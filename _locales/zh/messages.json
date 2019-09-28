@@ -1,0 +1,143 @@
+{
+    "appName": {
+        "message": "m3u8下载器"
+    },
+    "appDescription": {
+        "message": "此插件支持监控和下载：m3u8流媒体、视频、音频"
+    },
+    "processerName": {
+        "message": "m3u8下载器 处理程序 - $1"
+    },
+    "notificationYes": {
+        "message": "是"
+    },
+    "notificationNo": {
+        "message": "否"
+    },
+    "notificationOpenDownload": {
+        "message": "打开文件 $1 ？"
+    },
+    "nothing": {
+        "message": "无"
+    },
+    "monitor": {
+        "message": "监控"
+    },
+    "manual": {
+        "message": "手动"
+    },
+    "download": {
+        "message": "下载"
+    },
+    "settings": {
+        "message": "设置"
+    },
+    "monitorMonitoredCount": {
+        "message": "已监控总数"
+    },
+    "reload": {
+        "message": "刷新"
+    },
+    "url": {
+        "message": "URL地址"
+    },
+    "monitorFromTab": {
+        "message": "来自标签页"
+    },
+    "inputFileName": {
+        "message": "输入保存的文件名"
+    },
+    "delete": {
+        "message": "删除"
+    },
+    "inputValidURL": {
+        "message": "输入合法的URL地址"
+    },
+    "manualM3u8Tip": {
+        "message": "是否使用m3u8模式"
+    },
+    "clean": {
+        "message": "清空"
+    },
+    "downloadDlingShow": {
+        "message": "正在下载任务"
+    },
+    "downloadDlingCount": {
+        "message": "正在下载任务总数"
+    },
+    "downloadBatchShow": {
+        "message": "批次"
+    },
+    "downloadBatchCount": {
+        "message": "批次总数"
+    },
+    "fileName": {
+        "message": "文件名"
+    },
+    "cancel": {
+        "message": "取消"
+    },
+    "downloadDatchName": {
+        "message": "批次名称"
+    },
+    "downloadTaskWaitCnt": {
+        "message": "待下载任务数"
+    },
+    "downloadTaskCompletedCnt": {
+        "message": "已完成任务数"
+    },
+    "downloadTaskTriggeredCnt": {
+        "message": "已触发下载任务数"
+    },
+    "downloadTaskSum": {
+        "message": "总任务数"
+    },
+    "settingsEnvironment": {
+        "message": "模拟环境"
+    },
+    "settingsEnvironmentPC": {
+        "message": "桌面"
+    },
+    "settingsEnvironmentMobile": {
+        "message": "手机"
+    },
+    "settingsShowTab": {
+        "message": "监控详情显示标签页信息"
+    },
+    "settingsMonitorMax": {
+        "message": "监控数最大值"
+    },
+    "settingsDlingMax": {
+        "message": "正在下载任务数最大值"
+    },
+    "settingsDlBatchMax": {
+        "message": "批次数最大值"
+    },
+    "settingsPopupWidth": {
+        "message": "插件弹窗宽度最大像素"
+    },
+    "settingsPopupHeight": {
+        "message": "插件弹窗高度最大像素"
+    },
+    "submit": {
+        "message": "应用"
+    },
+	"copyUrl": {
+        "message": "复制URL"
+    },
+	"settingsPopupInTab": {
+        "message": "在标签页打开插件弹窗"
+    },
+	"settingsShowDuration": {
+        "message": "监控详情显示长度"
+    },
+	"duration": {
+        "message": "长度"
+    },
+	"running": {
+        "message": "运行"
+    },
+	"resume": {
+        "message": "继续"
+    }
+}

@@ -1,0 +1,143 @@
+{
+    "appName": {
+        "message": "m3u8 downloader"
+    },
+    "appDescription": {
+        "message": "This extension can monitor and download m3u8 stream, and video, audio media."
+    },
+    "processerName": {
+        "message": "m3u8 downloader processer - $1"
+    },
+    "notificationYes": {
+        "message": "yes"
+    },
+    "notificationNo": {
+        "message": "no"
+    },
+    "notificationOpenDownload": {
+        "message": "open the file $1 ?"
+    },
+    "nothing": {
+        "message": "nothing"
+    },
+    "monitor": {
+        "message": "monitor"
+    },
+    "manual": {
+        "message": "manual"
+    },
+    "download": {
+        "message": "download"
+    },
+    "settings": {
+        "message": "settings"
+    },
+    "monitorMonitoredCount": {
+        "message": "monitored count"
+    },
+    "reload": {
+        "message": "reload"
+    },
+    "url": {
+        "message": "URL"
+    },
+    "monitorFromTab": {
+        "message": "from tab"
+    },
+    "inputFileName": {
+        "message": "input the name of the file to be saved"
+    },
+    "delete": {
+        "message": "delete"
+    },
+    "inputValidURL": {
+        "message": "input a valid URL"
+    },
+    "manualM3u8Tip": {
+        "message": "whether to use m3u8 mode or not"
+    },
+    "clean": {
+        "message": "clean"
+    },
+    "downloadDlingShow": {
+        "message": "downloading task"
+    },
+    "downloadDlingCount": {
+        "message": "downloading task count"
+    },
+    "downloadBatchShow": {
+        "message": "batch"
+    },
+    "downloadBatchCount": {
+        "message": "batch count"
+    },
+    "fileName": {
+        "message": "the name of file"
+    },
+    "cancel": {
+        "message": "cancel"
+    },
+    "downloadDatchName": {
+        "message": "the name of batch"
+    },
+    "downloadTaskWaitCnt": {
+        "message": "waiting tasks count"
+    },
+    "downloadTaskCompletedCnt": {
+        "message": "completed tasks count"
+    },
+    "downloadTaskTriggeredCnt": {
+        "message": "triggered tasks count"
+    },
+    "downloadTaskSum": {
+        "message": "total number of task"
+    },
+    "settingsEnvironment": {
+        "message": "simulation environment"
+    },
+    "settingsEnvironmentPC": {
+        "message": "pc"
+    },
+    "settingsEnvironmentMobile": {
+        "message": "mobile"
+    },
+    "settingsShowTab": {
+        "message": "the monitored details show tab information"
+    },
+    "settingsMonitorMax": {
+        "message": "maximum number of the monitored"
+    },
+    "settingsDlingMax": {
+        "message": "maximum number of downloading task"
+    },
+    "settingsDlBatchMax": {
+        "message": "maximum number of batch"
+    },
+    "settingsPopupWidth": {
+        "message": "extension popup max width in pixel"
+    },
+    "settingsPopupHeight": {
+        "message": "extension popup max height in pixel"
+    },
+    "submit": {
+        "message": "submit"
+    },
+	"copyUrl": {
+        "message": "copy URL"
+    },
+	"settingsPopupInTab": {
+        "message": "open the extension popup in tab"
+    },
+	"settingsShowDuration": {
+        "message": "the monitored details show duration"
+    },
+	"duration": {
+        "message": "duration"
+    },
+	"running": {
+        "message": "running"
+    },
+	"resume": {
+        "message": "resume"
+    }
+}

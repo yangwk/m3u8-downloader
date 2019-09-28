@@ -1,0 +1,30 @@
+{
+    "manifest_version": 2,
+    "name": "__MSG_appName__",
+    "description": "__MSG_appDescription__",
+    "version": "1.0.0",
+    "default_locale": "en",
+    "homepage_url": "https://github.com/yangwk/m3u8-downloader",
+    "icons": {
+        "128": "img/icon128.png"
+    },
+    "browser_action": {
+        "default_icon": {
+            "128": "img/icon128.png"
+        },
+		"default_popup": "popup/index.html"
+    },
+    "background": {
+        "scripts": ["js/myutils.js", "js/myreader.js",
+            "js/mym3u8parser.js", "js/myxmlhttprequest.js",
+            "js/myasyncm3u8parser.js", "js/mychromeconfig.js",
+            "js/mychromenotification.js", "js/myvideox.js",
+            "js/mychromedownload.js", "js/mychromemediamonitor.js",
+            "js/bootstrap.js"],
+        "persistent": true
+    },
+    "permissions": ["storage", "activeTab", "tabs",
+        "downloads", "downloads.open", "notifications",
+        "webRequest", "webRequestBlocking",
+        "<all_urls>"]
+}
