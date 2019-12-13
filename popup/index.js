@@ -150,11 +150,10 @@ document.addEventListener("DOMContentLoaded", function () {
 			e.stopPropagation();
 			var url = this.dataset["url"];
 			var mediaName = document.getElementById(this.dataset["nameId"]).value.trim();
-			if(! url || ! mediaName){
-				if(! mediaName){
-					document.getElementById(this.dataset["nameId"]).focus();
-				}
-				return;
+			mediaName = mediaName || MyUtils.getLastPathName(url) ;
+			if(! mediaName){
+				document.getElementById(this.dataset["nameId"]).focus();
+				return ;
 			}
 			
 			chrome.runtime.sendMessage({
@@ -176,6 +175,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			e.stopPropagation();
 			var url = document.getElementById("manual-url").value.trim();
 			var mediaName = document.getElementById("manual-name").value.trim();
+			mediaName = mediaName || MyUtils.getLastPathName(url) ;
 			var mediaType = document.getElementById("manual-m3u8").checked ? "m3u8" : "video";
 			
 			if(! url){
@@ -371,6 +371,8 @@ document.addEventListener("DOMContentLoaded", function () {
 				document.getElementById("settings-popwidth").value = data.popupWidth;
 				document.getElementById("settings-popheight").value = data.popupHeight;
 				document.getElementById("settings-popupintab").checked = data.popupInTab == "1";
+				document.getElementById("settings-pwe").checked = data.promptWhenExist == "1";
+				document.getElementById("settings-nfar").checked = data.newFolderAtRoot == "1";
 			});
 		}
 		
@@ -401,6 +403,8 @@ document.addEventListener("DOMContentLoaded", function () {
 			data.popupHeight = parseInt(document.getElementById("settings-popheight").value, 10);
 			data.popupInTab = document.getElementById("settings-popupintab").checked ? "1" : "0";
 			data.showDuration = document.getElementById("settings-duration").checked ? "1" : "0";
+			data.promptWhenExist = document.getElementById("settings-pwe").checked ? "1" : "0";
+			data.newFolderAtRoot = document.getElementById("settings-nfar").checked ? "1" : "0";
 			
 			chrome.runtime.sendMessage({
 					action: "updateconfig",

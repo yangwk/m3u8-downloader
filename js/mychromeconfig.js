@@ -14,7 +14,9 @@ var MyChromeConfig = (function () {
 		downloadBatchMax: 5,
 		popupWidth: 462,
 		popupHeight: 435,
-		popupInTab: "0"
+		popupInTab: "0",
+		promptWhenExist: "0",
+		newFolderAtRoot: "1"
 	};
 	
 	chrome.storage.local.get(_config, function(items){

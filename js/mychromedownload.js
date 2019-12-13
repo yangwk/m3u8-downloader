@@ -206,8 +206,10 @@ var MyChromeDownload = (function () {
 				task.options.method = task.options.method.toUpperCase();
 			}
 			
-			task.options.conflictAction = "uniquify";
 			task.options.saveAs = false;
+			if(MyChromeConfig.get("promptWhenExist") == "1"){
+				task.options.conflictAction = "prompt";
+			}
 			
 			chrome.downloads.download(task.options, function (id) {
 				if(chrome.runtime.lastError){

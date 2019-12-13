@@ -179,7 +179,8 @@ var MyBootstrap = (function () {
 	
 	function _downloadOther(data){
 		var downloadDirectory = chrome.i18n.getMessage("appName") + "-" + MyUtils.genRandomString();
-		
+		downloadDirectory = MyChromeConfig.get("newFolderAtRoot") == "0" ? "" : downloadDirectory + "/";
+
 		var suffix = MyUtils.getSuffix(data.mediaName, false);
 		if(suffix){
 			suffix = "";
@@ -191,7 +192,7 @@ var MyBootstrap = (function () {
 		MyChromeDownload.download([{
 			options: {
 				url: data.reqConfig.url,
-				filename: downloadDirectory + "/" + data.mediaName + suffix,
+				filename: downloadDirectory + data.mediaName + suffix,
 				method: data.reqConfig.method
 			}
 		}], data.mediaName + suffix);

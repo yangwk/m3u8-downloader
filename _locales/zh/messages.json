@@ -139,5 +139,11 @@
     },
 	"resume": {
         "message": "继续"
+    },
+	"settingsPromptWhenExist": {
+        "message": "文件名已经存在时提示"
+    },
+	"settingsNewFolderAtRoot": {
+        "message": "在下载根目录创建子目录"
     }
 }

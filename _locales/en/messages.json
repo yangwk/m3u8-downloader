@@ -139,5 +139,11 @@
     },
 	"resume": {
         "message": "resume"
+    },
+	"settingsPromptWhenExist": {
+        "message": "prompt when filename exist"
+    },
+	"settingsNewFolderAtRoot": {
+        "message": "create subdirectory at download root folder"
     }
 }
