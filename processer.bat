@@ -30,6 +30,16 @@ if exist "%fileName%" (
 	exit
 )
 
+rem sometimes the name of downloaded ts file maybe not end with .ts
+set tsSuffix=.ts
+for %%i in (..\m3u8\*.*) do (
+	if not "%%~xi" == ".m3u8" (
+		if not "%%~xi" == "%tsSuffix%" (
+			ren "%%i" "%%~ni%%~xi%tsSuffix%" || exit
+		)
+	)
+)
+
 set count=0
 for %%f in (..\m3u8\*.ts) do (
 	set /a count+=1 || exit

@@ -195,9 +195,6 @@ var MyChromeDownload = (function () {
 	
 	function _downloadTaskImpl(){
 		try{
-			if(_downloadingHolder.isFull()){
-				return;
-			}
 			var task = _downloadBatchHolder.takeTask();
 			if(task == null){
 				return ;
@@ -218,6 +215,7 @@ var MyChromeDownload = (function () {
 					if(id){
 						_downloadBatchHolder.saveId(task.control.batchName, id);
 						_downloadingHolder.put(id, task.control);
+                        // FIXME before the callback of download is fired, the count of downloading maybe exceed _downloadingHolder.isFull() 
 						_downloadTask();
 					}else{
 						_downloadBatchHolder.clearWhenInterrupted(task.control.batchName);

@@ -150,7 +150,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			e.stopPropagation();
 			var url = this.dataset["url"];
 			var mediaName = document.getElementById(this.dataset["nameId"]).value.trim();
-			mediaName = mediaName || MyUtils.getLastPathName(url) ;
+			mediaName = mediaName || MyUtils.getLastPathName(url) || MyUtils.genRandomString();
 			if(! mediaName){
 				document.getElementById(this.dataset["nameId"]).focus();
 				return ;
@@ -175,7 +175,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			e.stopPropagation();
 			var url = document.getElementById("manual-url").value.trim();
 			var mediaName = document.getElementById("manual-name").value.trim();
-			mediaName = mediaName || MyUtils.getLastPathName(url) ;
+			mediaName = mediaName || MyUtils.getLastPathName(url) || MyUtils.genRandomString();
 			var mediaType = document.getElementById("manual-m3u8").checked ? "m3u8" : "video";
 			
 			if(! url){

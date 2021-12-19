@@ -117,8 +117,8 @@ var MyBootstrap = (function () {
 		function stepDownloadm3u8processer1(){
 			MyChromeDownload.download([{
 				options: {
-					url: chrome.extension.getURL("processer.bat.txt"),
-					filename: downloadDirectory + "/processer/" + chrome.i18n.getMessage("processerName", data.mediaName) + ".bat"
+                    url: chrome.extension.getURL("processer.bat"),
+                    filename: downloadDirectory + "/processer/processer.bat"
 				},
 				control: {
 					autoAcceptDanger: true
