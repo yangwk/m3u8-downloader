@@ -130,6 +130,13 @@ var MyUtils = (function(){
 			}
 			
 			return headers;
+		},
+		isWindowsPlatform: function(){
+			if(navigator.userAgentData){
+				return navigator.userAgentData.platform == "Windows";
+			}
+			
+			return navigator.platform == "Win32" || navigator.platform == "Win64";
 		}
 	
     };

@@ -109,16 +109,18 @@ var MyBootstrap = (function () {
 	}
 	
 	function _downloadM3u8Impl(data, parseResult){
-		var downloadDirectory = chrome.i18n.getMessage("appName") + "-" + MyUtils.genRandomString();
-		var baseFileName = MyUtils.genRandomString();
+		var uniqueKey = MyUtils.genRandomString();
+		var downloadDirectory = chrome.i18n.getMessage("appName") + "-" + uniqueKey;
+		var baseFileName = uniqueKey;
 		var processerId = null;
 		
-		
 		function stepDownloadm3u8processer1(){
+			var processerName = MyUtils.isWindowsPlatform() ? "processer.bat" : "processer.sh.command" ;
+			
 			MyChromeDownload.download([{
 				options: {
-                    url: chrome.extension.getURL("processer.bat"),
-                    filename: downloadDirectory + "/processer/processer.bat"
+                    url: chrome.extension.getURL(processerName),
+                    filename: downloadDirectory + "/processer/"+processerName
 				},
 				control: {
 					autoAcceptDanger: true

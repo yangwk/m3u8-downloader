@@ -6,6 +6,8 @@ title %0
 
 setlocal enabledelayedexpansion
 
+cd /D "%~dp0"
+
 if exist "lock" (
 	exit
 )
