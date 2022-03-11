@@ -145,5 +145,8 @@
     },
 	"settingsNewFolderAtRoot": {
         "message": "create subdirectory at download root folder"
+    },
+	"settingsPlaySoundWhenComplete": {
+        "message": "play sound when complete"
     }
 }

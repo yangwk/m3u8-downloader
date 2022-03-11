@@ -145,5 +145,8 @@
     },
 	"settingsNewFolderAtRoot": {
         "message": "在下载根目录创建子目录"
+    },
+	"settingsPlaySoundWhenComplete": {
+        "message": "下载完成时播放声音"
     }
 }

@@ -373,6 +373,7 @@ document.addEventListener("DOMContentLoaded", function () {
 				document.getElementById("settings-popupintab").checked = data.popupInTab == "1";
 				document.getElementById("settings-pwe").checked = data.promptWhenExist == "1";
 				document.getElementById("settings-nfar").checked = data.newFolderAtRoot == "1";
+				document.getElementById("settings-pswc").checked = data.playSoundWhenComplete == "1";
 			});
 		}
 		
@@ -405,6 +406,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			data.showDuration = document.getElementById("settings-duration").checked ? "1" : "0";
 			data.promptWhenExist = document.getElementById("settings-pwe").checked ? "1" : "0";
 			data.newFolderAtRoot = document.getElementById("settings-nfar").checked ? "1" : "0";
+			data.playSoundWhenComplete = document.getElementById("settings-pswc").checked ? "1" : "0";
 			
 			chrome.runtime.sendMessage({
 					action: "updateconfig",
