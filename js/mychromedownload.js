@@ -150,12 +150,14 @@ var MyChromeDownload = (function () {
 			return;
 		}
 		
+		if(delta.canResume){
+			control.canResume = delta.canResume.current;
+		}
+		
 		if(delta.state && delta.state.current == "interrupted"){
 			if(! (delta.canResume && delta.canResume.current == true)){
 				_cancelDownload(delta.id);
 				return ;
-			}else{
-				control.canResume = delta.canResume.current;
 			}
 		}
 		
