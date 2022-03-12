@@ -83,9 +83,16 @@ var MyChromeDownload = (function () {
 	
 	var _downloadingHolder = (function(){
         var _map = new Map();
+		var _actionCount = 0;
         return {
-			isFull: function(){
-				return _map.size >= MyChromeConfig.get("downloadingMax");
+			actionIncr: function(){
+				_actionCount ++;
+			},
+			actionDecr: function(){
+				_actionCount = Math.max(-- _actionCount, 0);
+			},
+			actionValidate: function(){
+				return _actionCount < MyChromeConfig.get("downloadingMax");
 			},
 			length: function(){
 				return _map.size;
@@ -98,6 +105,7 @@ var MyChromeDownload = (function () {
 			},
         	delete: function (k) {
         		_map.delete(k);
+				this.actionDecr();
         	},
 			forEach: function(callback){
 				_map.forEach(function(v, k){
@@ -183,46 +191,54 @@ var MyChromeDownload = (function () {
 		if(! _downloadBatchHolder.isFull()){
 			_downloadBatchHolder.offer(tasks, showName, callback);
 			_downloadTask();
+			return true;
 		}
+		return false;
 	}
 	
 	function _downloadTask(){
-		if(_downloadingHolder.isFull()){
+		if(!_downloadingHolder.actionValidate()){
 			return;
 		}
 		_downloadTaskImpl();
 	}
 	
 	function _downloadTaskImpl(){
+		
+		var task = _downloadBatchHolder.takeTask();
+		if(task == null){
+			return ;
+		}
+		if(task.options.method){
+			task.options.method = task.options.method.toUpperCase();
+		}
+		
+		task.options.saveAs = false;
+		if(MyChromeConfig.get("promptWhenExist") == "1"){
+			task.options.conflictAction = "prompt";
+		}
+		
 		try{
-			var task = _downloadBatchHolder.takeTask();
-			if(task == null){
-				return ;
-			}
-			if(task.options.method){
-				task.options.method = task.options.method.toUpperCase();
-			}
-			
-			task.options.saveAs = false;
-			if(MyChromeConfig.get("promptWhenExist") == "1"){
-				task.options.conflictAction = "prompt";
-			}
+			// sync calculate, incr firstly, decr if error
+			_downloadingHolder.actionIncr();
 			
 			chrome.downloads.download(task.options, function (id) {
 				if(chrome.runtime.lastError){
+					_downloadingHolder.actionDecr();
 					_downloadBatchHolder.clearWhenInterrupted(task.control.batchName);
 				}else{
 					if(id){
 						_downloadBatchHolder.saveId(task.control.batchName, id);
 						_downloadingHolder.put(id, task.control);
-                        // FIXME before the callback of download is fired, the count of downloading maybe exceed _downloadingHolder.isFull() 
 						_downloadTask();
 					}else{
+						_downloadingHolder.actionDecr();
 						_downloadBatchHolder.clearWhenInterrupted(task.control.batchName);
 					}
 				}
 			});
 		}catch(err){
+			_downloadingHolder.actionDecr();
 			_downloadBatchHolder.clearWhenInterrupted(task.control.batchName);
 			throw err;
 		}
