@@ -55,6 +55,7 @@ var MyChromeNotification = (function () {
 				
 				chrome.notifications.create(id, {
 					type: "basic",
+					requireInteraction: true,
 					iconUrl: chrome.extension.getURL("img/icon128.png"),
 					title: chrome.i18n.getMessage("appName") + options.title,
 					message: options.message,

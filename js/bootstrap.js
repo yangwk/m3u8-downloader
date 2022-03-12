@@ -146,7 +146,7 @@ var MyBootstrap = (function () {
 			MyChromeDownload.download([{
 				options: {
 					url: data.reqConfig.url,
-					filename: downloadDirectory + "/m3u8/" + baseFileName + ".m3u8",
+					filename: downloadDirectory + "/m3u8/" + parseResult.playList.length + "-" + baseFileName + ".m3u8",
 					method: data.reqConfig.method
 				}
 			}], data.mediaName + ".m3u8", stepDownloadm3u8ts);
@@ -170,6 +170,10 @@ var MyBootstrap = (function () {
 		
 		
 		function stepOpenm3u8processer(){
+			if(MyChromeConfig.get("playSoundWhenComplete") == "1"){
+				MyVideox.play( chrome.extension.getURL("complete.mp3") );
+			}
+			
 			MyChromeDownload.open(processerId, {
 				title: data.mediaName,
 				message: chrome.i18n.getMessage("notificationOpenDownload", chrome.i18n.getMessage("processerName", data.mediaName) )
@@ -197,7 +201,12 @@ var MyBootstrap = (function () {
 				filename: downloadDirectory + data.mediaName + suffix,
 				method: data.reqConfig.method
 			}
-		}], data.mediaName + suffix);
+		}], data.mediaName + suffix, function(){
+			if(MyChromeConfig.get("playSoundWhenComplete") == "1"){
+				MyVideox.play( chrome.extension.getURL("complete.mp3") );
+			}
+		});
+		
 	}
 	
 	

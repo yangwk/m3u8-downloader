@@ -20,10 +20,11 @@ var MyVideox = (function () {
                 }
             }
         }
-
-        this.getInfo = function (url) {
+		
+		function _init(url, muted){
             _video = document.createElement("video");
-            _video.muted = true;
+			_video.volume = 1;
+            _video.muted = muted;
             _video.controls = false;
             _video.autoplay = false;
             _video.width = 100;
@@ -35,6 +36,10 @@ var MyVideox = (function () {
                 _destroy();
                 _fireCallback(null);
             }
+		}
+		
+        this.getInfo = function (url) {
+			_init(url,true);
 
             _video.ondurationchange = function () {
                 var duration = _video.duration;
@@ -46,8 +51,21 @@ var MyVideox = (function () {
 
             _parent.appendChild(_video);
         }
+		
+        this.play = function (url) {
+			_init(url, false);
+
+            _video.onended = function () {
+                _destroy();
+            }
+
+            _parent.appendChild(_video);
+			_video.play();
+        }
 
     };
+	
+	
 
     var _videoCount = 0;
 
@@ -74,6 +92,10 @@ var MyVideox = (function () {
 				}
 			}
         },
+		play: function(url){
+			var mv = new _MyVideo(document.body, function() {});
+			mv.play(url);
+		},
 		info: function(){
 			return [_videoCount];
 		}
