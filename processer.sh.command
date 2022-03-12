@@ -48,6 +48,14 @@ if [ ${count} -eq 0 ] ; then
   exit 1
 fi
 
+m3u8Name=$(ls ../m3u8/*.m3u8)
+m3u8Name=$(basename ${m3u8Name})
+m3u8NameSplit=(`echo ${m3u8Name} | tr '-' ' '`)
+
+if [ ${count} != ${m3u8NameSplit[0]} ] ; then
+  exit 1
+fi
+
 mkdir -p "${path}"
 
 num=0

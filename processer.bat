@@ -51,6 +51,17 @@ if %count% EQU 0 (
 	exit
 )
 
+set expectedCount=0
+for %%i in (..\m3u8\*.m3u8) do (
+	for /f "tokens=1 delims=-" %%s in ("%%~ni%") do (
+		set expectedCount=%%s
+	)
+)
+
+if %count% NEQ %expectedCount% (
+	exit
+)
+
 md "%path%" || exit
 
 set num=0

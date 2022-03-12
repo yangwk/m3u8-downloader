@@ -146,7 +146,7 @@ var MyBootstrap = (function () {
 			MyChromeDownload.download([{
 				options: {
 					url: data.reqConfig.url,
-					filename: downloadDirectory + "/m3u8/" + baseFileName + ".m3u8",
+					filename: downloadDirectory + "/m3u8/" + parseResult.playList.length + "-" + baseFileName + ".m3u8",
 					method: data.reqConfig.method
 				}
 			}], data.mediaName + ".m3u8", stepDownloadm3u8ts);
