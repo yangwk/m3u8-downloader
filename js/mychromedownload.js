@@ -232,13 +232,8 @@ var MyChromeDownload = (function () {
 		chrome.downloads.cancel(id, function(){
 			if(chrome.runtime.lastError){
 			}
-			// fire onErased
-			chrome.downloads.erase({
-				id: id
-			}, function(erasedIds){
-				if(chrome.runtime.lastError){
-				}
-			});
+			
+			_downloadingHolder.delete(id);
 		});
 	}
 	
