@@ -156,8 +156,7 @@ var MyChromeDownload = (function () {
 		
 		if(delta.state && delta.state.current == "interrupted"){
 			if(! (delta.canResume && delta.canResume.current == true)){
-				_cancelDownload(delta.id);
-				return ;
+				// TODO interrupted and can't resume
 			}
 		}
 		
@@ -170,7 +169,9 @@ var MyChromeDownload = (function () {
 		if (delta.state && delta.state.current == "complete") {
 			_downloadingHolder.delete(delta.id);
 			_downloadBatchHolder.complete(control.batchName, delta.id);
-			
+		}
+		
+		if (delta.state){
 			_downloadTask();
 		}
 	});
