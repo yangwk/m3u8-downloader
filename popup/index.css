@@ -117,6 +117,7 @@ hr {
     max-height: 18px;
 }
 input[type="text"] , input[type="number"] {
+    padding: 0;
     margin: 0;
 	display: inline-block;
     width: 460px;
