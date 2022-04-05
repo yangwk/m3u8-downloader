@@ -137,7 +137,9 @@ var MyUtils = (function(){
 			}
 			
 			return navigator.platform == "Win32" || navigator.platform == "Win64";
+		},
+        isSuccessful: function(sc){
+            return (sc >= 200 && sc < 300) || sc == 304 ;
 		}
-	
     };
 })();

@@ -149,7 +149,7 @@ var MyChromeMediaMonitor = (function () {
 		if(details.tabId == null || details.tabId < 0){
 			return ;
 		}
-		if((details.statusCode >= 200 && details.statusCode < 300) || details.statusCode == 304){
+		if(MyUtils.isSuccessful(details.statusCode)){
 			var media = _getMedia(details.url, details.responseHeaders);
 			if(media != null){
 				var mediaItem = {

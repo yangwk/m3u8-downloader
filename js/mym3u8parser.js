@@ -9,6 +9,12 @@ var MyM3u8Parser = function(_reqConfig, _content){
 	var _PlayItem = function(sequence, url){
 		this.sequence = sequence;
 		this.url = url;
+        this.discontinuity = false;
+	}
+    
+    var _DiscontinuityItem = function(start, end){
+		this.start = start;
+		this.end = end;
 	}
 	
 	var _myReader = new MyReader(_content);
@@ -55,7 +61,11 @@ var MyM3u8Parser = function(_reqConfig, _content){
 				} else if(tag == "EXTINF"){
 					var commaIdx = statement.indexOf(",");
 					duration += parseFloat(statement.substring("#EXTINF:".length, commaIdx == -1 ? statement.length : commaIdx).trim());
-				}
+				} else if(tag == "EXT-X-DISCONTINUITY"){
+                    if(playList.length > 0){
+                        playList[playList.length-1].discontinuity = true;
+                    }
+                }
 			}else{
 				if(statement.charAt(0) === "\t" || statement.charAt(0) === " "){
 					throw "invalid m3u8 format";
@@ -69,7 +79,8 @@ var MyM3u8Parser = function(_reqConfig, _content){
 							
 		return {
 			duration: duration,
-			playList: playList
+			playList: playList,
+            discontinuity: _handleDiscontinuity(playList)
 		};
 	}
 	
@@ -79,6 +90,25 @@ var MyM3u8Parser = function(_reqConfig, _content){
 			return a.sequence - b.sequence;
 		});
 	}
+    
+    function _handleDiscontinuity(playList){
+        var retval = [];
+        if(playList.length == 0){
+            return retval;
+        }
+        if(MyChromeConfig.get("splitDiscontinuity") != "1"){
+            retval.push( new _DiscontinuityItem(0, playList.length-1) );
+            return retval;
+        }
+        for(var r=0, start=0, end=0; r<playList.length; r++){
+            if(playList[r].discontinuity == true || r == playList.length-1){
+                end = r;
+                retval.push( new _DiscontinuityItem(start, end) );
+                start = r+1;
+            }
+        }
+        return retval;
+    }
 	
 	this.parse = function(){
 		try{

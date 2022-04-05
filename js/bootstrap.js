@@ -143,13 +143,31 @@ var MyBootstrap = (function () {
 		
 		
 		function stepDownloadm3u8playlist(){
-			MyChromeDownload.download([{
-				options: {
-					url: data.reqConfig.url,
-					filename: downloadDirectory + "/m3u8/" + parseResult.playList.length + "-" + baseFileName + ".m3u8",
-					method: data.reqConfig.method
-				}
-			}], data.mediaName + ".m3u8", stepDownloadm3u8ts);
+            var tasks = [];
+            var shouldSplit = parseResult.discontinuity.length > 1;
+            for(var r=0; r<parseResult.discontinuity.length; r++){
+                var m3u8Name = MyUtils.padStart(r.toString(), 10,"0") + "-"
+                    + (shouldSplit ? "1" : "0") + "-" + parseResult.playList.length + "-"
+                    + parseResult.discontinuity[r].start + "-" + parseResult.discontinuity[r].end + "-"
+                    + baseFileName + ".m3u8";
+                if(r == 0){
+                    tasks.push({
+                        options: {
+                            url: data.reqConfig.url,
+                            filename: downloadDirectory + "/m3u8/" + m3u8Name,
+                            method: data.reqConfig.method
+                        }
+                    });
+                }else{
+                    tasks.push({
+                        options: {
+                            url: chrome.extension.getURL("processer.m3u8"),
+                            filename: downloadDirectory + "/m3u8/" + m3u8Name
+                        }
+                    });
+                }
+            }
+			MyChromeDownload.download(tasks, data.mediaName + ".m3u8", stepDownloadm3u8ts);
 		}
 		
 		function stepDownloadm3u8ts(){
