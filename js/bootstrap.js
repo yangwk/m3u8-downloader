@@ -15,6 +15,10 @@ var MyBootstrap = (function () {
 			}else if(request.action == "loadmonitoredmedia"){
 				sendResponse(MyChromeMediaMonitor.view());
 			}else if(request.action == "downloadmonitoredmedia"){
+                if(!MyChromeDownload.canDownload()){
+                    sendResponse({success: true});
+                    return ;
+                }
 				var mediaItem = MyChromeMediaMonitor.take(request.data.url);
 				sendResponse({success: true});
 				_downloadMonitoredMedia({ mediaItem: mediaItem, mediaName: request.data.mediaName });

@@ -259,6 +259,9 @@ var MyChromeDownload = (function () {
     
 	return {
 		download: _download,
+        canDownload: function(){
+            return ! _downloadBatchHolder.isFull();
+        },
 		open: function(id, options){
 			MyChromeNotification.create({
 				title: options.title,
