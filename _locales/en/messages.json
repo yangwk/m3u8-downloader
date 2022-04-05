@@ -148,5 +148,8 @@
     },
 	"settingsPlaySoundWhenComplete": {
         "message": "play sound when complete"
+    },
+	"settingsSplitDiscontinuity": {
+        "message": "split to handle discontinuity m3u8 playlist"
     }
 }

@@ -51,7 +51,7 @@ var MyXMLHttpRequest = function (_settings) {
 
         xhr.onreadystatechange = function () {
             if (this.readyState == 4) {
-				if((this.status >= 200 && this.status < 300) || this.status == 304){
+				if(MyUtils.isSuccessful(this.status)){
 					var data = null;
 					if(this.responseType == null || this.responseType == ""){
 						data = this.response;

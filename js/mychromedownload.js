@@ -38,8 +38,13 @@ var MyChromeDownload = (function () {
 				_queue.push(batch);
 			},
 			takeTask: function(){
-				var batch = _queue.length > 0 ? _queue[0] : null;
-				return batch == null ? null : batch.tasks.shift();
+                for(var x in _queue){
+                    var task = _queue[x].tasks.shift();
+                    if(task != null){
+                        return task;
+                    }
+                }
+				return null;
 			},
 			clearWhenInterrupted: function(batchName){
 				var batch = null;
@@ -259,6 +264,9 @@ var MyChromeDownload = (function () {
     
 	return {
 		download: _download,
+        canDownload: function(){
+            return ! _downloadBatchHolder.isFull();
+        },
 		open: function(id, options){
 			MyChromeNotification.create({
 				title: options.title,

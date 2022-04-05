@@ -17,7 +17,8 @@ var MyChromeConfig = (function () {
 		popupInTab: "0",
 		promptWhenExist: "0",
 		newFolderAtRoot: "1",
-		playSoundWhenComplete: "1"
+		playSoundWhenComplete: "1",
+        splitDiscontinuity: "1"
 	};
 	
 	chrome.storage.local.get(_config, function(items){

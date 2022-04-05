@@ -148,5 +148,8 @@
     },
 	"settingsPlaySoundWhenComplete": {
         "message": "下载完成时播放声音"
+    },
+	"settingsSplitDiscontinuity": {
+        "message": "拆分处理不连续的m3u8播放列表"
     }
 }

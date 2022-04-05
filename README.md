@@ -85,6 +85,14 @@ WeChat 1459669836
 
 ![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/09.PNG)
 
+音乐监控
+
+![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/10.png)
+
+视频监控
+
+![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/11.png)
+
 ## 注意事项
 
 * 为了避免糟糕的下载体验，请关闭浏览器选项 设置 -> 高级 -> 下载内容 -> 下载前询问每个文件的保存位置
