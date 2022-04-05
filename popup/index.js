@@ -174,11 +174,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		document.getElementById("manual-download").onclick = function(e){
 			e.stopPropagation();
 			var url = document.getElementById("manual-url").value.trim();
-			var mediaName = document.getElementById("manual-name").value.trim();
-			mediaName = mediaName || MyUtils.getLastPathName(url) || MyUtils.genRandomString();
-			var mediaType = document.getElementById("manual-m3u8").checked ? "m3u8" : "video";
-			
-			if(! url){
+            if(! url){
 				document.getElementById("manual-url").focus();
 				return ;
 			}
@@ -188,6 +184,10 @@ document.addEventListener("DOMContentLoaded", function () {
 				document.getElementById("manual-url").focus();
 				return ;
 			}
+            
+			var mediaName = document.getElementById("manual-name").value.trim();
+			mediaName = mediaName || MyUtils.getLastPathName(url) || MyUtils.genRandomString();
+			var mediaType = document.getElementById("manual-m3u8").checked ? "m3u8" : "video";
 			
 			if(! mediaName){
 				document.getElementById("manual-name").focus();
