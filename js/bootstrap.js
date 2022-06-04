@@ -30,9 +30,6 @@ var MyBootstrap = (function () {
 			}else if(request.action == "canceldownload"){
 				MyChromeDownload.cancel(request.data.id);
 				sendResponse({success: true});
-			}else if(request.action == "canceldownload"){
-				MyChromeDownload.cancel(request.data.id);
-				sendResponse({success: true});
 			}else if(request.action == "resumedownload"){
 				MyChromeDownload.resume(request.data.id);
 				sendResponse({success: true});

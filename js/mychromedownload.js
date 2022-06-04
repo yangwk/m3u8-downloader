@@ -57,7 +57,7 @@ var MyChromeDownload = (function () {
 				}
 				if(batch != null){
 					for(var w in batch.downloadIds){
-						_cancelDownload(batch.downloadIds[w]);
+						_cancelDownload(batch.downloadIds[w], false);
 					}
 				}
 			},
@@ -65,9 +65,10 @@ var MyChromeDownload = (function () {
 				for(var x in _queue){
 					if(_queue[x].batchName == batchName){
 						_queue[x].downloadIds.push(id);
-						break;
+						return true;
 					}
 				}
+                return false;
 			},
 			complete: function(batchName, id){
 				for(var x=0; x<_queue.length; x++){
@@ -236,9 +237,10 @@ var MyChromeDownload = (function () {
 					_downloadBatchHolder.clearWhenInterrupted(task.control.batchName);
 				}else{
 					if(id){
-						_downloadBatchHolder.saveId(task.control.batchName, id);
-						_downloadingHolder.put(id, task.control);
-						_downloadTask();
+						if(_downloadBatchHolder.saveId(task.control.batchName, id)){
+                            _downloadingHolder.put(id, task.control);
+                            _downloadTask();
+                        }
 					}else{
 						_downloadingHolder.actionDecr();
 						_downloadBatchHolder.clearWhenInterrupted(task.control.batchName);
@@ -252,12 +254,19 @@ var MyChromeDownload = (function () {
 		}
 	}
 
-	function _cancelDownload(id){
+	function _cancelDownload(id, recurse){
 		chrome.downloads.cancel(id, function(){
 			if(chrome.runtime.lastError){
 			}
 			
+            var control = _downloadingHolder.get(id);
 			_downloadingHolder.delete(id);
+            
+            if(recurse){
+                if (control != null) {
+                    _downloadBatchHolder.clearWhenInterrupted( control.batchName );
+                }
+            }
 		});
 	}
 	
@@ -279,7 +288,9 @@ var MyChromeDownload = (function () {
 				chrome.downloads.open(id);
 			}, [id]);
 		},
-		cancel: _cancelDownload,
+		cancel: function(id){
+            _cancelDownload(id, true);
+        },
 		resume: function(id){
 			chrome.downloads.resume(id, function(){
 				if(chrome.runtime.lastError){
