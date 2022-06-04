@@ -25,6 +25,7 @@ var MyChromeDownload = (function () {
 					task.control == null ? task.control = {} : null;
 					task.control.batchName = batchName;
 					task.control.fileName = task.options.filename;
+                    task.control.url = task.options.url;
 				}
 				var batch = {
 					batchName: batchName,
@@ -128,7 +129,8 @@ var MyChromeDownload = (function () {
 			downloadingTasks.push({
 				id: id,
 				fileName: control.fileName,
-				canResume: control.canResume
+				canResume: control.canResume,
+                url: control.url
 			});
 		});
 		var downloadBatches = [];

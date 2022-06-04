@@ -1,10 +1,11 @@
 document.addEventListener("DOMContentLoaded", function () {
 	
-	function addClass(dom, clz){
+    //global
+	function __addClass(dom, clz){
 		var cln = dom.className.replace(clz, "").trim();
 		dom.className = cln ? cln + " " + clz : clz;
 	}
-	function removeClass(dom, clz){
+	function __removeClass(dom, clz){
 		dom.className = dom.className.replace(clz, "").trim();
 	}
 	
@@ -30,13 +31,13 @@ document.addEventListener("DOMContentLoaded", function () {
 			
 			for(var x in _showIds){
 				if(this.id == _showIds[x][0].id){
-					addClass(_showIds[x][0].parentElement, "active");
-					removeClass(_showIds[x][1], "hide");
-					addClass(_showIds[x][1], "show");
+					__addClass(_showIds[x][0].parentElement, "active");
+					__removeClass(_showIds[x][1], "hide");
+					__addClass(_showIds[x][1], "show");
 				}else{
-					removeClass(_showIds[x][0].parentElement, "active");
-					removeClass(_showIds[x][1], "show");
-					addClass(_showIds[x][1], "hide");
+					__removeClass(_showIds[x][0].parentElement, "active");
+					__removeClass(_showIds[x][1], "show");
+					__addClass(_showIds[x][1], "hide");
 				}
 			}
 		}
@@ -237,13 +238,13 @@ document.addEventListener("DOMContentLoaded", function () {
 				
 				for(var x in _showIds){
 					if(this.id == _showIds[x][0].id){
-						addClass(_showIds[x][0], "active");
-						removeClass(_showIds[x][1], "hide");
-						addClass(_showIds[x][1], "show");
+						__addClass(_showIds[x][0], "active");
+						__removeClass(_showIds[x][1], "hide");
+						__addClass(_showIds[x][1], "show");
 					}else{
-						removeClass(_showIds[x][0], "active");
-						removeClass(_showIds[x][1], "show");
-						addClass(_showIds[x][1], "hide");
+						__removeClass(_showIds[x][0], "active");
+						__removeClass(_showIds[x][1], "show");
+						__addClass(_showIds[x][1], "hide");
 					}
 				}
 			}
@@ -316,6 +317,12 @@ document.addEventListener("DOMContentLoaded", function () {
 					
 					dom.appendChild(dom3);
 				}
+                
+                var dom4 = document.createElement("span");
+                dom4.innerHTML = '<span class="badge badge-b" data-msg="copyUrl">copyUrl</span>';
+                dom4.dataset["url"] = obj.url;
+                dom4.onclick = copyDownloadUrl;
+                dom.appendChild(dom4);
 			}
 		}
 		
@@ -342,6 +349,14 @@ document.addEventListener("DOMContentLoaded", function () {
 				}
 			}, function(response){
 			});
+		}
+        
+		function copyDownloadUrl(e){
+			e.stopPropagation();
+			var copyholder = document.getElementById("download-copyholder");
+			copyholder.value = this.dataset["url"];
+			copyholder.select();
+			document.execCommand("copy");
 		}
 		
 	})();
