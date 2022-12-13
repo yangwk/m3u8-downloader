@@ -90,9 +90,15 @@ m3u8处理程序处理完毕后，会自动打开处理后的文件所处位置
 
 ## 案例
 
+音乐
+
 ![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/10.png)
 
+视频
+
 ![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/11.png)
+
+社交
 
 ![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/12.png)
 
