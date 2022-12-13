@@ -7,25 +7,34 @@
     <title>popup</title>
 	<link rel="shortcut icon" href="../img/icon128.png" type="image/png" />
 	<link href="index.css" rel="stylesheet" type="text/css">
+    <script src="../js/myreader.js" type="text/javascript"></script>
 	<script src="../js/myutils.js" type="text/javascript"></script>
 	<script src="index.js" type="text/javascript"></script>
   </head>
   
   <body>
 	<div>
-		<ul class="nav nav-tabs">
+		<ul id="page-nav" class="nav nav-tabs">
 		  <li class="active"><a href="#" id="monitor-show" data-msg="monitor" >monitor</a></li>
 		  <li><a href="#" id="manual-show" data-msg="manual">manual</a></li>
 		  <li><a href="#" id="download-show" data-msg="download">download</a></li>
 		  <li><a href="#" id="settings-show" data-msg="settings">settings</a></li>
 		  <li><a href="#" id="running-show" data-msg="running">running</a></li>
 		</ul>
-		<div class="page-wrapper">
+		<div id="page-wrapper">
 			<div id="monitor-page" class="show">
 				<div>
 					<span id="monitor-count" class="badge" data-title="monitorMonitoredCount">-</span>
 					<span class="badge badge-b" id="monitor-reload" data-msg="reload">reload</span>
 					<span class="badge badge-b" id="monitor-clean" data-msg="clean">clean</span>
+                    <span>
+                        <select id="monitor-filter" class="empty-select" data-title="filter" >
+                          <option value="">&nbsp;</option>
+                          <option value="m3u8">m3u8</option>
+                          <option value="video">video</option>
+                          <option value="audio">audio</option>
+                        </select>
+                    </span>
 					<span><input type="text" id="monitor-copyholder" class="copyholder" /></span>
 				</div>
 				<div id="monitor-content">
@@ -33,7 +42,8 @@
 			</div>
 			<div id="manual-page" class="hide">
 				<div>
-					<textarea id="manual-url" data-place="inputValidURL"></textarea>
+					<textarea id="manual-url" class="textarea-url" data-place="inputValidURL"></textarea>
+                    <textarea id="manual-headers" class="textarea-headers" data-place="inputValidHeaders"></textarea>
 					<input type="text" data-place="inputFileName" id="manual-name" />
 				</div>
 				<div>
@@ -41,6 +51,13 @@
 					  <span class="not-select">m3u8</span>
 					  <input type="checkbox" id="manual-m3u8" />
 					</label>
+				</div>
+                <div>
+					<label class="not-select">method</label>
+					<select id="manual-method">
+					  <option value="GET">GET</option>
+					  <option value="POST">POST</option>
+					</select>
 				</div>
 				<div>
 					<span class="badge badge-b" id="manual-download" data-msg="download">download</span>
@@ -53,7 +70,7 @@
 					<span id="download-downloading-count" class="badge" data-title="downloadDlingCount">-</span>
 					<span class="badge badge-c" id="download-batch-show" data-msg="downloadBatchShow">batch</span>
 					<span id="download-batch-count" class="badge" data-title="downloadBatchCount">-</span>
-					<span class="badge badge-b" id="download-reload" data-msg="reload">reload</span>
+					<span class="badge badge-b" id="download-reload" data-msg="reload" data-title="downloadReloadTip">reload</span>
                     <span><input type="text" id="download-copyholder" class="copyholder" /></span>
 				</div>
 				<div>
@@ -90,7 +107,7 @@
 				</div>
 				<div>
 					<label class="not-select" data-msg="settingsMonitorMax">mmax</label>
-					<input type="number" step="1" min="1" max="50" value="1" id="settings-mntmax" />
+					<input type="number" step="1" min="1" max="200" value="1" id="settings-mntmax" />
 				</div>
 				<div>
 					<label class="not-select" data-msg="settingsDlingMax">dlmax</label>
@@ -108,7 +125,7 @@
 					<label class="not-select" data-msg="settingsPopupHeight">height</label>
 					<input type="number" step="20" min="435" max="3000" value="435" id="settings-popheight" />
 				</div>
-				<div>
+				<div style="display: none;">
 					<label>
 					  <span class="not-select" data-msg="settingsPopupInTab">popupintab</span>
 					  <input type="checkbox" id="settings-popupintab" disabled />
@@ -137,6 +154,18 @@
 					  <span class="not-select" data-msg="settingsSplitDiscontinuity">sd</span>
 					  <input type="checkbox" id="settings-sd" />
 					</label>
+				</div>
+				<div>
+					<label>
+					  <span class="not-select" data-msg="settingsProcesserThreshold">pt</span>
+                      <input type="number" step="50" min="0" max="2000" value="500" id="settings-prothr" />
+					</label>
+				</div>
+				<div style="display: none;">
+					<label>
+					  <span class="not-select" data-msg="settingsMatchingRule">mr</span>
+					</label>
+                    <textarea id="settings-mr" class="textarea-mr"></textarea>
 				</div>
 				<div>
 					<span class="badge badge-b" id="settings-submit" data-msg="submit">submit</span>

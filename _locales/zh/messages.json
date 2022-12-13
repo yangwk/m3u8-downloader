@@ -53,6 +53,9 @@
     "inputValidURL": {
         "message": "输入合法的URL地址"
     },
+    "inputValidHeaders": {
+        "message": "输入合法的请求头"
+    },
     "manualM3u8Tip": {
         "message": "是否使用m3u8模式"
     },
@@ -111,7 +114,7 @@
         "message": "正在下载任务数最大值"
     },
     "settingsDlBatchMax": {
-        "message": "批次数最大值"
+        "message": "下载批次数最大值"
     },
     "settingsPopupWidth": {
         "message": "插件弹窗宽度最大像素"
@@ -141,7 +144,7 @@
         "message": "继续"
     },
 	"settingsPromptWhenExist": {
-        "message": "文件名已经存在时提示"
+        "message": "下载文件名已经存在时提示"
     },
 	"settingsNewFolderAtRoot": {
         "message": "在下载根目录创建子目录"
@@ -151,5 +154,35 @@
     },
 	"settingsSplitDiscontinuity": {
         "message": "拆分处理不连续的m3u8播放列表"
+    },
+	"pause": {
+        "message": "暂停"
+    },
+    "restart": {
+        "message": "重试"
+    },
+    "downloadTotal": {
+        "message": "共"
+    },
+    "downloadRemaining": {
+        "message": "还剩"
+    },
+    "second": {
+        "message": "秒"
+    },
+    "downloadError": {
+        "message": "网络错误"
+    },
+    "downloadReloadTip": {
+        "message": "每次操作前刷新"
+    },
+    "filter": {
+        "message": "过滤"
+    },
+    "settingsProcesserThreshold": {
+        "message": "m3u8处理器模式的阈值（MB）"
+    },
+    "settingsMatchingRule": {
+        "message": "匹配规则"
     }
 }

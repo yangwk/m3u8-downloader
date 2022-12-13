@@ -29,20 +29,7 @@ fi
 
 echo processing...
 
-# sometimes the name of downloaded ts file maybe not end with .ts
-tsExtension=ts
-tempExtension=
-for i in $(ls ../m3u8/*.*)
-do
-  tempExtension=${i##*.}
-  if [ "${tempExtension}" != "m3u8" ] ; then
-    if [ "${tempExtension}" != "${tsExtension}" ] ; then
-      mv "${i}" "${i}.${tsExtension}"
-    fi
-  fi
-done
-
-count=$(ls ../m3u8/ | grep -E ".+\.ts$" | wc -l)
+count=$(ls ../segment/ | wc -l)
 
 if [ ${count} -le 0 ] ; then
   exit 1
@@ -67,7 +54,7 @@ mergeM3u8(){
     
     local percent=0
     local mergeIndex=0
-    for i in $(ls ../m3u8/*.ts)
+    for i in $(ls ../segment/*)
     do
         if [ ${mergeIndex} -ge ${mergeStart} ] ; then
             if [ ${mergeIndex} -le ${mergeEnd} ] ; then
@@ -99,7 +86,7 @@ completeM3u8(){
 
 mainIndex=0
 handleNum=0
-for i in $(ls ../m3u8/*.m3u8)
+for i in $(ls ../m3u8/*)
 do
     parseM3u8Name "${i}"
     mainIndex=$((mainIndex+1))

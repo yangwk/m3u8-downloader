@@ -20,7 +20,7 @@ var MyAsyncM3u8Parser = function (_reqConfig) {
 
     this.parse = function (callback) {
         _getContent(function (content) {
-            callback(content ? new MyM3u8Parser(_reqConfig, content).parse() : null);
+            callback(content ? new MyM3u8Parser({url: _reqConfig.relatedUrl}, content).parse() : null);
         });
     }
 

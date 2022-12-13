@@ -1,159 +1,7 @@
 var MyChromeDownload = (function () {
-	
-	var _downloadBatchHolder = (function(){
-		var _queue = new Array();
-		return {
-			isFull: function(){
-				return _queue.length >= MyChromeConfig.get("downloadBatchMax");
-			},
-			length: function(){
-				return _queue.length;
-			},
-			forEach: function(callback){
-				for(var x in _queue){
-					callback(_queue[x]);
-				}
-			},
-			offer: function(tasks, showName, callback){
-				if(this.isFull()){
-					throw "download batch is full";
-				}
-				var batchName = MyUtils.genRandomString();
-				var copyTasks = MyUtils.clone(tasks);
-				for(var x in copyTasks){
-					var task = copyTasks[x];
-					task.control == null ? task.control = {} : null;
-					task.control.batchName = batchName;
-					task.control.fileName = task.options.filename;
-                    task.control.url = task.options.url;
-				}
-				var batch = {
-					batchName: batchName,
-					tasks: copyTasks,
-					showName: showName,
-					completedCnt: 0,
-					mustCompleteCnt: copyTasks.length,
-					downloadIds: [],
-					callback: callback
-				};
-				_queue.push(batch);
-			},
-			takeTask: function(){
-                for(var x in _queue){
-                    var task = _queue[x].tasks.shift();
-                    if(task != null){
-                        return task;
-                    }
-                }
-				return null;
-			},
-			clearWhenInterrupted: function(batchName){
-				var batch = null;
-				for(var x=0; x<_queue.length; x++){
-					if(_queue[x].batchName == batchName){
-						batch = _queue[x];
-						_queue.splice(x, 1);
-						break;
-					}
-				}
-				if(batch != null){
-					for(var w in batch.downloadIds){
-						_cancelDownload(batch.downloadIds[w], false);
-					}
-				}
-			},
-			saveId: function(batchName, id){
-				for(var x in _queue){
-					if(_queue[x].batchName == batchName){
-						_queue[x].downloadIds.push(id);
-						return true;
-					}
-				}
-                return false;
-			},
-			complete: function(batchName, id){
-				for(var x=0; x<_queue.length; x++){
-					var batch = _queue[x];
-					if(batch.batchName == batchName){
-						batch.completedCnt ++;
-						if(batch.completedCnt >= batch.mustCompleteCnt){
-							_queue.splice(x, 1);
-							batch.callback == null ? null : batch.callback( batch.downloadIds );
-						}
-						break;
-					}
-				}
-			}
-		};
-	})();
-	
-	
-	var _downloadingHolder = (function(){
-        var _map = new Map();
-		var _actionCount = 0;
-        return {
-			actionIncr: function(){
-				_actionCount ++;
-			},
-			actionDecr: function(){
-				_actionCount = Math.max(-- _actionCount, 0);
-			},
-			actionValidate: function(){
-				return _actionCount < MyChromeConfig.get("downloadingMax");
-			},
-			length: function(){
-				return _map.size;
-			},
-        	put: function (k, v) {
-        		_map.set(k, v);
-        	},
-			get: function(k){
-				return _map.get(k);
-			},
-        	delete: function (k) {
-        		_map.delete(k);
-				this.actionDecr();
-        	},
-			forEach: function(callback){
-				_map.forEach(function(v, k){
-					callback(k, v);
-				});
-			}
-        };
-    })();
-	
-	
-	function _metric(){
-		var downloadingTasks = [];
-		_downloadingHolder.forEach(function(id, control){
-			downloadingTasks.push({
-				id: id,
-				fileName: control.fileName,
-				canResume: control.canResume,
-                url: control.url
-			});
-		});
-		var downloadBatches = [];
-		_downloadBatchHolder.forEach(function(batch){
-			downloadBatches.push({
-				showName: batch.showName,
-				waitCnt: batch.tasks.length,
-				completedCnt: batch.completedCnt,
-				triggeredCnt: batch.downloadIds.length,
-				sum: batch.mustCompleteCnt
-			});
-		});
 		
-		var retval = {
-			downloadingTasks: downloadingTasks,
-			downloadBatches: downloadBatches
-		};
-		return MyUtils.clone(retval);
-	}
-	
-	
 	chrome.downloads.onChanged.addListener(function (delta) {
-		var control = _downloadingHolder.get(delta.id);
+		var control = MyDownload.downloadingHolder.get(delta.id);
 		if (control == null) {
 			return;
 		}
@@ -163,63 +11,32 @@ var MyChromeDownload = (function () {
 		}
 		
 		if(delta.state && delta.state.current == "interrupted"){
-			if(! (delta.canResume && delta.canResume.current == true)){
+			if(delta.canResume && delta.canResume.current != true){
 				// TODO interrupted and can't resume
 			}
 		}
-		
-		if (control.autoAcceptDanger && delta.danger && delta.danger.current != "safe" && delta.danger.current != "accepted") {
-            chrome.downloads.acceptDanger(delta.id, function(){
-				if(chrome.runtime.lastError){
-				}
-			});
-		}
+
 		if (delta.state && delta.state.current == "complete") {
-			_downloadingHolder.delete(delta.id);
-			_downloadBatchHolder.complete(control.batchName, delta.id);
+			MyDownload.downloadingHolder.delete(delta.id);
+			MyDownload.downloadBatchHolder.complete(control.batchName, delta.id);
 		}
 		
 		if (delta.state){
-			_downloadTask();
+			MyDownload.downloadTask();
 		}
 	});
 	
 	chrome.downloads.onErased.addListener(function(id){
-		var control = _downloadingHolder.get(id);
-		// complete or not from this
+		var control = MyDownload.downloadingHolder.get(id);
 		if (control == null) {
 			return;
 		}
-		_downloadingHolder.delete(id);
-		_downloadBatchHolder.clearWhenInterrupted( control.batchName );
+		MyDownload.downloadingHolder.delete(id);
+		MyDownload.downloadBatchHolder.clearWhenInterrupted( control.batchName );
 	});
 	
 	
-	function _download(tasks, showName, callback){
-		if(tasks == null || ! Array.isArray(tasks) || showName == null){
-			throw "invalid arguments";
-		}
-		if(! _downloadBatchHolder.isFull()){
-			_downloadBatchHolder.offer(tasks, showName, callback);
-			_downloadTask();
-			return true;
-		}
-		return false;
-	}
-	
-	function _downloadTask(){
-		if(!_downloadingHolder.actionValidate()){
-			return;
-		}
-		_downloadTaskImpl();
-	}
-	
-	function _downloadTaskImpl(){
-		
-		var task = _downloadBatchHolder.takeTask();
-		if(task == null){
-			return ;
-		}
+	function _downloadTask(task){
 		if(task.options.method){
 			task.options.method = task.options.method.toUpperCase();
 		}
@@ -231,53 +48,34 @@ var MyChromeDownload = (function () {
 		
 		try{
 			// sync calculate, incr firstly, decr if error
-			_downloadingHolder.actionIncr();
+			MyDownload.downloadingHolder.actionIncr();
 			
 			chrome.downloads.download(task.options, function (id) {
 				if(chrome.runtime.lastError){
-					_downloadingHolder.actionDecr();
-					_downloadBatchHolder.clearWhenInterrupted(task.control.batchName);
+					MyDownload.downloadingHolder.actionDecr();
+					MyDownload.downloadBatchHolder.clearWhenInterrupted(task.control.batchName);
 				}else{
 					if(id){
-						if(_downloadBatchHolder.saveId(task.control.batchName, id)){
-                            _downloadingHolder.put(id, task.control);
-                            _downloadTask();
+						if(MyDownload.downloadBatchHolder.saveId(task.control.batchName, id)){
+                            MyDownload.downloadingHolder.put(id, task.control);
+                            MyDownload.downloadTask();
                         }
 					}else{
-						_downloadingHolder.actionDecr();
-						_downloadBatchHolder.clearWhenInterrupted(task.control.batchName);
+						MyDownload.downloadingHolder.actionDecr();
+						MyDownload.downloadBatchHolder.clearWhenInterrupted(task.control.batchName);
 					}
 				}
 			});
 		}catch(err){
-			_downloadingHolder.actionDecr();
-			_downloadBatchHolder.clearWhenInterrupted(task.control.batchName);
+			MyDownload.downloadingHolder.actionDecr();
+			MyDownload.downloadBatchHolder.clearWhenInterrupted(task.control.batchName);
 			throw err;
 		}
 	}
-
-	function _cancelDownload(id, recurse){
-		chrome.downloads.cancel(id, function(){
-			if(chrome.runtime.lastError){
-			}
-			
-            var control = _downloadingHolder.get(id);
-			_downloadingHolder.delete(id);
-            
-            if(recurse){
-                if (control != null) {
-                    _downloadBatchHolder.clearWhenInterrupted( control.batchName );
-                }
-            }
-		});
-	}
-	
+    
     
 	return {
-		download: _download,
-        canDownload: function(){
-            return ! _downloadBatchHolder.isFull();
-        },
+        downloadTask: _downloadTask,
 		open: function(id, options){
 			MyChromeNotification.create({
 				title: options.title,
@@ -290,18 +88,18 @@ var MyChromeDownload = (function () {
 				chrome.downloads.open(id);
 			}, [id]);
 		},
-		cancel: function(id){
-            _cancelDownload(id, true);
+		cancel: function(id, callback){
+            chrome.downloads.cancel(id, function(){
+                if(chrome.runtime.lastError){
+                }
+                callback();
+            });
         },
 		resume: function(id){
 			chrome.downloads.resume(id, function(){
 				if(chrome.runtime.lastError){
 				}
 			});
-		},
-		metric: _metric,
-		info: function(){
-			return [_downloadingHolder.length(), _downloadBatchHolder.length()];
 		}
 	};
     

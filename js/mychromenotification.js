@@ -1,22 +1,6 @@
 var MyChromeNotification = (function () {
 	
-	var _cache = (function(){
-		var _map = new Map();
-        return {
-			length: function(){
-				return _map.size;
-			},
-        	put: function (k, v) {
-        		_map.set(k, v);
-        	},
-			get: function(k){
-				return _map.get(k);
-			},
-        	delete: function (k) {
-        		_map.delete(k);
-        	}
-        };
-	})();
+	var _cache = new Map();
 	
 	var _Executable = function(_fn, _args){
 		this.execute = function(){
@@ -51,7 +35,7 @@ var MyChromeNotification = (function () {
 		chrome.notifications.getPermissionLevel(function(level){
 			if(level == "granted"){
 				var id = MyUtils.genRandomString();
-				_cache.put(id, new _Executable(fn,args));
+				_cache.set(id, new _Executable(fn,args));
 				
 				chrome.notifications.create(id, {
 					type: "basic",
@@ -73,7 +57,7 @@ var MyChromeNotification = (function () {
 	return {
 		create: _create,
 		info: function(){
-			return [_cache.length()];
+			return [_cache.size];
 		}
 	}
 })();

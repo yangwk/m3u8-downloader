@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "__MSG_appName__",
     "description": "__MSG_appDescription__",
-    "version": "2.1.1",
+    "version": "3.0.0",
     "default_locale": "en",
     "homepage_url": "https://github.com/yangwk/m3u8-downloader",
     "icons": {
@@ -17,13 +17,17 @@
     "background": {
         "scripts": ["js/myutils.js", "js/myreader.js",
             "js/mym3u8parser.js", "js/myxmlhttprequest.js",
-            "js/myasyncm3u8parser.js", "js/mychromeconfig.js",
+            "js/myasyncm3u8parser.js", "js/myurlrulematcher.js", "js/mychromeconfig.js",
             "js/mychromenotification.js", "js/myvideox.js",
-            "js/mychromedownload.js", "js/mychromemediamonitor.js",
-            "js/bootstrap.js"],
+            "js/mychromedownload.js", "js/myhttpheadershandler.js", "js/mychromemediamonitor.js",
+            "js/mydownloader.js", "js/mydownload.js", 
+            "js/aes-js.js", "js/mym3u8processer.js", 
+            "js/mychromem3u8processer.js", "js/mymp4racodecs.js",
+            "js/mym3u8builder.js", "js/mybootstrap.js"],
         "persistent": true
     },
-    "permissions": ["storage", "activeTab", "tabs",
+    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+    "permissions": ["storage", "unlimitedStorage", "activeTab", "tabs",
         "downloads", "downloads.open", "notifications",
         "webRequest", "webRequestBlocking",
         "<all_urls>"]

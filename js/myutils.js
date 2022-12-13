@@ -30,17 +30,20 @@ var MyUtils = (function(){
             return result;
         },
 		genRandomString: function() {
-			return Date.now() + "" + parseInt(Math.random()*90000000+10000000, 10);
+			return Date.now() + "" + Math.trunc(Math.random()*90000000+10000000, 10);
 		},
-		clone: function(obj, exclusions){
+		clone: function(obj, exclusions, inverse){
+            if(inverse == null){
+                inverse = false;
+            }
 			if(exclusions != null && Array.isArray(exclusions)){
 				if(! Array.isArray(obj) && (obj instanceof Object)){
 					var copy = {};
 					for(var key in obj){
-						var out = false;
+						var out = inverse ? true : false;
 						for(var x in exclusions){
 							if(exclusions[x] == key){
-								out = true;
+								out = inverse ? false : true;
 								break;
 							}
 						}
@@ -59,44 +62,56 @@ var MyUtils = (function(){
 		getSuffix: function(path, isUrl){
 			if(path){
 				if(isUrl){
-					var url = new URL(path);
-					path = url.pathname;
+					path = this.getLastPathName(path);
 				}
 				var idx = path ? path.lastIndexOf(".") : -1;
 				return idx == -1 ? null : ( idx+1 >= path.length ? null : path.substring(idx+1) );
 			}
 			return null;
 		},
+		trimSuffix: function(path){
+            var idx = path ? path.lastIndexOf(".") : -1;
+            return idx == -1 ? path : path.substring(0, idx);
+		},
 		getLastPathName: function(url){
 			var u = new URL(url);
 			var idx = u.pathname ? u.pathname.lastIndexOf("/") : -1;
 			return idx == -1 ? null : ( idx+1 >= u.pathname.length ? null : u.pathname.substring(idx+1) );
 		},
+        removeLastPathName: function(pathname){
+            var idx = pathname ? pathname.lastIndexOf("/") : -1;
+            return ( idx == -1 ? pathname : pathname.substring(0, idx) ) || "/";
+        },
 		escapeFileName: function(fileName){
 			// \ / : * ? " < > | ! # ~ ` @ $ % ^ &
 			return fileName.replace(new RegExp('[\\\\/\:\*\?"\<>\|\!#~`@\\$%\\^&]', "g"), "").trim();
 		},
 		padStart: function(str, targetLen, padStr){
+            
 			if(String.prototype.padStart){
 				return str.padStart(targetLen, padStr);
 			}
+            
 			if(str.length >= targetLen){
 				return str;
 			}
-			var yx = targetLen - str.length;
-			var tostr = padStr;
-			var tolen = padStr.length;
-			while(tolen < yx){
-				tostr += padStr;
-				tolen += padStr.length;
-			}
-			return tostr.substring(0, yx) + str;
+			const difference = targetLen - str.length;
+            const count = Math.trunc(difference / padStr.length);
+            let addStr = "";
+            for(let r=0; r<count; r++){
+                addStr += padStr;
+            }
+            const remainder = difference % padStr.length;
+            if(remainder != 0){
+                addStr += padStr.substring(0, remainder);
+            }
+			return addStr + str;
 		},
 		formatHms: function(sec){
-			var fsec = sec.toFixed(0);
-			var hour = parseInt(fsec / 3600);
+			var fsec = sec < 1 ? 1 : Number(sec.toFixed(0));
+			var hour = Math.trunc(fsec / 3600);
 			var tail = fsec % 3600;
-			var minute = parseInt(tail / 60);
+			var minute = Math.trunc(tail / 60);
 			var second = tail % 60;
 			return this.padStart(hour.toString(), 2, "0") + ":" + this.padStart(minute.toString(), 2, "0") + ":" + this.padStart(second.toString(), 2, "0");
 		},
@@ -129,7 +144,7 @@ var MyUtils = (function(){
 				}
 			}
 			
-			return headers;
+			return headers.length == 0 ? null : headers;
 		},
 		isWindowsPlatform: function(){
 			if(navigator.userAgentData){
@@ -140,6 +155,80 @@ var MyUtils = (function(){
 		},
         isSuccessful: function(sc){
             return (sc >= 200 && sc < 300) || sc == 304 ;
-		}
+		},
+        isChromeTarget: function(downloadId){
+            return ! (typeof downloadId == "string" || downloadId instanceof String );
+        },
+        formatBandwidth: function(bandwidth){
+            let dividend = 1 , unit = "bps";
+            if(1000 * 1000 <= bandwidth){
+                dividend = 1000 * 1000;
+                unit = "Mbps";
+            }else if(1000 <= bandwidth){
+                dividend = 1000;
+                unit = "Kbps";
+            }
+            const num = bandwidth / dividend;
+            const intPart = Math.trunc(num);
+            let fraPart = Number((num - intPart).toFixed(2));
+            if(fraPart != 0){
+                fraPart = Math.trunc(fraPart * 10) / 10;
+            }
+            return (intPart + fraPart) + unit;
+        },
+        readAsArrayBuffer: function(blob){
+            if(Blob.prototype.arrayBuffer){
+                return blob.arrayBuffer();
+            }
+            
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    if(reader.readyState == 2){
+                        resolve(reader.result);
+                    }
+                };
+                reader.onabort = (e) => {
+                    reject(e);
+                };
+                reader.onerror = (e) => {
+                    reject(e);
+                };
+                reader.readAsArrayBuffer(blob);
+            });
+        },
+        escapeRegExp: function(string, exclusions) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, function(match){
+                let ignore = false;
+                if(exclusions != null && Array.isArray(exclusions)){
+                    ignore = exclusions.includes(match);
+                }
+                return ignore ? match : "\\" + match;
+            });
+        },
+        run: function(funcExpression, funcArgs){
+            try{
+                return Function(`"use strict";return (${funcExpression})`)()(
+                    funcArgs
+                );
+            }catch(e){
+                // ignore
+            }
+            return null;
+        },
+        headersToHeader: function(headers){
+            if(headers != null && headers.length != 0){
+                const header = {};
+                for(let r in headers){
+                    header[headers[r].name] = headers[r].value;
+                }
+                return header;
+            }
+            return null;
+        },
+        outerHeight: function(dom){
+            const marginHeight = parseFloat( dom.style.marginTop || 0 ) + parseFloat( dom.style.marginBottom || 0 );
+            return dom.offsetHeight + marginHeight;
+        }
     };
 })();

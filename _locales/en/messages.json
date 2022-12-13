@@ -53,6 +53,9 @@
     "inputValidURL": {
         "message": "input a valid URL"
     },
+    "inputValidHeaders": {
+        "message": "input valid headers"
+    },
     "manualM3u8Tip": {
         "message": "whether to use m3u8 mode or not"
     },
@@ -111,7 +114,7 @@
         "message": "maximum number of downloading task"
     },
     "settingsDlBatchMax": {
-        "message": "maximum number of batch"
+        "message": "maximum number of download batch"
     },
     "settingsPopupWidth": {
         "message": "extension popup max width in pixel"
@@ -151,5 +154,35 @@
     },
 	"settingsSplitDiscontinuity": {
         "message": "split to handle discontinuity m3u8 playlist"
+    },
+	"pause": {
+        "message": "pause"
+    },
+    "restart": {
+        "message": "restart"
+    },
+    "downloadTotal": {
+        "message": "total"
+    },
+    "downloadRemaining": {
+        "message": "remaining"
+    },
+    "second": {
+        "message": "second"
+    },
+    "downloadError": {
+        "message": "network error"
+    },
+    "downloadReloadTip": {
+        "message": "reload before each operation"
+    },
+    "filter": {
+        "message": "filter"
+    },
+    "settingsProcesserThreshold": {
+        "message": "the threshold (MB) of m3u8 processer mode"
+    },
+    "settingsMatchingRule": {
+        "message": "matching rule"
     }
 }
