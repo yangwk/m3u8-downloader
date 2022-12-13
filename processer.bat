@@ -32,18 +32,8 @@ if exist "%path%" (
 
 echo processing...
 
-rem sometimes the name of downloaded ts file maybe not end with .ts
-set tsSuffix=.ts
-for %%i in (..\m3u8\*.*) do (
-    if not "%%~xi" == ".m3u8" (
-        if not "%%~xi" == "%tsSuffix%" (
-            ren "%%i" "%%~ni%%~xi%tsSuffix%" || exit
-        )
-    )
-)
-
 set count=0
-for %%f in (..\m3u8\*.ts) do (
+for %%f in (..\segment\*) do (
     set /a count+=1 || exit
 )
 
@@ -53,7 +43,7 @@ if %count% LEQ 0 (
 
 set mainIndex=0
 set handleNum=0
-for %%i in (..\m3u8\*.m3u8) do (
+for %%i in (..\m3u8\*) do (
     call:parseM3u8Name "%%~ni%"
     set /a mainIndex+=1
     call:mergeM3u8
@@ -87,7 +77,7 @@ if not exist "%path%" (
 
 set percent=0
 set mergeIndex=0
-for %%f in (..\m3u8\*.ts) do (
+for %%f in (..\segment\*) do (
     if !mergeIndex! GEQ %mergeStart% (
         if !mergeIndex! LEQ %mergeEnd% (
             type "%%f" >> "%tempFileName%" || exit

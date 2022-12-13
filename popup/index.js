@@ -8,6 +8,9 @@ document.addEventListener("DOMContentLoaded", function () {
 	function __removeClass(dom, clz){
 		dom.className = dom.className.replace(clz, "").trim();
 	}
+    function __containsClass(dom, clz){
+        return dom.className.indexOf(clz) != -1;
+    }
 	
 	//show ui
 	(function(){
@@ -75,14 +78,19 @@ document.addEventListener("DOMContentLoaded", function () {
 			}, function(response){
 				var data = response;
 				
-				contentDom.innerHTML = data.length == 0 ? chrome.i18n.getMessage("nothing") : "";
-				document.getElementById("monitor-count").innerHTML = data.length;
-			
+				contentDom.innerHTML = "";
+                let dataCount = 0;
+                let monitorFilter = document.getElementById("monitor-filter");
+                let targetMediaType = monitorFilter[monitorFilter.selectedIndex].value;
 				for(var x in data){
 					var obj = data[x];
-					
+					if(targetMediaType && obj.mediaType != targetMediaType){
+                        continue;
+                    }
+                    dataCount ++;
 					var nameId = "monitor-name-"+x;
-					
+					var playlistId = "monitor-playlist-"+x;
+                    
 					var dom = document.createElement("div");
 					var html = (
 						'<hr/>' +
@@ -97,28 +105,58 @@ document.addEventListener("DOMContentLoaded", function () {
 					);
 					dom.innerHTML = html;
 					
+                    const isMasterPlaylist = obj.mediaType == "m3u8" && obj.isMasterPlaylist;
 					
 					var dom2 = document.createElement("span");
 					dom2.innerHTML = '<span class="badge badge-b" data-msg="download">download</span>';
+                    dom2.dataset["identifier"] = obj.identifier;
 					dom2.dataset["url"] = obj.url;
 					dom2.dataset["nameId"] = nameId;
+                    dom2.dataset["playlistId"] = isMasterPlaylist ? playlistId : "";
 					dom2.onclick = downloadMonitoredMedia;
 					
 					var dom3 = document.createElement("span");
 					dom3.innerHTML = '<span class="badge badge-b" data-msg="delete">delete</span>';
-					dom3.dataset["url"] = obj.url;
+					dom3.dataset["identifier"] = obj.identifier;
 					dom3.onclick = deleteMonitoredMedia;
 					
 					var dom4 = document.createElement("span");
 					dom4.innerHTML = '<span class="badge badge-b" data-msg="copyUrl">copyUrl</span>';
 					dom4.dataset["url"] = obj.url;
 					dom4.onclick = copyMonitoredUrl;
+                    
+                    
+                    contentDom.appendChild(dom);
+                    
+                    if(isMasterPlaylist){
+                        let dom5 = document.createElement("span");
+                        const mtSet = new Set();
+                        const spl = document.createElement("select");
+                        spl.id = playlistId;
+                        spl.className = "empty-select";
+                        for(let r in obj.parseResult.playList){
+                            let pi = obj.parseResult.playList[r];
+                            const opt = document.createElement("option");
+                            opt.value = pi.url;
+                            opt.text = pi.mediaType + " - " + MyUtils.formatBandwidth(pi.bandwidth);
+                            opt.dataset["direct"] = pi.isDirect ? String(pi.isDirect) : "";
+                            spl.appendChild(opt);
+                            mtSet.add( pi.mediaType );
+                        }
+                        spl.dataset["destroy"] = mtSet.size <= 1 ? String(true) : "";
+                        dom5.appendChild(spl);
+                        dom.appendChild(dom5);
+                    }
 					
-					contentDom.appendChild(dom);
 					dom.appendChild(dom2);
 					dom.appendChild(dom3);
 					dom.appendChild(dom4);
 				}
+                
+                if(dataCount == 0){
+                    contentDom.innerHTML = chrome.i18n.getMessage("nothing");
+                }
+				document.getElementById("monitor-count").innerHTML = dataCount;
 			});
 		}
 		
@@ -134,12 +172,12 @@ document.addEventListener("DOMContentLoaded", function () {
 		
 		function deleteMonitoredMedia(e){
 			e.stopPropagation();
-			var url = this.dataset["url"];
+			var identifier = this.dataset["identifier"];
 			
 			chrome.runtime.sendMessage({
 				action: "deletemonitoredmedia",
 				data: {
-					url: url
+					identifier: identifier
 				}
 			}, function(response){
 				loadMonitoredMedia();
@@ -149,18 +187,27 @@ document.addEventListener("DOMContentLoaded", function () {
 		
 		function downloadMonitoredMedia(e){
 			e.stopPropagation();
-			var url = this.dataset["url"];
-			var mediaName = document.getElementById(this.dataset["nameId"]).value.trim();
-			mediaName = mediaName || MyUtils.getLastPathName(url) || MyUtils.genRandomString();
-			if(! mediaName){
-				document.getElementById(this.dataset["nameId"]).focus();
-				return ;
-			}
+            var identifier = this.dataset["identifier"];
 			
+            let urlMaster = null, destroy = true, isDirect = false;
+            if(this.dataset["playlistId"]){
+                let spl = document.getElementById(this.dataset["playlistId"]);
+                urlMaster = spl[spl.selectedIndex].value;
+                destroy = spl.dataset["destroy"] ? true : false;
+                isDirect = spl[spl.selectedIndex].dataset["direct"] ? true : false;
+            }
+            
+            var mediaName = document.getElementById(this.dataset["nameId"]).value.trim();
+			mediaName = mediaName || MyUtils.getLastPathName( urlMaster || this.dataset["url"] ) || MyUtils.genRandomString();
+			
+            
 			chrome.runtime.sendMessage({
 				action: "downloadmonitoredmedia",
 				data: {
-					url: url,
+                    identifier: identifier,
+                    destroy: destroy,
+                    urlMaster: urlMaster,
+                    isDirect: isDirect,
 					mediaName: MyUtils.escapeFileName(mediaName)
 				}
 			}, function(response){
@@ -190,16 +237,17 @@ document.addEventListener("DOMContentLoaded", function () {
 			mediaName = mediaName || MyUtils.getLastPathName(url) || MyUtils.genRandomString();
 			var mediaType = document.getElementById("manual-m3u8").checked ? "m3u8" : "video";
 			
-			if(! mediaName){
-				document.getElementById("manual-name").focus();
-				return ;
-			}
+            var methodDom = document.getElementById("manual-method");
+            var method = methodDom[methodDom.selectedIndex].value;
+            
+            var headersContent = document.getElementById("manual-headers").value.trim();
 			
 			chrome.runtime.sendMessage({
 				action: "downloadmedia",
 				data: {
 					url: url,
-					method: "GET",
+					method: method,
+                    headers: MyUtils.parseHeaders(headersContent),
 					mediaName: MyUtils.escapeFileName(mediaName),
 					mediaType: mediaType
 				}
@@ -262,7 +310,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			chrome.runtime.sendMessage({
 				action: "metricdownload"
 			}, function(response){
-				metricDownloadDownloading(response.downloadingTasks);
+				metricDownloadDownloading(response.downloadingTasks, response.downloadingTasksCustom);
 				metricDownloadBatch(response.downloadBatches);
 			});
 		}
@@ -289,7 +337,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			}
 		}
 		
-		function metricDownloadDownloading(data){
+		function metricDownloadDownloading(data, custom){
 			var contentDom = document.getElementById("download-downloading-content");
 			contentDom.innerHTML = data.length == 0 ? chrome.i18n.getMessage("nothing") : "";
 			document.getElementById("download-downloading-count").innerHTML = data.length;
@@ -297,35 +345,44 @@ document.addEventListener("DOMContentLoaded", function () {
 			for(var x in data){
 				var obj = data[x];
 				
-				var dom = document.createElement("div");
-				var html = '<hr/><span class="badge badge-name" data-title="fileName">' + obj.fileName + '</span>';
-				dom.innerHTML = html;
-				
-				var dom2 = document.createElement("span");
-				dom2.innerHTML = '<span class="badge badge-b" data-msg="cancel">cancel</span>';
-				dom2.dataset["downloadId"] = obj.id;
-				dom2.onclick = cancelDownload;
-				
-				contentDom.appendChild(dom);
-				dom.appendChild(dom2);
-				
-				if(obj.canResume){
-					var dom3 = document.createElement("span");
-					dom3.innerHTML = '<span class="badge badge-b" data-msg="resume">resume</span>';
-					dom3.dataset["downloadId"] = obj.id;
-					dom3.onclick = resumeDownload;
-					
-					dom.appendChild(dom3);
-				}
+                if(MyUtils.isChromeTarget(obj.id)){
+                    metricDownloadDownloadingChrome(contentDom, obj);
+                }else{
+                    metricDownloadDownloadingCustom(contentDom, obj, custom);
+                }
                 
-                var dom4 = document.createElement("span");
-                dom4.innerHTML = '<span class="badge badge-b" data-msg="copyUrl">copyUrl</span>';
-                dom4.dataset["url"] = obj.url;
-                dom4.onclick = copyDownloadUrl;
-                dom.appendChild(dom4);
 			}
 		}
-		
+        
+        function metricDownloadDownloadingChrome(contentDom, obj){
+            var dom = document.createElement("div");
+            var html = '<hr/><span class="badge badge-name" data-title="fileName">' + obj.fileName + '</span>';
+            dom.innerHTML = html;
+            
+            var dom2 = document.createElement("span");
+            dom2.innerHTML = '<span class="badge badge-b" data-msg="cancel">cancel</span>';
+            dom2.dataset["downloadId"] = obj.id;
+            dom2.addEventListener("click", cancelDownload);
+            
+            contentDom.appendChild(dom);
+            dom.appendChild(dom2);
+            
+            if(obj.canResume){
+                var dom3 = document.createElement("span");
+                dom3.innerHTML = '<span class="badge badge-b" data-msg="resume">resume</span>';
+                dom3.dataset["downloadId"] = obj.id;
+                dom3.addEventListener("click", resumeDownload);
+                
+                dom.appendChild(dom3);
+            }
+            
+            var dom4 = document.createElement("span");
+            dom4.innerHTML = '<span class="badge badge-b" data-msg="copyUrl">copyUrl</span>';
+            dom4.dataset["url"] = obj.url;
+            dom4.onclick = copyDownloadUrl;
+            dom.appendChild(dom4);
+        }
+        
 		function cancelDownload(e){
 			e.stopPropagation();
 			var downloadId = parseInt(this.dataset["downloadId"], 10);
@@ -335,8 +392,8 @@ document.addEventListener("DOMContentLoaded", function () {
 					id: downloadId
 				}
 			}, function(response){
-				metricDownload();
 			});
+            this.removeEventListener("click", cancelDownload);
 		}
 		
 		function resumeDownload(e){
@@ -349,6 +406,7 @@ document.addEventListener("DOMContentLoaded", function () {
 				}
 			}, function(response){
 			});
+            this.removeEventListener("click", resumeDownload);
 		}
         
 		function copyDownloadUrl(e){
@@ -359,6 +417,91 @@ document.addEventListener("DOMContentLoaded", function () {
 			document.execCommand("copy");
 		}
 		
+        
+        function buildOperationalDom(data, msg){
+            const dom = document.createElement("span");
+            dom.innerHTML = '<span class="badge badge-b" data-msg="' + msg + '">' +  msg + '</span>';
+            const onceClickHandler = function(e){
+                e.stopPropagation();
+                chrome.runtime.sendMessage({
+                    action: "download." + msg,
+                    data: {
+                        id: data.id
+                    }
+                }, function(response){
+                });
+                dom.removeEventListener("click", onceClickHandler);
+            };
+            dom.addEventListener("click", onceClickHandler);
+            return dom;
+        }
+    
+        function metricDownloadDownloadingCustom(contentDom, obj, custom){
+            const data = custom[obj.id];
+            const itemDom = document.createElement("div");
+            itemDom.innerHTML = '<hr/><div>' + data.url + '</div>';
+            const statusDom = document.createElement("div");
+            const progressDom1 = document.createElement("div");
+            progressDom1.className = "download-progress-outer";
+            const progressDom2 = document.createElement("div");
+            progressDom2.className = "download-progress-inner";
+            const operationDom = document.createElement("div");
+            const pauseDom = buildOperationalDom(data, "pause");
+            const resumeDom = buildOperationalDom(data, "resume");
+            const restartDom = buildOperationalDom(data, "restart");
+            const cancelDom = buildOperationalDom(data, "cancel");
+            
+            contentDom.appendChild(itemDom);
+            itemDom.appendChild(statusDom);
+            itemDom.appendChild(progressDom1);
+            progressDom1.appendChild(progressDom2);
+            itemDom.appendChild(operationDom);
+            operationDom.appendChild(pauseDom);
+            operationDom.appendChild(resumeDom);
+            operationDom.appendChild(restartDom);
+            operationDom.appendChild(cancelDom);
+            
+            if(data.state == "in_progress"){
+                statusDom.innerText = data.speed + ' ' + data.speedUnit + ' - ' + data.loaded + ' B' + ( data.lengthComputable ? ' , '+chrome.i18n.getMessage("downloadTotal")+' ' + data.total + ' B' + (data.remainSec >= 0 ? ' , '+chrome.i18n.getMessage("downloadRemaining")+' ' + data.remainSec  + ' '+chrome.i18n.getMessage("second") : '') : '' );
+                statusDom.style.display = "block";
+                if(data.lengthComputable){
+                    progressDom2.style.width = data.percent + "%";
+                    progressDom1.style.display = "block";
+                }else{
+                    progressDom1.style.display = "none";
+                }
+                cancelDom.style.display = "block";
+                resumeDom.style.display = "none";
+                if(data.restart){
+                    pauseDom.style.display = "none";
+                    restartDom.style.display = "block";
+                }else{
+                    pauseDom.style.display = data.resumable ? "block" : "none";
+                    restartDom.style.display = "none";
+                }
+            }else if(data.state == "interrupted"){
+                statusDom.innerText = data.loaded + ' B' + ( data.lengthComputable ? ' , '+chrome.i18n.getMessage("downloadTotal")+' ' + data.total + ' B' : '' ) + ' , '+chrome.i18n.getMessage("downloadError");
+                statusDom.style.display = "block";
+                progressDom1.style.display = "none";
+                pauseDom.style.display = "none";
+                cancelDom.style.display = "block";
+                if(data.restart){
+                    resumeDom.style.display = "none";
+                    restartDom.style.display = "block";
+                }else{
+                    resumeDom.style.display = data.resumable ? "block" : "none";
+                    restartDom.style.display = !data.resumable ? "block" : "none";
+                }
+            }else if(data.state == "complete"){
+                statusDom.style.display = "none";
+                progressDom1.style.display = "none";
+                pauseDom.style.display = "none";
+                cancelDom.style.display = "none";
+                resumeDom.style.display = "none";
+                restartDom.style.display = "none";
+            }
+        }
+        
 	})();
 	
 	
@@ -390,6 +533,8 @@ document.addEventListener("DOMContentLoaded", function () {
 				document.getElementById("settings-nfar").checked = data.newFolderAtRoot == "1";
 				document.getElementById("settings-pswc").checked = data.playSoundWhenComplete == "1";
                 document.getElementById("settings-sd").checked = data.splitDiscontinuity == "1";
+                document.getElementById("settings-prothr").value = data.processerThreshold;
+                document.getElementById("settings-mr").value = data.matchingRule;
 			});
 		}
 		
@@ -397,7 +542,8 @@ document.addEventListener("DOMContentLoaded", function () {
 		
 		function windowResize(w, h){
 			document.body.style.width = w + "px";
-			document.querySelector('.page-wrapper').style.maxHeight = h + "px";
+            const pnh = MyUtils.outerHeight( document.getElementById("page-nav") );
+			document.getElementById("page-wrapper").style.maxHeight = (h-pnh) + "px";
 		}
 		
 		
@@ -424,6 +570,8 @@ document.addEventListener("DOMContentLoaded", function () {
 			data.newFolderAtRoot = document.getElementById("settings-nfar").checked ? "1" : "0";
 			data.playSoundWhenComplete = document.getElementById("settings-pswc").checked ? "1" : "0";
             data.splitDiscontinuity = document.getElementById("settings-sd").checked ? "1" : "0";
+            data.processerThreshold = parseInt(document.getElementById("settings-prothr").value, 10);
+            data.matchingRule = document.getElementById("settings-mr").value.trim();
 			
 			chrome.runtime.sendMessage({
 					action: "updateconfig",
@@ -438,6 +586,14 @@ document.addEventListener("DOMContentLoaded", function () {
 				}
 			});
 		};
+        
+        document.getElementById("settings-mr").onclick = function(e){
+            e.stopPropagation();
+            if(! __containsClass(this, "textarea-mr-max")){
+                __removeClass(this, "textarea-mr");
+                __addClass(this, "textarea-mr-max");
+            }
+        };
 	})();
 	
 	
@@ -452,9 +608,11 @@ document.addEventListener("DOMContentLoaded", function () {
 				if(dom.dataset != null){
 					if(dom.dataset["title"]){
 						dom.title = chrome.i18n.getMessage( dom.dataset["title"] );
-					}else if(dom.dataset["msg"]){
+					}
+                    if(dom.dataset["msg"]){
 						dom.innerHTML = chrome.i18n.getMessage( dom.dataset["msg"] );
-					}else if(dom.dataset["place"]){
+					}
+                    if(dom.dataset["place"]){
 						dom.placeholder = chrome.i18n.getMessage( dom.dataset["place"] );
 					}
 				}

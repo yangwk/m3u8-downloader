@@ -16,7 +16,12 @@ var MyVideox = (function () {
             if (!_destroyed) {
                 _destroyed = true;
                 if (_video != null) {
-                    _parent.removeChild(_video);
+                    try{
+                        _video.pause();
+                        _video.src = "";
+                    }finally{
+                        _parent.removeChild(_video);
+                    }
                 }
             }
         }
@@ -60,7 +65,9 @@ var MyVideox = (function () {
             }
 
             _parent.appendChild(_video);
-			_video.play();
+			_video.play().catch((e) => {
+                // ignore
+            });
         }
 
     };
@@ -70,14 +77,35 @@ var MyVideox = (function () {
     var _videoCount = 0;
 
     return {
-        getInfo: function (mediaType, url, method, callback) {
+        getInfo: function (mediaType, url, method, relatedUrl, headers, callback) {
 			if(mediaType == "m3u8"){
 				var reqConfig = {
 					url: url,
-					method: method
+					method: method,
+                    relatedUrl: relatedUrl,
+                    header: MyUtils.headersToHeader(headers)
 				};
 				new MyAsyncM3u8Parser(reqConfig).parse(function(result){
-					callback( (result == null || result.playList == null || result.playList.length == 0) ? null : result );
+                    var parseResult = (result == null || result.playList == null || result.playList.length == 0) ? null : result;
+                    if(parseResult != null && parseResult.isMasterPlaylist){
+                        for(let x in parseResult.playList){
+                            if(parseResult.playList[x].isDirect){
+                                callback( parseResult );
+                                return ;
+                            }
+                        }
+                        new MyAsyncM3u8Parser({
+                            url: parseResult.playList[0].url,
+                            method: method,
+                            relatedUrl: parseResult.playList[0].url,
+                            header: null
+                        }).parse(function(result2){
+                            parseResult.duration = (result2 == null || result2.playList == null || result2.playList.length == 0) ? null : result2.duration;
+                            callback( parseResult );
+                        });
+                    }else{
+                        callback( parseResult );
+                    }
 				});
 			}else{
 				if (_videoCount >= 10) {

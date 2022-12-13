@@ -7,28 +7,37 @@ var MyBootstrap = (function () {
 
 	function _start() {
 		chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-			//console.log(request);
-			
 			if(request.action == "downloadmedia"){
-				_downloadMedia(request.data);
+                if(MyDownload.canDownload()){
+                    _downloadMedia(request.data);
+                }
 				sendResponse({success: true});
 			}else if(request.action == "loadmonitoredmedia"){
 				sendResponse(MyChromeMediaMonitor.view());
 			}else if(request.action == "downloadmonitoredmedia"){
-                if(!MyChromeDownload.canDownload()){
+                if(!MyDownload.canDownload()){
                     sendResponse({success: true});
                     return ;
                 }
-				var mediaItem = MyChromeMediaMonitor.take(request.data.url);
+				var mediaItem = request.data.destroy ? MyChromeMediaMonitor.take(request.data.identifier) : MyChromeMediaMonitor.element(request.data.identifier);
+                if(request.data.urlMaster){
+                    mediaItem.url = request.data.urlMaster;
+                    mediaItem.parseResult = null;
+                }
+                if(request.data.isDirect){
+                    mediaItem.mediaType = "video";
+                }
 				sendResponse({success: true});
 				_downloadMonitoredMedia({ mediaItem: mediaItem, mediaName: request.data.mediaName });
 			}else if(request.action == "deletemonitoredmedia"){
-				MyChromeMediaMonitor.take(request.data.url);
+				MyChromeMediaMonitor.take(request.data.identifier);
 				sendResponse({success: true});
 			}else if(request.action == "metricdownload"){
-				sendResponse(MyChromeDownload.metric());
-			}else if(request.action == "canceldownload"){
-				MyChromeDownload.cancel(request.data.id);
+                const metric = MyDownload.metric();
+                metric.downloadingTasksCustom = MyM3u8Processer.downloadMetric();
+                sendResponse(metric);
+			}else if(request.action == "canceldownload" || request.action == "download.cancel"){
+				MyDownload.cancel(request.data.id);
 				sendResponse({success: true});
 			}else if(request.action == "resumedownload"){
 				MyChromeDownload.resume(request.data.id);
@@ -42,12 +51,29 @@ var MyBootstrap = (function () {
 				MyChromeMediaMonitor.clear();
 				sendResponse({success: true});
 			}else if(request.action == "loadrunninginfo"){
-				sendResponse({
-					monitor: MyChromeMediaMonitor.info(),
-					videox: MyVideox.info(),
-					download: MyChromeDownload.info(),
-					notification: MyChromeNotification.info()
-				});
+                sendResponse({
+                    monitor: MyChromeMediaMonitor.info(),
+                    videox: MyVideox.info(),
+                    download: MyDownload.info(),
+                    notification: MyChromeNotification.info(),
+                    processer: MyM3u8Processer.info(),
+                    matchingRule: MyUrlRuleMatcher.info()
+                });
+			}else if(request.action == "download.resume"){
+                MyM3u8Processer.downloadResume(request.data.id);
+                sendResponse({success: true});
+			}else if(request.action == "download.restart"){
+                MyM3u8Processer.downloadRestart(request.data.id);
+                sendResponse({success: true});
+			}else if(request.action == "download.pause"){
+                MyM3u8Processer.downloadPause(request.data.id);
+                sendResponse({success: true});
+			}else if(request.action == "contentscript.match"){
+                const matcherResult = MyUrlRuleMatcher.matchAndParse( request.data.url, "contentscript" );
+                sendResponse({ content: (matcherResult != null && matcherResult.targetContentscript != null) ? matcherResult.targetContentscript.func : null });
+			}else if(request.action == "contentscript.setm3u8"){
+                MyChromeMediaMonitor.add(request.data.url, "GET", request.data.result);
+                sendResponse({success: true});
 			}
 			
 		});
@@ -59,6 +85,9 @@ var MyBootstrap = (function () {
 				url: chrome.extension.getURL("popup/index.html")
 			}, function(){});
 		});
+        
+        
+        _updateIcon(! MyChromeMediaMonitor.isEmpty() );
 	}
 	
 	
@@ -66,7 +95,8 @@ var MyBootstrap = (function () {
 		var toSend = {
 			reqConfig: {
 				url: data.url,
-				method: data.method
+				method: data.method,
+                headers: MyHttpHeadersHandler.filterForbidden( MyHttpHeadersHandler.filter(data.headers) )
 			}, 
 			mediaName: data.mediaName
 		};
@@ -85,7 +115,8 @@ var MyBootstrap = (function () {
 		var toSend = {
 			reqConfig: {
 				url: data.mediaItem.url,
-				method: data.mediaItem.method
+				method: data.mediaItem.method,
+                headers: MyHttpHeadersHandler.filterForbidden(data.mediaItem.requestData ? data.mediaItem.requestData.requestHeaders : null)
 			}, 
 			mediaName: data.mediaName
 		};
@@ -98,110 +129,103 @@ var MyBootstrap = (function () {
 	
 	function _downloadM3u8(data, parseResult){
 		if(parseResult == null){
-			new MyAsyncM3u8Parser(data.reqConfig).parse(function(result){
-				if(result == null || result.playList == null || result.playList.length == 0){
+            MyVideox.getInfo("m3u8", data.reqConfig.url, data.reqConfig.method, data.reqConfig.url, data.reqConfig.headers, function(result){
+                if(result == null){
 					return ;
 				}
-				_downloadM3u8Impl(data, result);
-			});
+                _downloadM3u8CustomImpl(data, result);
+            });
 		}else{
-			_downloadM3u8Impl(data, parseResult);
+			_downloadM3u8CustomImpl(data, parseResult);
+
 		}
 	}
 	
-	function _downloadM3u8Impl(data, parseResult){
-		var uniqueKey = MyUtils.genRandomString();
-		var downloadDirectory = chrome.i18n.getMessage("appName") + "-" + uniqueKey;
-		var baseFileName = uniqueKey;
-		var processerId = null;
-		
-		function stepDownloadm3u8processer1(){
-			var processerName = MyUtils.isWindowsPlatform() ? "processer.bat" : "processer.sh.command" ;
-			
-			MyChromeDownload.download([{
-				options: {
-                    url: chrome.extension.getURL(processerName),
-                    filename: downloadDirectory + "/processer/"+processerName
-				},
-				control: {
-					autoAcceptDanger: true
-				}
-			}], data.mediaName + "1.txt", stepDownloadm3u8processer2 );
-		}
-		
-		stepDownloadm3u8processer1();
-		
-		function stepDownloadm3u8processer2(ids){
-			processerId = ids[0];
-			
-			MyChromeDownload.download([{
-				options: {
-					url: chrome.extension.getURL("processer.txt"),
-					filename: downloadDirectory + "/processer/" + data.mediaName + ".txt"
-				}
-			}], data.mediaName + "2.txt", stepDownloadm3u8playlist);
-		}
-		
-		
-		function stepDownloadm3u8playlist(){
-            var tasks = [];
-            var shouldSplit = parseResult.discontinuity.length > 1;
-            for(var r=0; r<parseResult.discontinuity.length; r++){
-                var m3u8Name = MyUtils.padStart(r.toString(), 10,"0") + "-"
-                    + (shouldSplit ? "1" : "0") + "-" + parseResult.playList.length + "-"
-                    + parseResult.discontinuity[r].start + "-" + parseResult.discontinuity[r].end + "-"
-                    + baseFileName + ".m3u8";
-                if(r == 0){
-                    tasks.push({
-                        options: {
-                            url: data.reqConfig.url,
-                            filename: downloadDirectory + "/m3u8/" + m3u8Name,
-                            method: data.reqConfig.method
-                        }
-                    });
-                }else{
-                    tasks.push({
-                        options: {
-                            url: chrome.extension.getURL("processer.m3u8"),
-                            filename: downloadDirectory + "/m3u8/" + m3u8Name
-                        }
-                    });
-                }
+    
+    function _downloadM3u8CustomImpl(data, parseResult){
+        if(parseResult.isMasterPlaylist){
+            return ;
+        }
+        const uniqueKey = MyUtils.genRandomString();
+		const downloadDirectory = chrome.i18n.getMessage("appName") + "-" + uniqueKey;
+        
+        MyM3u8Processer.saveDownloadContext({
+            id: uniqueKey,
+            downloadDirectory: downloadDirectory,
+            parseResult: parseResult,
+            completedCnt: 0,
+            total: 0,
+            chromeM3u8 : {
+                data : {
+                    uniqueKey: uniqueKey,
+                    downloadDirectory: downloadDirectory,
+                    reqConfig: data.reqConfig,
+                    mediaName: data.mediaName
+                },
+                threshold: MyChromeConfig.get("processerThreshold") * 1024 * 1024,
+                basic: false,
+                processerId: null,
+                index: 0,
+                completedCnt: 0
+            },
+            mediaName: data.mediaName,
+            mergeCallback: mergeCallback
+        });
+        stepDownloadKey();
+        
+        function stepDownloadKey(){
+            if(parseResult.keyData.size == 0){
+                stepDownloadTs();
+                return ;
             }
-			MyChromeDownload.download(tasks, data.mediaName + ".m3u8", stepDownloadm3u8ts);
-		}
-		
-		function stepDownloadm3u8ts(){
-			var tasks = [];
-			for(var x in parseResult.playList){
-				var fileName = baseFileName + "-" + MyUtils.padStart(parseResult.playList[x].sequence.toString(), 10,"0") + ".ts";
-				tasks.push({
-					options: {
-						url: parseResult.playList[x].url,
-						filename: downloadDirectory + "/m3u8/" + fileName,
-						method: data.reqConfig.method
-					}
-				});
-			}
-			
-			MyChromeDownload.download(tasks, data.mediaName + ".multiplets", stepOpenm3u8processer);
-		}
-		
-		
-		function stepOpenm3u8processer(){
-			if(MyChromeConfig.get("playSoundWhenComplete") == "1"){
-				MyVideox.play( chrome.extension.getURL("complete.mp3") );
-			}
-			
-			MyChromeDownload.open(processerId, {
-				title: data.mediaName,
-				message: chrome.i18n.getMessage("notificationOpenDownload", chrome.i18n.getMessage("processerName", data.mediaName) )
-			});
-		}
-		
-	}
+            const tasks = [];
+            parseResult.keyData.forEach(function(key, keyRef){
+                tasks.push({
+                    options: {
+                        url: key.url,
+                        filename: downloadDirectory + "/custom/key-" + keyRef,
+                        method: data.reqConfig.method
+                    },
+                    target: "custom",
+                    custom: { phase: "key", contextId: uniqueKey, keyRef: keyRef }
+                });
+            });
+            
+            MyDownload.download({
+                tasks: tasks, 
+                showName: data.mediaName + ".multiplekey"
+            }, stepDownloadTs);
+        }
+        
+        function stepDownloadTs(){
+            const tasks = [];
+            for(let x in parseResult.playList){
+                tasks.push({
+                    options: {
+                        url: parseResult.playList[x].url,
+                        filename: downloadDirectory + "/custom/ts-" + x,
+                        method: data.reqConfig.method
+                    },
+                    target: "custom",
+                    custom: { phase: "ts", contextId: uniqueKey, index: x }
+                });
+            }
+            
+            MyDownload.download({
+                tasks: tasks, 
+                showName: data.mediaName + ".multiplets"
+            }, null);
+        }
+        
+        function mergeCallback(){
+            if(MyChromeConfig.get("playSoundWhenComplete") == "1"){
+                MyVideox.play( chrome.extension.getURL("complete.mp3") );
+            }
+        }
+        
+    }
 	
-	
+    
 	function _downloadOther(data){
 		var downloadDirectory = chrome.i18n.getMessage("appName") + "-" + MyUtils.genRandomString();
 		downloadDirectory = MyChromeConfig.get("newFolderAtRoot") == "0" ? "" : downloadDirectory + "/";
@@ -214,13 +238,18 @@ var MyBootstrap = (function () {
 			suffix = suffix ? "."+suffix : "";
 		}
 		
-		MyChromeDownload.download([{
-			options: {
-				url: data.reqConfig.url,
-				filename: downloadDirectory + data.mediaName + suffix,
-				method: data.reqConfig.method
-			}
-		}], data.mediaName + suffix, function(){
+		MyDownload.download({
+            tasks: [{
+                options: {
+                    url: data.reqConfig.url,
+                    filename: downloadDirectory + data.mediaName + suffix,
+                    method: data.reqConfig.method,
+                    headers: data.reqConfig.headers
+                },
+                target: "chrome"
+            }], 
+            showName: data.mediaName + suffix
+        }, function(){
 			if(MyChromeConfig.get("playSoundWhenComplete") == "1"){
 				MyVideox.play( chrome.extension.getURL("complete.mp3") );
 			}
