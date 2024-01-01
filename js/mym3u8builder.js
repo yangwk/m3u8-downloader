@@ -86,6 +86,9 @@ var MyM3u8Builder = function(_data){
     }
 	
 	this.build = function(){
+        if(_data.playList == null || _data.playList.length == 0){
+            return null;
+        }
 		if(_data.isMaster){
             return _buildMasterPlaylist();
         }

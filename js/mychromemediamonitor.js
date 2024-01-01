@@ -225,6 +225,10 @@ var MyChromeMediaMonitor = (function () {
             let reqUrl = null, reqMethod = null;
             if(! runResult.isUrl){
                 const toEncode = runResult.content ? runResult.content : new MyM3u8Builder(runResult.builder).build();
+                if(! toEncode){
+                    callback(null);
+                    return ;
+                }
                 const ua = new TextEncoder().encode(toEncode);
                 const blob = new Blob([ua], {type: "application/octet-stream"});
                 reqUrl = URL.createObjectURL(blob);
