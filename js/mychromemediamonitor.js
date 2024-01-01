@@ -38,10 +38,10 @@ var MyChromeMediaMonitor = (function () {
 			length: function(){
 				return _map.size;
 			},
+            isFull: function(){
+                return _map.size >= MyChromeConfig.get("monitoredQueueMax");
+            },
         	offer: function (mediaItem) {
-				if(_map.size >= MyChromeConfig.get("monitoredQueueMax")){
-					return ;
-				}
 				var zeroJump = (_map.size == 0);
 				
 				_map.set(mediaItem.identifier, mediaItem);
@@ -166,7 +166,7 @@ var MyChromeMediaMonitor = (function () {
 			}else if(mime == "video/mp2t"){
 				return null;
 			}else{
-				var type = mime.substring(0, mime.indexOf("/"));
+				var type = MyUtils.getMimeType(mime);
 				if(type == "audio" || type == "video"){
 					mediaType = type;
 				}
@@ -191,6 +191,20 @@ var MyChromeMediaMonitor = (function () {
 				}
 			}
 		}
+        
+        if(! mediaType && url){
+            var urlJS = new URL(url);
+            for (const [k, v] of urlJS.searchParams.entries()) {
+                if(k.toLowerCase() == "mime"){
+                    const str = decodeURIComponent(v);
+                    var type = MyUtils.getMimeType(str);
+                    if(type == "audio" || type == "video"){
+                        mediaType = type;
+                        break;
+                    }
+                }
+            }
+        }
 		
 		if(mediaType){
 			var retval = { mediaType: mediaType , mime: mime };
@@ -222,7 +236,13 @@ var MyChromeMediaMonitor = (function () {
             
             const mediaItem = new _MediaItem(details.url, details.url, null, details.method, "m3u8", null, null);
             
-            MyVideox.getInfo("m3u8", reqUrl, reqMethod, originalUrl, MyHttpHeadersHandler.filterForbidden(requestData ? requestData.requestHeaders : null), function(result){
+            MyVideox.getInfo({
+                mediaType: "m3u8", 
+                url: reqUrl, 
+                method: reqMethod, 
+                relatedUrl: originalUrl, 
+                headers: MyHttpHeadersHandler.filterForbidden(requestData ? requestData.requestHeaders : null)
+            }, function(result){
                 if(! runResult.isUrl){
                     URL.revokeObjectURL(reqUrl);
                 }
@@ -297,15 +317,15 @@ var MyChromeMediaMonitor = (function () {
 	}, { urls: ["<all_urls>"] }, ["blocking", "requestHeaders"]);
 
 	
-    function onSendHeadersCallback(details) {
+    function _onSendHeadersCallback(details) {
         const headers = MyHttpHeadersHandler.filter( MyUtils.clone( details.requestHeaders ) );
         _monitoredRequestCache.put(new _RequestData(details.requestId, headers, null), "headers");
     }
     try{
-        chrome.webRequest.onSendHeaders.addListener(onSendHeadersCallback,
+        chrome.webRequest.onSendHeaders.addListener(_onSendHeadersCallback,
         { urls: ["<all_urls>"] }, ["requestHeaders", "extraHeaders"]);
     }catch(e){
-        chrome.webRequest.onSendHeaders.addListener(onSendHeadersCallback,
+        chrome.webRequest.onSendHeaders.addListener(_onSendHeadersCallback,
         { urls: ["<all_urls>"] }, ["requestHeaders"]);
     }
     
@@ -315,6 +335,9 @@ var MyChromeMediaMonitor = (function () {
 			return ;
 		}
 		if(MyUtils.isSuccessful(details.statusCode)){
+            if(_monitoredQueue.isFull()){
+                return ;
+            }
             const requestData = _monitoredRequestCache.obtain(details.requestId);
 			var media = _getMedia(details.url, details.responseHeaders);
             
@@ -421,7 +444,13 @@ var MyChromeMediaMonitor = (function () {
             _monitoredQueue.offer(mediaItem);
             return ;
         }
-		MyVideox.getInfo(mediaItem.mediaType, mediaItem.url, mediaItem.method, mediaItem.url, MyHttpHeadersHandler.filterForbidden(mediaItem.requestData ? mediaItem.requestData.requestHeaders : null), function(result){
+		MyVideox.getInfo({
+            mediaType: mediaItem.mediaType, 
+            url: mediaItem.url, 
+            method: mediaItem.method, 
+            relatedUrl: mediaItem.url, 
+            headers: MyHttpHeadersHandler.filterForbidden(mediaItem.requestData ? mediaItem.requestData.requestHeaders : null)
+        }, function(result){
             mediaItem.buildInfo(result);
 			_monitoredQueue.offer(mediaItem);
 		});
@@ -439,6 +468,7 @@ var MyChromeMediaMonitor = (function () {
         isEmpty: function(){
             return _monitoredQueue.length() == 0;
         },
-        add: _addSimpleMedia
+        add: _addSimpleMedia,
+        isFull: _monitoredQueue.isFull
 	}
 })();

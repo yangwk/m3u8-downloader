@@ -269,8 +269,8 @@ var MyM3u8Parser = function(_reqConfig, _content){
 		try{
 			return _parse();
 		}catch(err){
-			return null;
 		}
+        return null;
 	};
 
 }

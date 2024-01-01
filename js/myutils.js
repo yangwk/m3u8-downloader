@@ -30,7 +30,9 @@ var MyUtils = (function(){
             return result;
         },
 		genRandomString: function() {
-			return Date.now() + "" + Math.trunc(Math.random()*90000000+10000000, 10);
+			var array = new Uint32Array(1);
+            crypto.getRandomValues(array);
+            return Date.now().toString() + array[0];
 		},
 		clone: function(obj, exclusions, inverse){
             if(inverse == null){
@@ -229,6 +231,13 @@ var MyUtils = (function(){
         outerHeight: function(dom){
             const marginHeight = parseFloat( dom.style.marginTop || 0 ) + parseFloat( dom.style.marginBottom || 0 );
             return dom.offsetHeight + marginHeight;
+        },
+        getMimeType: function(mime){
+            if(mime){
+                var idx = mime.indexOf("/");
+                return mime.substring(0, idx == -1 ? mime.length : idx);
+            }
+            return null;
         }
     };
 })();

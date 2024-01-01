@@ -1,6 +1,6 @@
 var MyChromeConfig = (function () {
 	var _USER_AGENT = {
-		pc: "Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36",
+		pc: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36",
 		mobile: "Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.91 Mobile Safari/537.36"
 	};
 	
@@ -14,12 +14,12 @@ var MyChromeConfig = (function () {
 		downloadBatchMax: 5,
 		popupWidth: 462,
 		popupHeight: 435,
-		popupInTab: "0",
 		promptWhenExist: "0",
 		newFolderAtRoot: "1",
 		playSoundWhenComplete: "1",
         splitDiscontinuity: "1",
         processerThreshold: 500,
+        matchingRuleEnable: "0",
         matchingRule: '[]'
 	};
 	
@@ -41,6 +41,7 @@ var MyChromeConfig = (function () {
 					throw "not exists key " + key;
 				}
 			}
+            
             if(newConfig.matchingRule != null){
                 if(! MyUrlRuleMatcher.verify(newConfig.matchingRule)){
                     delete newConfig.matchingRule;
@@ -48,6 +49,7 @@ var MyChromeConfig = (function () {
                     MyUrlRuleMatcher.update(JSON.parse(newConfig.matchingRule));
                 }
             }
+            
 			for(var k in newConfig){
 				_config[k] = newConfig[k];
 			}

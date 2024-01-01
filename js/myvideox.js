@@ -77,13 +77,13 @@ var MyVideox = (function () {
     var _videoCount = 0;
 
     return {
-        getInfo: function (mediaType, url, method, relatedUrl, headers, callback) {
-			if(mediaType == "m3u8"){
+        getInfo: function (options, callback) {
+			if(options.mediaType == "m3u8"){
 				var reqConfig = {
-					url: url,
-					method: method,
-                    relatedUrl: relatedUrl,
-                    header: MyUtils.headersToHeader(headers)
+					url: options.url,
+					method: options.method,
+                    relatedUrl: options.relatedUrl,
+                    header: MyUtils.headersToHeader(options.headers)
 				};
 				new MyAsyncM3u8Parser(reqConfig).parse(function(result){
                     var parseResult = (result == null || result.playList == null || result.playList.length == 0) ? null : result;
@@ -96,7 +96,7 @@ var MyVideox = (function () {
                         }
                         new MyAsyncM3u8Parser({
                             url: parseResult.playList[0].url,
-                            method: method,
+                            method: options.method,
                             relatedUrl: parseResult.playList[0].url,
                             header: null
                         }).parse(function(result2){
@@ -116,7 +116,7 @@ var MyVideox = (function () {
 						_videoCount--;
 						callback(result);
 					});
-					mv.getInfo(url);
+					mv.getInfo(options.url);
 				}
 			}
         },

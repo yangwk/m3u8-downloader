@@ -136,7 +136,8 @@ var MyM3u8Processer = (function () {
                 },
                 target: "chrome"
             }], 
-            showName: fileName
+            showName: fileName,
+            priority: true
         }, function(){
             URL.revokeObjectURL(url);
             
