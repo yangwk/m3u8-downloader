@@ -1,17 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
 	
-    //global
-	function __addClass(dom, clz){
-		var cln = dom.className.replace(clz, "").trim();
-		dom.className = cln ? cln + " " + clz : clz;
-	}
-	function __removeClass(dom, clz){
-		dom.className = dom.className.replace(clz, "").trim();
-	}
-    function __containsClass(dom, clz){
-        return dom.className.indexOf(clz) != -1;
-    }
-	
 	//show ui
 	(function(){
 		var _showIds = [
@@ -34,13 +22,13 @@ document.addEventListener("DOMContentLoaded", function () {
 			
 			for(var x in _showIds){
 				if(this.id == _showIds[x][0].id){
-					__addClass(_showIds[x][0].parentElement, "active");
-					__removeClass(_showIds[x][1], "hide");
-					__addClass(_showIds[x][1], "show");
+					_showIds[x][0].parentElement.classList.add("active");
+					_showIds[x][1].classList.remove("hide");
+					_showIds[x][1].classList.add("show");
 				}else{
-					__removeClass(_showIds[x][0].parentElement, "active");
-					__removeClass(_showIds[x][1], "show");
-					__addClass(_showIds[x][1], "hide");
+					_showIds[x][0].parentElement.classList.remove("active");
+					_showIds[x][1].classList.remove("show");
+					_showIds[x][1].classList.add("hide");
 				}
 			}
 		}
@@ -286,13 +274,13 @@ document.addEventListener("DOMContentLoaded", function () {
 				
 				for(var x in _showIds){
 					if(this.id == _showIds[x][0].id){
-						__addClass(_showIds[x][0], "active");
-						__removeClass(_showIds[x][1], "hide");
-						__addClass(_showIds[x][1], "show");
+						_showIds[x][0].classList.add("active");
+						_showIds[x][1].classList.remove("hide");
+						_showIds[x][1].classList.add("show");
 					}else{
-						__removeClass(_showIds[x][0], "active");
-						__removeClass(_showIds[x][1], "show");
-						__addClass(_showIds[x][1], "hide");
+						_showIds[x][0].classList.remove("active");
+						_showIds[x][1].classList.remove("show");
+						_showIds[x][1].classList.add("hide");
 					}
 				}
 			}
@@ -439,8 +427,9 @@ document.addEventListener("DOMContentLoaded", function () {
         function metricDownloadDownloadingCustom(contentDom, obj, custom){
             const data = custom[obj.id];
             const itemDom = document.createElement("div");
-            itemDom.innerHTML = '<hr/><div>' + data.url + '</div>';
+            itemDom.innerHTML = '<hr/><div class="line-wrapping">' + data.url + '</div>';
             const statusDom = document.createElement("div");
+            statusDom.className = "line-wrapping";
             const progressDom1 = document.createElement("div");
             progressDom1.className = "download-progress-outer";
             const progressDom2 = document.createElement("div");
@@ -528,12 +517,12 @@ document.addEventListener("DOMContentLoaded", function () {
 				document.getElementById("settings-dlbtmax").value = data.downloadBatchMax;
 				document.getElementById("settings-popwidth").value = data.popupWidth;
 				document.getElementById("settings-popheight").value = data.popupHeight;
-				document.getElementById("settings-popupintab").checked = data.popupInTab == "1";
 				document.getElementById("settings-pwe").checked = data.promptWhenExist == "1";
 				document.getElementById("settings-nfar").checked = data.newFolderAtRoot == "1";
 				document.getElementById("settings-pswc").checked = data.playSoundWhenComplete == "1";
                 document.getElementById("settings-sd").checked = data.splitDiscontinuity == "1";
                 document.getElementById("settings-prothr").value = data.processerThreshold;
+                document.getElementById("settings-mrenable").checked = data.matchingRuleEnable == "1";
                 document.getElementById("settings-mr").value = data.matchingRule;
 			});
 		}
@@ -564,13 +553,13 @@ document.addEventListener("DOMContentLoaded", function () {
 			data.downloadBatchMax = parseInt(document.getElementById("settings-dlbtmax").value, 10);
 			data.popupWidth = parseInt(document.getElementById("settings-popwidth").value, 10);
 			data.popupHeight = parseInt(document.getElementById("settings-popheight").value, 10);
-			data.popupInTab = document.getElementById("settings-popupintab").checked ? "1" : "0";
 			data.showDuration = document.getElementById("settings-duration").checked ? "1" : "0";
 			data.promptWhenExist = document.getElementById("settings-pwe").checked ? "1" : "0";
 			data.newFolderAtRoot = document.getElementById("settings-nfar").checked ? "1" : "0";
 			data.playSoundWhenComplete = document.getElementById("settings-pswc").checked ? "1" : "0";
             data.splitDiscontinuity = document.getElementById("settings-sd").checked ? "1" : "0";
             data.processerThreshold = parseInt(document.getElementById("settings-prothr").value, 10);
+            data.matchingRuleEnable = document.getElementById("settings-mrenable").checked ? "1" : "0";
             data.matchingRule = document.getElementById("settings-mr").value.trim();
 			
 			chrome.runtime.sendMessage({
@@ -578,22 +567,25 @@ document.addEventListener("DOMContentLoaded", function () {
 					data: data
 				}, function(response){
 				windowResize(data.popupWidth, data.popupHeight);
-				
-				if(! document.getElementById("settings-popupintab").disabled ){
-					chrome.browserAction.setPopup({
-						popup: data.popupInTab == "1" ? "" : chrome.extension.getURL("popup/index.html")
-					});
-				}
 			});
 		};
         
         document.getElementById("settings-mr").onclick = function(e){
             e.stopPropagation();
-            if(! __containsClass(this, "textarea-mr-max")){
-                __removeClass(this, "textarea-mr");
-                __addClass(this, "textarea-mr-max");
+            if(! this.classList.contains("textarea-mr-max")){
+                this.classList.remove("textarea-mr");
+                this.classList.add("textarea-mr-max");
             }
         };
+        
+        
+		document.getElementById("settings-popupintab").onclick = function(e){
+			e.stopPropagation();
+			chrome.runtime.sendMessage({
+                action: "popupintab"
+            }, function(response){});
+		};
+        
 	})();
 	
 	

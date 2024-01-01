@@ -17,6 +17,8 @@
 
 * 支持主流视频、音频下载，不局限于web规范的视音频
 
+* 支持自定义监控规则
+
 * 全自动化，为下片而生
 
 ## 运行环境
@@ -76,7 +78,7 @@ WeChat 1459669836
 
 ![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/06.PNG)
 
-下载完毕后会通知你打开m3u8处理程序，点击 是
+下载完毕后会通知打开m3u8处理程序，点击 是
 
 ![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/07.PNG)
 
@@ -90,15 +92,17 @@ m3u8处理程序处理完毕后，会自动打开处理后的文件所处位置
 
 ## 案例
 
-音乐
+* 音乐
 
 ![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/10.png)
 
-视频
+* 视频
 
 ![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/11.png)
 
-社交
+![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/13.png)
+
+* 社交
 
 ![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/12.png)
 
@@ -106,12 +110,14 @@ m3u8处理程序处理完毕后，会自动打开处理后的文件所处位置
 
 * 为了避免糟糕的下载体验，请关闭浏览器选项 设置 -> 高级 -> 下载内容 -> 下载前询问每个文件的保存位置
 
-* 下载m3u8使用m3u8处理器模式时，浏览器会提示m3u8处理程序是一个有风险的文件，该处理程序安全可靠，请保留该文件，让下载继续
+* 使用m3u8处理器模式下载m3u8时，浏览器会提示m3u8处理程序是一个有风险的文件，该处理程序安全可靠，请保留该文件，让下载继续
 
 ## 特殊技巧
 
 * 主流视频网站，都会有广告视频，同样被监控到，可以根据监控详情的长度鉴别是否为广告（广告长度都很短）
 
-* 同一个标签页，可能会监控到多个视音频，同样可根据监控详情的长度鉴别哪个是下载目标
+* 同一个标签页，可能会监控到多个视音频，同样根据监控详情的长度鉴别哪个是下载目标
+
+* 一些网站将视频和音频拆分，比如 YouTube，需要完整下载video和audio文件
 
 * 一些网站会防止下载，比如 某b，解决方法是：将插件弹窗设置的 模拟环境 切换为 手机，刷新网站页面后即可监控下载

@@ -69,23 +69,23 @@ var MyBootstrap = (function () {
                 MyM3u8Processer.downloadPause(request.data.id);
                 sendResponse({success: true});
 			}else if(request.action == "contentscript.match"){
+                if(MyChromeMediaMonitor.isFull()){
+                    sendResponse({ content: null });
+                    return;
+                }
                 const matcherResult = MyUrlRuleMatcher.matchAndParse( request.data.url, "contentscript" );
                 sendResponse({ content: (matcherResult != null && matcherResult.targetContentscript != null) ? matcherResult.targetContentscript.func : null });
 			}else if(request.action == "contentscript.setm3u8"){
                 MyChromeMediaMonitor.add(request.data.url, "GET", request.data.result);
                 sendResponse({success: true});
+			}else if(request.action == "popupintab"){
+                chrome.tabs.create({
+                    url: chrome.extension.getURL("popup/index.html")
+                }, function(){});
+                sendResponse({success: true});
 			}
 			
 		});
-		
-		
-		
-		chrome.browserAction.onClicked.addListener(function(tab) {
-			chrome.tabs.create({
-				url: chrome.extension.getURL("popup/index.html")
-			}, function(){});
-		});
-        
         
         _updateIcon(! MyChromeMediaMonitor.isEmpty() );
 	}
@@ -129,7 +129,13 @@ var MyBootstrap = (function () {
 	
 	function _downloadM3u8(data, parseResult){
 		if(parseResult == null){
-            MyVideox.getInfo("m3u8", data.reqConfig.url, data.reqConfig.method, data.reqConfig.url, data.reqConfig.headers, function(result){
+            MyVideox.getInfo({
+                mediaType: "m3u8",
+                url: data.reqConfig.url, 
+                method: data.reqConfig.method, 
+                relatedUrl: data.reqConfig.url, 
+                headers: data.reqConfig.headers
+            }, function(result){
                 if(result == null){
 					return ;
 				}

@@ -171,7 +171,7 @@ textarea {
     height: 90px;
 }
 .textarea-mr {
-    height: 2em;
+    height: 3em;
 }
 .textarea-mr-max {
     height: 300px;
@@ -211,4 +211,8 @@ span {
 }
 label {
     display: inline-block;
+}
+.line-wrapping {
+    word-break: break-all;
+    white-space: normal;
 }

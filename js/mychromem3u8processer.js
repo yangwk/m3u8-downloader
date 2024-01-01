@@ -38,7 +38,7 @@ var MyChromeM3u8Processer = (function () {
                 tasks: [{
                     options: {
                         url: chrome.extension.getURL("processer.txt"),
-                        filename: data.downloadDirectory + "/processer/" + data.mediaName + ".txt"
+                        filename: data.downloadDirectory + "/processer/" + MyUtils.trimSuffix(data.mediaName) + ".txt"
                     },
                     target: "chrome"
                 }], 

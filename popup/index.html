@@ -94,16 +94,12 @@
 					</select>
 				</div>
 				<div>
-					<label>
-					  <span class="not-select" data-msg="settingsShowTab">tab</span>
-					  <input type="checkbox" id="settings-tab" checked />
-					</label>
+                    <label class="not-select" data-msg="settingsShowTab">tab</label>
+					<input type="checkbox" id="settings-tab" checked />
 				</div>
 				<div>
-					<label>
-					  <span class="not-select" data-msg="settingsShowDuration">duration</span>
-					  <input type="checkbox" id="settings-duration" checked />
-					</label>
+					<label class="not-select" data-msg="settingsShowDuration">duration</label>
+					<input type="checkbox" id="settings-duration" checked />
 				</div>
 				<div>
 					<label class="not-select" data-msg="settingsMonitorMax">mmax</label>
@@ -119,56 +115,40 @@
 				</div>
 				<div>
 					<label class="not-select" data-msg="settingsPopupWidth">width</label>
-					<input type="number" step="20" min="462" max="3000" value="462" id="settings-popwidth" />
+					<input type="number" step="20" min="462" max="4000" value="462" id="settings-popwidth" />
 				</div>
 				<div>
 					<label class="not-select" data-msg="settingsPopupHeight">height</label>
 					<input type="number" step="20" min="435" max="3000" value="435" id="settings-popheight" />
 				</div>
-				<div style="display: none;">
-					<label>
-					  <span class="not-select" data-msg="settingsPopupInTab">popupintab</span>
-					  <input type="checkbox" id="settings-popupintab" disabled />
-					</label>
+				<div>
+					<label class="not-select" data-msg="settingsPromptWhenExist">pwe</label>
+					<input type="checkbox" id="settings-pwe" />
 				</div>
 				<div>
-					<label>
-					  <span class="not-select" data-msg="settingsPromptWhenExist">pwe</span>
-					  <input type="checkbox" id="settings-pwe" />
-					</label>
+					<label class="not-select" data-msg="settingsNewFolderAtRoot">nfar</label>
+					<input type="checkbox" id="settings-nfar" />
 				</div>
 				<div>
-					<label>
-					  <span class="not-select" data-msg="settingsNewFolderAtRoot">nfar</span>
-					  <input type="checkbox" id="settings-nfar" />
-					</label>
+					<label class="not-select" data-msg="settingsPlaySoundWhenComplete">pswc</label>
+					<input type="checkbox" id="settings-pswc" />
 				</div>
 				<div>
-					<label>
-					  <span class="not-select" data-msg="settingsPlaySoundWhenComplete">pswc</span>
-					  <input type="checkbox" id="settings-pswc" />
-					</label>
+					<label class="not-select" data-msg="settingsSplitDiscontinuity">sd</label>
+					<input type="checkbox" id="settings-sd" />
 				</div>
 				<div>
-					<label>
-					  <span class="not-select" data-msg="settingsSplitDiscontinuity">sd</span>
-					  <input type="checkbox" id="settings-sd" />
-					</label>
+                    <label class="not-select" data-msg="settingsProcesserThreshold">pt</label>
+                    <input type="number" step="50" min="0" max="2000" value="500" id="settings-prothr" />
 				</div>
 				<div>
-					<label>
-					  <span class="not-select" data-msg="settingsProcesserThreshold">pt</span>
-                      <input type="number" step="50" min="0" max="2000" value="500" id="settings-prothr" />
-					</label>
-				</div>
-				<div style="display: none;">
-					<label>
-					  <span class="not-select" data-msg="settingsMatchingRule">mr</span>
-					</label>
+					<label class="not-select" data-msg="settingsMatchingRule">mr</label>
+                    <input type="checkbox" id="settings-mrenable" />
                     <textarea id="settings-mr" class="textarea-mr"></textarea>
 				</div>
 				<div>
 					<span class="badge badge-b" id="settings-submit" data-msg="submit">submit</span>
+                    <span class="badge badge-b" id="settings-popupintab" data-msg="settingsPopupInTab">popupintab</span>
 				</div>
 				
 			</div>
