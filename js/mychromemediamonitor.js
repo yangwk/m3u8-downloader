@@ -31,7 +31,7 @@ var MyChromeMediaMonitor = (function () {
 		var _map = new Map();
         
         function _clone(item){
-            return MyUtils.clone(item, ( item.mediaType == "m3u8" && item.isMasterPlaylist ) ? null : ["parseResult"]);
+            return MyUtils.clone(item, ( item.mediaType == "m3u8" && item.isMasterPlaylist ) ? ["requestData"] : ["requestData", "parseResult"]);
         }
         
         return {
@@ -173,8 +173,9 @@ var MyChromeMediaMonitor = (function () {
 			}
 		}
 		
-		if(mediaType != "m3u8" && url){
-			var suffix = MyUtils.getSuffix(url, true);
+        const urlJS = url ? new URL(url) : null;
+		if(mediaType != "m3u8" && urlJS){
+			var suffix = MyUtils.getSuffix(urlJS, true);
 			if(suffix){
 				suffix = suffix.toLowerCase();
 				
@@ -192,8 +193,7 @@ var MyChromeMediaMonitor = (function () {
 			}
 		}
         
-        if(! mediaType && url){
-            var urlJS = new URL(url);
+        if(! mediaType && urlJS){
             for (const [k, v] of urlJS.searchParams.entries()) {
                 if(k.toLowerCase() == "mime"){
                     const str = decodeURIComponent(v);

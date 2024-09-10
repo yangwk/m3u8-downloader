@@ -76,7 +76,10 @@ var MyUtils = (function(){
             return idx == -1 ? path : path.substring(0, idx);
 		},
 		getLastPathName: function(url){
-			var u = new URL(url);
+            let u = url;
+            if(!(url instanceof URL)){
+                u = new URL(url);
+            }
 			var idx = u.pathname ? u.pathname.lastIndexOf("/") : -1;
 			return idx == -1 ? null : ( idx+1 >= u.pathname.length ? null : u.pathname.substring(idx+1) );
 		},

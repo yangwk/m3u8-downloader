@@ -2,7 +2,7 @@ var MyDownloader = (function () {
     
 	var _data = new Map();
 	
-    const _DownloadItem = function(id, url, method, attributes){
+    const _DownloadItem = function(id, url, method, attributes, rangeBoundary){
 		this.id = id;
         this.url = url;
         this.method = method;
@@ -21,14 +21,14 @@ var MyDownloader = (function () {
         this.loadedOriginal = 0;
         this.content = [];
         this.request = null;
-        this.rangeBoundary = 50 * 1024 * 1024;
+        this.rangeBoundary = rangeBoundary || 50 * 1024 * 1024;
         this.rangeMode = false;
 	}
     
     function _download(options, callback){
         const id = MyUtils.genRandomString();
         const op = MyUtils.clone(options);
-        _data.set(id, new _DownloadItem(id, op.url, op.method, op.attributes));
+        _data.set(id, new _DownloadItem(id, op.url, op.method, op.attributes, op.rangeBoundary));
         const header = {
             "Range": "bytes=0-0"
         };
@@ -70,9 +70,9 @@ var MyDownloader = (function () {
         if(item.state == "complete"){
             return ;
         }
-        const base = MyUtils.clone(item, ["id", "url", "method", "attributes"], true);
+        const base = MyUtils.clone(item, ["id", "url", "method", "attributes", "rangeBoundary"], true);
         _data.delete(id);
-        _data.set(base.id, new _DownloadItem(base.id, base.url, base.method, base.attributes));
+        _data.set(base.id, new _DownloadItem(base.id, base.url, base.method, base.attributes, base.rangeBoundary));
         _downloadImpl(base.id, base.url, base.method, null, false, false, callback);
     }
     

@@ -130,6 +130,23 @@ document.addEventListener("DOMContentLoaded", function () {
                             opt.dataset["direct"] = pi.isDirect ? String(pi.isDirect) : "";
                             spl.appendChild(opt);
                             mtSet.add( pi.mediaType );
+                            
+                            for(let z in pi.renditionGroups){
+                                const groupId = pi.renditionGroups[z].groupId;
+                                const type = pi.renditionGroups[z].type;
+                                if( obj.parseResult.renditionData[groupId] && obj.parseResult.renditionData[groupId][type] ){
+                                    const renTypeItem = obj.parseResult.renditionData[groupId][type];
+                                    for(let k in renTypeItem){
+                                        const renItem = renTypeItem[k];
+                                        const thisMediaType = renItem.type.toLowerCase();
+                                        const opt2 = document.createElement("option");
+                                        opt2.value = renItem.url;
+                                        opt2.text = "[" + thisMediaType + " - " + renItem.name + "]";
+                                        spl.appendChild(opt2);
+                                        mtSet.add( thisMediaType );
+                                    }
+                                }
+                            }
                         }
                         spl.dataset["destroy"] = mtSet.size <= 1 ? String(true) : "";
                         dom5.appendChild(spl);
@@ -199,7 +216,7 @@ document.addEventListener("DOMContentLoaded", function () {
 					mediaName: MyUtils.escapeFileName(mediaName)
 				}
 			}, function(response){
-				loadMonitoredMedia();
+				destroy && loadMonitoredMedia();
 			});
 		}
 	})();
@@ -522,6 +539,7 @@ document.addEventListener("DOMContentLoaded", function () {
 				document.getElementById("settings-pswc").checked = data.playSoundWhenComplete == "1";
                 document.getElementById("settings-sd").checked = data.splitDiscontinuity == "1";
                 document.getElementById("settings-prothr").value = data.processerThreshold;
+                document.getElementById("settings-dps").value = data.downloaderPageSize;
                 document.getElementById("settings-mrenable").checked = data.matchingRuleEnable == "1";
                 document.getElementById("settings-mr").value = data.matchingRule;
 			});
@@ -537,6 +555,9 @@ document.addEventListener("DOMContentLoaded", function () {
 		
 		
 		document.querySelectorAll('input[type="number"]').forEach(function(dom){
+            if(dom.id == "settings-dps"){
+                return ;
+            }
 			dom.onkeydown = function(){
 				return false;
 			};
@@ -559,6 +580,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			data.playSoundWhenComplete = document.getElementById("settings-pswc").checked ? "1" : "0";
             data.splitDiscontinuity = document.getElementById("settings-sd").checked ? "1" : "0";
             data.processerThreshold = parseInt(document.getElementById("settings-prothr").value, 10);
+            data.downloaderPageSize = Math.min( Math.max( parseInt(document.getElementById("settings-dps").value, 10), 1024 ), 1024 * 1024 * 1024 );
             data.matchingRuleEnable = document.getElementById("settings-mrenable").checked ? "1" : "0";
             data.matchingRule = document.getElementById("settings-mr").value.trim();
 			

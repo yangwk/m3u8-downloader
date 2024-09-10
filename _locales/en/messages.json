@@ -184,5 +184,8 @@
     },
     "settingsMatchingRule": {
         "message": "matching rule"
+    },
+    "settingsDownloaderPageSize": {
+        "message": "the page size (byte) of downloader"
     }
 }

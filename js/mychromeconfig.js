@@ -19,6 +19,7 @@ var MyChromeConfig = (function () {
 		playSoundWhenComplete: "1",
         splitDiscontinuity: "1",
         processerThreshold: 500,
+        downloaderPageSize: 50 * 1024 * 1024,
         matchingRuleEnable: "0",
         matchingRule:   '[\r\n' +
                         '    {\r\n         "url": {\r\n             "host": "*.googlevideo.com",\r\n             "pathname": null\r\n         },\r\n         "rule": {\r\n             "identifier": {\r\n                 "pathIndex": null,\r\n                 "queryParam": ["id"]\r\n             },\r\n             "ignorer": {\r\n                 "queryParam": ["range", "rn"]\r\n             }\r\n         }\r\n     },\r\n' +

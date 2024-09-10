@@ -14,11 +14,12 @@ var MyM3u8Parser = function(_reqConfig, _content){
         this.content = null;
 	}
     
-	var _MasterPlayItem = function(bandwidth, mediaType, url, isDirect){
+	var _MasterPlayItem = function(bandwidth, mediaType, url, isDirect, renditionGroups){
 		this.bandwidth = bandwidth;
         this.mediaType = mediaType;
 		this.url = url;
         this.isDirect = isDirect;
+        this.renditionGroups = renditionGroups;
 	}
     
     var _DiscontinuityItem = function(start, end){
@@ -31,6 +32,18 @@ var MyM3u8Parser = function(_reqConfig, _content){
 		this.url = url;
         this.iv = iv;
         this.content = null;
+	}
+    
+    var _RenditionGroupItem = function(groupId, type){
+        this.groupId = groupId;
+		this.type = type;
+	}
+    
+    var _RenditionItem = function(type, url, groupId, name){
+		this.type = type;
+		this.url = url;
+        this.groupId = groupId;
+        this.name = name;
 	}
 	
 	var _myReader = new MyReader(_content);
@@ -116,7 +129,7 @@ var MyM3u8Parser = function(_reqConfig, _content){
 	function _parse(){
 		var statement = null;
 		var playList = [], firstSequence = 0, index = 0, logicIndex = 0, duration = 0, keyData = new Map(), keyRef = 0, existEXT = false;
-        var isMasterPlaylist = false, bandwidth = 0, mediaType = null;
+        var isMasterPlaylist = false, bandwidth = 0, mediaType = null, renditionGroups = null, renditionData = {};
         var firstDiscSequence = 0, firstDiscIndex = -1, discIndex = -1;
         const emptyCheck = " \f\n\r\t\v";
         var segmentType = "mpegts"; // mpegts, fmp4
@@ -157,8 +170,39 @@ var MyM3u8Parser = function(_reqConfig, _content){
                     if(nameValue["X-DIRECT-DURATION"]){
                         duration = _parseAttributeValue(nameValue["X-DIRECT-DURATION"], 2);
                     }
+                    renditionGroups = [];
+                    const renTypeList = ["AUDIO", "VIDEO", "SUBTITLES", "CLOSED-CAPTIONS"];
+                    for(let x in renTypeList){
+                        const renType = renTypeList[x];
+                        if(nameValue[renType]){
+                            const groupId = _parseAttributeValue(nameValue[renType], 4);
+                            const ren = renditionData[groupId];
+                            const renItem = ren ? ren[renType] : null;
+                            renItem && renditionGroups.push(new _RenditionGroupItem(groupId, renType));
+                        }
+                    }
                     isMasterPlaylist = true;
-				} else if(tag == "EXTINF"){
+				} else if(tag == "EXT-X-MEDIA"){
+                    const nameValue = _parseAttributeList(statement.substring("#EXT-X-MEDIA:".length));
+                    const type = _parseAttributeValue(nameValue["TYPE"], 4);
+                    const uri = nameValue["URI"] ? _parseAttributeValue(nameValue["URI"], 4) : null;
+                    const groupId = _parseAttributeValue(nameValue["GROUP-ID"], 4);
+                    const name = _parseAttributeValue(nameValue["NAME"], 4);
+                    const requireUri = (type == "AUDIO" || type == "VIDEO" || type == "SUBTITLES");
+                    if((requireUri && uri) || !requireUri){
+                        let ren = renditionData[groupId];
+                        if(ren == null){
+                            ren = {};
+                            renditionData[groupId] = ren;
+                        }
+                        let renTypeItem = ren[type];
+                        if(renTypeItem == null){
+                            renTypeItem = [];
+                            ren[type] = renTypeItem;
+                        }
+                        renTypeItem.push(new _RenditionItem(type, MyUtils.concatUrl(uri, _reqConfig.url), groupId, name));
+                    }
+                } else if(tag == "EXTINF"){
 					var commaIdx = statement.indexOf(",");
                     duration += _parseAttributeValue(statement.substring("#EXTINF:".length, commaIdx == -1 ? statement.length : commaIdx).trim(), 2);
 				} else if(tag == "EXT-X-DISCONTINUITY"){
@@ -166,6 +210,7 @@ var MyM3u8Parser = function(_reqConfig, _content){
                         playList[playList.length-1].discontinuity = true;
                     }
                     discIndex = index;
+                    // The EXT-X-DISCONTINUITY-SEQUENCE tag MUST appear before the first Media Segment in the Playlist.
                     // The EXT-X-DISCONTINUITY-SEQUENCE tag MUST appear before any EXT-X-DISCONTINUITY tag.
                     if(firstDiscIndex != discIndex){
                         firstDiscSequence = 0;
@@ -189,7 +234,7 @@ var MyM3u8Parser = function(_reqConfig, _content){
                 if(isMasterPlaylist){
                     const isDirect = contentURI.startsWith("direct://");
                     contentURI = isDirect ? contentURI.substring("direct://".length) : contentURI;
-                    playList.push( new _MasterPlayItem(bandwidth, mediaType, MyUtils.concatUrl(contentURI, _reqConfig.url), isDirect) );
+                    playList.push( new _MasterPlayItem(bandwidth, mediaType, MyUtils.concatUrl(contentURI, _reqConfig.url), isDirect, renditionGroups) );
                     continue;
                 }
                 let keyIV = null;
@@ -214,7 +259,8 @@ var MyM3u8Parser = function(_reqConfig, _content){
             discontinuity: ! isMasterPlaylist ? _handleDiscontinuity(playList) : null,
             keyData: keyData,
             isMasterPlaylist: isMasterPlaylist,
-            suffix: segmentType == "mpegts" ? "mpeg" : "mp4"
+            suffix: segmentType == "mpegts" ? "mpeg" : "mp4",
+            renditionData: renditionData
 		};
 	}
 	
