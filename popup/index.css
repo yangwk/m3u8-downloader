@@ -89,6 +89,7 @@ a {
 }
 .badge-url {
 	text-align: left;
+    user-select: text !important;
 }
 .badge-name {
 	text-align: left;

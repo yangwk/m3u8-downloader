@@ -184,5 +184,8 @@
     },
     "settingsMatchingRule": {
         "message": "匹配规则"
+    },
+    "settingsDownloaderPageSize": {
+        "message": "下载器的页大小（byte）"
     }
 }

@@ -103,10 +103,15 @@ var MyM3u8Processer = (function () {
             for(let p=discontinuity[d].start; p<=discontinuity[d].end; p++){
                 allBytes.push(context.parseResult.playList[p].content);
             }
-                     
-            let fileName = context.downloadDirectory + "/" + MyUtils.trimSuffix(context.mediaName) + (shouldSplit ? "-" + (++mainIndex) : "") + "."+context.parseResult.suffix;
+            
+            let suffix = MyUtils.getSuffix(context.mediaName, false);
+            if(suffix && [ "m3u8", "m3u" ].includes(suffix.toLowerCase())){
+                suffix = "";
+            }
+            suffix = suffix || context.parseResult.suffix;
+            let fileName = context.downloadDirectory + "/" + MyUtils.trimSuffix(context.mediaName) + (shouldSplit ? "-" + (++mainIndex) : "") + "."+suffix;
             if(MyChromeConfig.get("newFolderAtRoot") == "0" && ! shouldSplit){
-                fileName = MyUtils.trimSuffix(context.mediaName) + "."+context.parseResult.suffix;
+                fileName = MyUtils.trimSuffix(context.mediaName) + "."+suffix;
             }
             
             _mergeContentImpl(allBytes, fileName, function(){
@@ -174,7 +179,8 @@ var MyM3u8Processer = (function () {
         const options = {
             url: task.options.url,
             method: task.options.method.toUpperCase(),
-            attributes: task.custom
+            attributes: task.custom,
+            rangeBoundary: MyChromeConfig.get("downloaderPageSize")
         };
         return MyDownloader.download(options, _downloadCallback);
     }
