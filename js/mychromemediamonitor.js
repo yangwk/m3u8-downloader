@@ -1,5 +1,10 @@
 var MyChromeMediaMonitor = (function () {
     
+    var _TabItem = function(title, favIconUrl){
+        this.title = title;
+        this.favIconUrl = favIconUrl;
+    };
+    
 	var _MediaItem = function(identifier, url, tabItem, method, mediaType, mime, length){
         this.identifier = identifier;
         this.url = url;
@@ -60,7 +65,7 @@ var MyChromeMediaMonitor = (function () {
 				return item;
 			},
             element: function(identifier){
-                return _clone( _map.get(identifier) );
+                return _map.get(identifier);
             },
             contains: function(identifier){
                 return _map.has(identifier);
@@ -421,10 +426,10 @@ var MyChromeMediaMonitor = (function () {
             if(MyChromeConfig.get("showTab") == "1"){
                 chrome.tabs.get(details.tabId, function(tab){
                     if(tab != null){
-                        mediaItem.tabItem = {
-                            title: tab.title,
-                            favIconUrl: tab.favIconUrl
-                        };
+                        mediaItem.tabItem = new _TabItem(
+                            tab.title,
+                            tab.favIconUrl
+                        );
                     }
                     if(MyChromeConfig.get("showDuration") == "1"){
                         _getMediaInfo(mediaItem);

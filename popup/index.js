@@ -141,7 +141,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                         const thisMediaType = renItem.type.toLowerCase();
                                         const opt2 = document.createElement("option");
                                         opt2.value = renItem.url;
-                                        opt2.text = "[" + thisMediaType + " - " + renItem.name + "]";
+                                        opt2.text = "[" + thisMediaType + (renItem.bandwidth != null ? " - " + MyUtils.formatBandwidth(renItem.bandwidth) : "") + " - " + renItem.name + "]";
                                         spl.appendChild(opt2);
                                         mtSet.add( thisMediaType );
                                     }
@@ -264,6 +264,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		document.getElementById("manual-clean").onclick = function(e){
 			e.stopPropagation();
 			document.getElementById("manual-url").value = "";
+            document.getElementById("manual-headers").value = "";
 			document.getElementById("manual-name").value = "";
 		}
 		
