@@ -193,10 +193,6 @@ var MyM3u8Processer = (function () {
         MyDownloader.restart(id, _downloadCallback);
     }
     
-    function _downloadPause(id){
-        MyDownloader.pause(id);
-    }
-    
     function _downloadCancel(id){
         const data = MyDownloader.cancel(id);
         if(data != null){
@@ -204,14 +200,8 @@ var MyM3u8Processer = (function () {
         }
     }
     
-    function _downloadMetric(){
-        return MyDownloader.metric();
-    }
-    
     function _info(){
-        const info = MyDownloader.info();
-        info.push(_cache.size);
-        return info;
+        return [_cache.size];
     }
     
     function _saveDownloadContext(data){
@@ -222,9 +212,7 @@ var MyM3u8Processer = (function () {
         downloadDownload: _downloadDownload,
         downloadResume: _downloadResume,
         downloadRestart: _downloadRestart,
-        downloadPause: _downloadPause,
         downloadCancel: _downloadCancel,
-        downloadMetric: _downloadMetric,
         info: _info,
         saveDownloadContext: _saveDownloadContext
     };

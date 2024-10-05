@@ -187,5 +187,8 @@
     },
     "settingsDownloaderPageSize": {
         "message": "the page size (byte) of downloader"
+    },
+    "settingsConvertSubtitles": {
+        "message": "convert subtitles"
     }
 }

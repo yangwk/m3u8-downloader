@@ -24,6 +24,8 @@ var MyDownload = (function () {
 					task.control.batchName = batchName;
 					task.control.fileName = task.options.filename;
                     task.control.url = task.options.url;
+                    task.control.canResume = false;
+                    task.control.target = task.target;
 				}
 				var batch = {
 					batchName: batchName,
@@ -159,7 +161,8 @@ var MyDownload = (function () {
 		
 		var retval = {
 			downloadingTasks: downloadingTasks,
-			downloadBatches: downloadBatches
+			downloadBatches: downloadBatches,
+            downloadingTasksCustom: MyDownloader.metric()
 		};
 		return MyUtils.clone(retval);
 	}
@@ -187,14 +190,16 @@ var MyDownload = (function () {
 		}
         if(task.target == "chrome"){
             MyChromeDownload.downloadTask(task);
-        }else{
+        }else if(task.target == "custom"){
             MyM3u8Processer.downloadDownload(task);
+        }else if(task.target == "custom.base"){
+            MyBaseProcesser.downloadDownload(task);
         }
 	}
 
 	function _cancelDownload(id, recurse){
         const callback = function(){
-            var control = _downloadingHolder.get(id);
+            const control = _downloadingHolder.get(id);
 			_downloadingHolder.delete(id);
             
             if(recurse){
@@ -204,13 +209,41 @@ var MyDownload = (function () {
             }
         };
         
-        if(MyUtils.isChromeTarget(id)){
+        const control = _downloadingHolder.get(id);
+        if(control.target == "chrome"){
             MyChromeDownload.cancel(id, callback);
-        }else{
+        }else if(control.target == "custom"){
             MyM3u8Processer.downloadCancel(id);
+            callback();
+        }else if(control.target == "custom.base"){
+            MyBaseProcesser.downloadCancel(id);
             callback();
         }
 	}
+    
+    function _resumeDownload(id){
+        const control = _downloadingHolder.get(id);
+        if(control.target == "chrome"){
+            MyChromeDownload.resume(id);
+        }else if(control.target == "custom"){
+            MyM3u8Processer.downloadResume(id);
+        }else if(control.target == "custom.base"){
+            MyBaseProcesser.downloadResume(id);
+        }
+    }
+    
+    function _restartDownload(id){
+        const control = _downloadingHolder.get(id);
+        if(control.target == "custom"){
+            MyM3u8Processer.downloadRestart(id);
+        }else if(control.target == "custom.base"){
+            MyBaseProcesser.downloadRestart(id);
+        }
+    }
+    
+    function _pauseDownload(id){
+        MyDownloader.pause(id);
+    }
 	
     
 	return {
@@ -223,6 +256,15 @@ var MyDownload = (function () {
         },
 		cancel: function(id){
             _cancelDownload(id, true);
+        },
+        resume: function(id){
+            _resumeDownload(id);
+        },
+        restart: function(id){
+            _restartDownload(id);
+        },
+        pause: function(id){
+            _pauseDownload(id);
         },
 		metric: _metric,
 		info: function(){

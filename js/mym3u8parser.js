@@ -39,12 +39,15 @@ var MyM3u8Parser = function(_reqConfig, _content){
 		this.type = type;
 	}
     
-    var _RenditionItem = function(type, url, groupId, name, bandwidth){
+    var _RenditionItem = function(type, url, groupId, name, bandwidth, isDirect, language, kind){
 		this.type = type;
 		this.url = url;
         this.groupId = groupId;
         this.name = name;
         this.bandwidth = bandwidth;
+        this.isDirect = isDirect;
+        this.language = language;
+        this.kind = kind;
 	}
 	
 	var _myReader = new MyReader(_content);
@@ -186,10 +189,12 @@ var MyM3u8Parser = function(_reqConfig, _content){
 				} else if(tag == "EXT-X-MEDIA"){
                     const nameValue = _parseAttributeList(statement.substring("#EXT-X-MEDIA:".length));
                     const type = _parseAttributeValue(nameValue["TYPE"], 4);
-                    const uri = nameValue["URI"] ? _parseAttributeValue(nameValue["URI"], 4) : null;
+                    let uri = nameValue["URI"] ? _parseAttributeValue(nameValue["URI"], 4) : null;
                     const groupId = _parseAttributeValue(nameValue["GROUP-ID"], 4);
                     const name = _parseAttributeValue(nameValue["NAME"], 4);
                     bandwidth  = _parseAttributeValue(nameValue["X-BANDWIDTH"], 0);
+                    const language = _parseAttributeValue(nameValue["LANGUAGE"], 4);
+                    const kind = _parseAttributeValue(nameValue["X-KIND"], 4);
                     const requireUri = (type == "AUDIO" || type == "VIDEO" || type == "SUBTITLES");
                     if((requireUri && uri) || !requireUri){
                         let ren = renditionData[groupId];
@@ -202,7 +207,9 @@ var MyM3u8Parser = function(_reqConfig, _content){
                             renTypeItem = [];
                             ren[type] = renTypeItem;
                         }
-                        renTypeItem.push(new _RenditionItem(type, MyUtils.concatUrl(uri, _reqConfig.url), groupId, name, bandwidth));
+                        const isDirect = uri && uri.startsWith("direct://");
+                        uri = isDirect ? uri.substring("direct://".length) : uri;
+                        renTypeItem.push(new _RenditionItem(type, uri ? MyUtils.concatUrl(uri, _reqConfig.url) : null, groupId, name, bandwidth, isDirect, language, kind));
                     }
                 } else if(tag == "EXTINF"){
 					var commaIdx = statement.indexOf(",");

@@ -23,9 +23,14 @@ var MyBootstrap = (function () {
                 if(request.data.urlMaster){
                     mediaItem.url = request.data.urlMaster;
                     mediaItem.parseResult = null;
+                    mediaItem.requestData = null;
                 }
                 if(request.data.isDirect){
                     mediaItem.mediaType = "video";
+                }
+                if(request.data.mediaType == "subtitles"){
+                    mediaItem.mediaType = request.data.mediaType;
+                    mediaItem.kind = request.data.kind;
                 }
 				sendResponse({success: true});
 				_downloadMonitoredMedia({ mediaItem: mediaItem, mediaName: request.data.mediaName });
@@ -34,13 +39,12 @@ var MyBootstrap = (function () {
 				sendResponse({success: true});
 			}else if(request.action == "metricdownload"){
                 const metric = MyDownload.metric();
-                metric.downloadingTasksCustom = MyM3u8Processer.downloadMetric();
                 sendResponse(metric);
 			}else if(request.action == "canceldownload" || request.action == "download.cancel"){
 				MyDownload.cancel(request.data.id);
 				sendResponse({success: true});
-			}else if(request.action == "resumedownload"){
-				MyChromeDownload.resume(request.data.id);
+			}else if(request.action == "resumedownload" || request.action == "download.resume"){
+				MyDownload.resume(request.data.id);
 				sendResponse({success: true});
 			}else if(request.action == "getconfig"){
 				sendResponse(MyChromeConfig.view());
@@ -57,16 +61,14 @@ var MyBootstrap = (function () {
                     download: MyDownload.info(),
                     notification: MyChromeNotification.info(),
                     processer: MyM3u8Processer.info(),
+                    downloader: MyDownloader.info(),
                     matchingRule: MyUrlRuleMatcher.info()
                 });
-			}else if(request.action == "download.resume"){
-                MyM3u8Processer.downloadResume(request.data.id);
-                sendResponse({success: true});
 			}else if(request.action == "download.restart"){
-                MyM3u8Processer.downloadRestart(request.data.id);
+                MyDownload.restart(request.data.id);
                 sendResponse({success: true});
 			}else if(request.action == "download.pause"){
-                MyM3u8Processer.downloadPause(request.data.id);
+                MyDownload.pause(request.data.id);
                 sendResponse({success: true});
 			}else if(request.action == "contentscript.match"){
                 if(MyChromeMediaMonitor.isFull()){
@@ -122,7 +124,9 @@ var MyBootstrap = (function () {
 		};
 		if(data.mediaItem.mediaType == "m3u8"){
 			_downloadM3u8(toSend, data.mediaItem.parseResult);
-		}else{
+		}else if(data.mediaItem.mediaType == "subtitles"){
+            _downloadSubtitles(toSend, data.mediaItem.kind);
+        }else{
 			_downloadOther(toSend);
 		}
 	}
@@ -143,7 +147,6 @@ var MyBootstrap = (function () {
             });
 		}else{
 			_downloadM3u8CustomImpl(data, parseResult);
-
 		}
 	}
 	
@@ -262,6 +265,70 @@ var MyBootstrap = (function () {
 		});
 		
 	}
+    
+    
+    function _downloadSubtitles(data, kind){
+        const uniqueKey = MyUtils.genRandomString();
+		let downloadDirectory = chrome.i18n.getMessage("appName") + "-" + uniqueKey;
+        downloadDirectory = MyChromeConfig.get("newFolderAtRoot") == "0" ? "" : downloadDirectory + "/";
+        
+        MyBaseProcesser.saveDownloadContext({
+            id: uniqueKey,
+            completeCallback: completeCallback
+        });
+        
+        MyDownload.download({
+            tasks: [{
+                options: {
+                    url: data.reqConfig.url,
+                    filename: downloadDirectory + data.mediaName,
+                    method: data.reqConfig.method,
+                    headers: data.reqConfig.headers
+                },
+                target: "custom.base",
+                custom: { contextId: uniqueKey }
+            }],
+            showName: data.mediaName
+        }, null);
+        
+                
+        function completeCallback(buf, context){
+            let bytes = null;
+            if(MyChromeConfig.get("convertSubtitles") == "1"){
+                if(kind == "asr"){
+                    const content = new TextDecoder().decode(buf);
+                    const srt = new MyYoutubeTimedTextConverter().convertToSrt(content);
+                    if(srt){
+                        bytes = new TextEncoder().encode(srt);
+                    }
+                }
+            }
+            if(bytes == null){
+                bytes = new Uint8Array(buf);
+            }
+            
+            const blob = new Blob([ bytes ], {type: "application/octet-stream"});
+            const url = URL.createObjectURL(blob);
+            
+            MyDownload.download({
+                tasks: [{
+                    options: {
+                        url: url,
+                        filename: downloadDirectory + data.mediaName
+                    },
+                    target: "chrome"
+                }], 
+                showName: data.mediaName,
+                priority: true
+            }, function(){
+                URL.revokeObjectURL(url);
+                
+                if(MyChromeConfig.get("playSoundWhenComplete") == "1"){
+                    MyVideox.play( chrome.extension.getURL("complete.mp3") );
+                }
+            });
+        }
+    }
 	
 	
 	function _updateIcon(marked){

@@ -31,7 +31,10 @@ _data {
                     uri: "",
                     groupId: "",
                     name: "",
-                    bandwidth: 0    // optional
+                    bandwidth: 0,    // optional
+                    isDirect: false,    // optional
+                    language: "",   // optional
+                    kind: ""    // optional, subtitles: asr, srt
                 }
             ],
             rendition:  // optional
@@ -98,7 +101,10 @@ var MyM3u8Builder = function(_data){
             const item = _data.playList[r];
             for(let j=0; item.renditions != null && j < item.renditions.length; j++){
                 const rendition = item.renditions[j];
-                _write("#EXT-X-MEDIA:TYPE=" + rendition.type + ",GROUP-ID=" + _quotedString(rendition.groupId) + ",NAME=" + _quotedString(rendition.name) + ",URI=" + _quotedString(rendition.uri) + (rendition.bandwidth != null ? ",X-BANDWIDTH=" + rendition.bandwidth : "" ) );
+                _write("#EXT-X-MEDIA:TYPE=" + rendition.type + ",GROUP-ID=" + _quotedString(rendition.groupId) + ",NAME=" + _quotedString(rendition.name) + ",URI=" + _quotedString((rendition.isDirect ? "direct://" : "") + rendition.uri) + (rendition.bandwidth != null ? ",X-BANDWIDTH=" + rendition.bandwidth : "" ) 
+                    + (rendition.language ? ",LANGUAGE=" + _quotedString(rendition.language) : "")
+                    + (rendition.kind ? ",X-KIND=" + _quotedString(rendition.kind) : "") 
+                );
             }
             let renditionAttr = "";
             for(let k=0; item.rendition != null && k < item.rendition.length; k++){

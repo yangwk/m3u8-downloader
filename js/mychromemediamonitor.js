@@ -18,6 +18,7 @@ var MyChromeMediaMonitor = (function () {
         this.isMasterPlaylist = null;
         this.immutableInfo = false;
         this.requestData = null;
+        this.kind = null;   // reserve
         
         _MediaItem.prototype.buildInfo = function(result){
             if(this.immutableInfo){
@@ -65,7 +66,7 @@ var MyChromeMediaMonitor = (function () {
 				return item;
 			},
             element: function(identifier){
-                return _map.get(identifier);
+                return _clone( _map.get(identifier) );
             },
             contains: function(identifier){
                 return _map.has(identifier);

@@ -50,7 +50,7 @@ var MyXMLHttpRequest = function (_settings) {
         if(_loadDelta.previous != null){
             const elapsed = Math.abs(_loadDelta.current.timeStamp - _loadDelta.previous.timeStamp);
             const bytes = Math.abs(_loadDelta.current.loaded - _loadDelta.previous.loaded);
-            speedBS = (elapsed == 0) ? bytes * 1000 : Math.floor(bytes / elapsed * 1000);
+            speedBS = (elapsed == 0) ? bytes : Math.floor(bytes / elapsed * 1000);
             if(1024 <= speedBS){
                 speed = Math.floor(speedBS / 1024);
                 speedUnit = "KB/s";

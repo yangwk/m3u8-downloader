@@ -7,13 +7,20 @@ var MyYoutubeTimedTextConverter = function(){
         this.text = text;
     }
     
-    function _srt(content){
-        const result = [];
+    function _srtJson(content){
         if(!content){
-            return result;
+            return null;
         }
-        const data = JSON.parse(content);
+        let data = null;
+        try{
+            data = JSON.parse(content);
+        }catch(e){
+        }
+        if(! data){
+            return null;
+        }
         
+        const result = [];
         let sequence = 0;
         for(let r=0; data.events != null && r< data.events.length; r++) {
             const item = data.events[r];
@@ -44,6 +51,44 @@ var MyYoutubeTimedTextConverter = function(){
         return _formatSrt(result);
     }
     
+    function _srtXml(content){
+        if(!content){
+            return null;
+        }
+        let data = null;
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(content, "text/xml");
+        const errorNode = doc.querySelector("parsererror");
+        if (errorNode) {
+            return null;
+        }
+        
+        const result = [];
+        let sequence = 0;
+        doc.querySelectorAll("transcript text").forEach(function(dom){
+            const start = dom.getAttribute("start");
+            const dur = dom.getAttribute("dur");
+            let text = dom.textContent;
+            if(start == null || dur == null || ! text){
+                return;
+            }
+            // handle character reference
+            const element = new DOMParser().parseFromString("<text>"+ text +"</text>", "text/xml");
+            text = element.querySelector("text").textContent;
+            
+            const appearMs = Number((parseFloat(start) * 1000).toFixed(0));
+            result.push(new _SrtItem(
+                ++ sequence,
+                appearMs,
+                appearMs + Number((parseFloat(dur) * 1000).toFixed(0)),
+                text
+            ));
+        });
+        
+        return _formatSrt(result);
+    }
+    
+    
     function _formatSrt(result){
         const _buffer = [];
         for(let r in result){
@@ -57,7 +102,7 @@ var MyYoutubeTimedTextConverter = function(){
     }
     
 	this.convertToSrt = function(content){
-        return _srt(content);
+        return _srtJson(content) || _srtXml(content);
 	};
 
 }
