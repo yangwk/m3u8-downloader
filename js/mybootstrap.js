@@ -60,7 +60,7 @@ var MyBootstrap = (function () {
                     videox: MyVideox.info(),
                     download: MyDownload.info(),
                     notification: MyChromeNotification.info(),
-                    processer: MyM3u8Processer.info(),
+                    processer: MyBaseProcesser.info(),
                     downloader: MyDownloader.info(),
                     matchingRule: MyUrlRuleMatcher.info()
                 });
@@ -158,7 +158,7 @@ var MyBootstrap = (function () {
         const uniqueKey = MyUtils.genRandomString();
 		const downloadDirectory = chrome.i18n.getMessage("appName") + "-" + uniqueKey;
         
-        MyM3u8Processer.saveDownloadContext({
+        MyBaseProcesser.saveDownloadContext({
             id: uniqueKey,
             downloadDirectory: downloadDirectory,
             parseResult: parseResult,
@@ -178,7 +178,8 @@ var MyBootstrap = (function () {
                 completedCnt: 0
             },
             mediaName: data.mediaName,
-            mergeCallback: mergeCallback
+            mergeCallback: mergeCallback,
+            completeCallback: MyM3u8Processer.completeCallback
         });
         stepDownloadKey();
         
@@ -227,9 +228,7 @@ var MyBootstrap = (function () {
         }
         
         function mergeCallback(){
-            if(MyChromeConfig.get("playSoundWhenComplete") == "1"){
-                MyVideox.play( chrome.extension.getURL("complete.mp3") );
-            }
+            MyVideox.playCompleteSound();
         }
         
     }
@@ -259,9 +258,7 @@ var MyBootstrap = (function () {
             }], 
             showName: data.mediaName + suffix
         }, function(){
-			if(MyChromeConfig.get("playSoundWhenComplete") == "1"){
-				MyVideox.play( chrome.extension.getURL("complete.mp3") );
-			}
+			MyVideox.playCompleteSound();
 		});
 		
 	}
@@ -285,7 +282,7 @@ var MyBootstrap = (function () {
                     method: data.reqConfig.method,
                     headers: data.reqConfig.headers
                 },
-                target: "custom.base",
+                target: "custom",
                 custom: { contextId: uniqueKey }
             }],
             showName: data.mediaName
@@ -323,10 +320,10 @@ var MyBootstrap = (function () {
             }, function(){
                 URL.revokeObjectURL(url);
                 
-                if(MyChromeConfig.get("playSoundWhenComplete") == "1"){
-                    MyVideox.play( chrome.extension.getURL("complete.mp3") );
-                }
+                MyVideox.playCompleteSound();
             });
+            
+            MyBaseProcesser.deleteDownloadContext(context);
         }
     }
 	

@@ -44,6 +44,9 @@ var MyXMLHttpRequest = function (_settings) {
         if(_loadDelta.current == null){
             _loadDelta.current = new _LoadDeltaItem(0, 0, 0, false);
         }
+        if(_loadDelta.current.state == "interrupted" || _loadDelta.current.state == "complete"){
+            return ;
+        }
         _loadDelta.current.state = newState;
         
         let percent = 0 , speed = 0 , speedUnit = "B/s" , speedBS = 0 , remainSec = -1;
@@ -79,14 +82,13 @@ var MyXMLHttpRequest = function (_settings) {
 	}
     
 	function _fireError(fn){
+        
+        _fireChanged("interrupted");
+        
 		if(! _errored){
 			_errored = true;
             
-            try{
-                _fireChanged("interrupted");
-            }finally{
-                fn();
-            }
+            fn();
 		}
 	}
     

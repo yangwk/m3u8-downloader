@@ -191,8 +191,6 @@ var MyDownload = (function () {
         if(task.target == "chrome"){
             MyChromeDownload.downloadTask(task);
         }else if(task.target == "custom"){
-            MyM3u8Processer.downloadDownload(task);
-        }else if(task.target == "custom.base"){
             MyBaseProcesser.downloadDownload(task);
         }
 	}
@@ -205,38 +203,42 @@ var MyDownload = (function () {
             if(recurse){
                 if (control != null) {
                     _downloadBatchHolder.clearWhenInterrupted( control.batchName );
+                    _downloadTask();
                 }
             }
         };
         
         const control = _downloadingHolder.get(id);
+        if(control == null){
+            return ;
+        }
         if(control.target == "chrome"){
             MyChromeDownload.cancel(id, callback);
         }else if(control.target == "custom"){
-            MyM3u8Processer.downloadCancel(id);
-            callback();
-        }else if(control.target == "custom.base"){
             MyBaseProcesser.downloadCancel(id);
             callback();
         }
+        
 	}
     
     function _resumeDownload(id){
         const control = _downloadingHolder.get(id);
+        if(control == null){
+            return ;
+        }
         if(control.target == "chrome"){
             MyChromeDownload.resume(id);
         }else if(control.target == "custom"){
-            MyM3u8Processer.downloadResume(id);
-        }else if(control.target == "custom.base"){
             MyBaseProcesser.downloadResume(id);
         }
     }
     
     function _restartDownload(id){
         const control = _downloadingHolder.get(id);
+        if(control == null){
+            return ;
+        }
         if(control.target == "custom"){
-            MyM3u8Processer.downloadRestart(id);
-        }else if(control.target == "custom.base"){
             MyBaseProcesser.downloadRestart(id);
         }
     }

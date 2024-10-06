@@ -98,7 +98,8 @@ var MyChromeM3u8Processer = (function () {
                 },
                 target: "chrome"
             }], 
-            showName: fileName
+            showName: fileName,
+            priority: true
         }, function(){
             URL.revokeObjectURL(url);
             
@@ -111,9 +112,7 @@ var MyChromeM3u8Processer = (function () {
 	
     
 	function _openM3u8Processer(data, processerId){
-        if(MyChromeConfig.get("playSoundWhenComplete") == "1"){
-            MyVideox.play( chrome.extension.getURL("complete.mp3") );
-        }
+        MyVideox.playCompleteSound();
         
         MyChromeDownload.open(processerId, {
             title: data.mediaName,

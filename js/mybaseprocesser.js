@@ -36,7 +36,7 @@ var MyBaseProcesser = (function () {
             if(context == null){
                 return ;
             }
-            context.completeCallback && context.completeCallback(buf, context);
+            context.completeCallback && context.completeCallback(buf, context, data);
         }).catch((e) => {
             _cache.delete(data.attributes.contextId);
         });
@@ -81,8 +81,12 @@ var MyBaseProcesser = (function () {
         return [_cache.size];
     }
     
-    function _saveDownloadContext(data){
-        _cache.set(data.id, data);
+    function _saveDownloadContext(context){
+        _cache.set(context.id, context);
+    }
+    
+    function _deleteDownloadContext(context){
+        _cache.delete(context.id);
     }
     
     return {
@@ -91,7 +95,8 @@ var MyBaseProcesser = (function () {
         downloadRestart: _downloadRestart,
         downloadCancel: _downloadCancel,
         info: _info,
-        saveDownloadContext: _saveDownloadContext
+        saveDownloadContext: _saveDownloadContext,
+        deleteDownloadContext: _deleteDownloadContext
     };
     
 })();

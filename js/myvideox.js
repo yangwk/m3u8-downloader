@@ -126,7 +126,12 @@ var MyVideox = (function () {
 		},
 		info: function(){
 			return [_videoCount];
-		}
+		},
+        playCompleteSound: function(){
+            if(MyChromeConfig.get("playSoundWhenComplete") == "1"){
+                this.play( chrome.extension.getURL("complete.mp3") );
+            }
+        }
     };
 
 })();
