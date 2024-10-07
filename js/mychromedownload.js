@@ -31,7 +31,7 @@ var MyChromeDownload = (function () {
 		if (control == null) {
 			return;
 		}
-		MyDownload.downloadingHolder.delete(id);
+		
 		MyDownload.downloadBatchHolder.clearWhenInterrupted( control.batchName );
 	});
 	

@@ -120,6 +120,11 @@ var MyUtils = (function(){
 			var second = tail % 60;
 			return this.padStart(hour.toString(), 2, "0") + ":" + this.padStart(minute.toString(), 2, "0") + ":" + this.padStart(second.toString(), 2, "0");
 		},
+		formatHmsMs: function(ms){
+            var second = Math.trunc(ms / 1000);
+            var millisecond = ms % 1000;
+			return this.formatHms(second) + "," + this.padStart(millisecond.toString(), 3, "0");
+		},
 		getEntityLength: function(contentRange, contentLength){
 			if(contentRange){
 				var sizeStr = contentRange.substring( contentRange.lastIndexOf("/")+1).trim();
@@ -241,6 +246,15 @@ var MyUtils = (function(){
                 return mime.substring(0, idx == -1 ? mime.length : idx);
             }
             return null;
+        },
+        buildMediaName: function(mediaName, url, suffix){
+            if(! mediaName){
+                mediaName = ( url && this.getLastPathName(url) ) || this.genRandomString();
+                if(suffix){
+                    mediaName = this.trimSuffix(mediaName) + "." + suffix;
+                }
+            }
+            return this.escapeFileName(mediaName);
         }
     };
 })();

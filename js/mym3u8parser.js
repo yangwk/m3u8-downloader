@@ -39,11 +39,15 @@ var MyM3u8Parser = function(_reqConfig, _content){
 		this.type = type;
 	}
     
-    var _RenditionItem = function(type, url, groupId, name){
+    var _RenditionItem = function(type, url, groupId, name, bandwidth, isDirect, language, kind){
 		this.type = type;
 		this.url = url;
         this.groupId = groupId;
         this.name = name;
+        this.bandwidth = bandwidth;
+        this.isDirect = isDirect;
+        this.language = language;
+        this.kind = kind;
 	}
 	
 	var _myReader = new MyReader(_content);
@@ -185,9 +189,12 @@ var MyM3u8Parser = function(_reqConfig, _content){
 				} else if(tag == "EXT-X-MEDIA"){
                     const nameValue = _parseAttributeList(statement.substring("#EXT-X-MEDIA:".length));
                     const type = _parseAttributeValue(nameValue["TYPE"], 4);
-                    const uri = nameValue["URI"] ? _parseAttributeValue(nameValue["URI"], 4) : null;
+                    let uri = nameValue["URI"] ? _parseAttributeValue(nameValue["URI"], 4) : null;
                     const groupId = _parseAttributeValue(nameValue["GROUP-ID"], 4);
                     const name = _parseAttributeValue(nameValue["NAME"], 4);
+                    bandwidth  = _parseAttributeValue(nameValue["X-BANDWIDTH"], 0);
+                    const language = _parseAttributeValue(nameValue["LANGUAGE"], 4);
+                    const kind = _parseAttributeValue(nameValue["X-KIND"], 4);
                     const requireUri = (type == "AUDIO" || type == "VIDEO" || type == "SUBTITLES");
                     if((requireUri && uri) || !requireUri){
                         let ren = renditionData[groupId];
@@ -200,7 +207,9 @@ var MyM3u8Parser = function(_reqConfig, _content){
                             renTypeItem = [];
                             ren[type] = renTypeItem;
                         }
-                        renTypeItem.push(new _RenditionItem(type, MyUtils.concatUrl(uri, _reqConfig.url), groupId, name));
+                        const isDirect = uri && uri.startsWith("direct://");
+                        uri = isDirect ? uri.substring("direct://".length) : uri;
+                        renTypeItem.push(new _RenditionItem(type, uri ? MyUtils.concatUrl(uri, _reqConfig.url) : null, groupId, name, bandwidth, isDirect, language, kind));
                     }
                 } else if(tag == "EXTINF"){
 					var commaIdx = statement.indexOf(",");
@@ -234,7 +243,7 @@ var MyM3u8Parser = function(_reqConfig, _content){
                 if(isMasterPlaylist){
                     const isDirect = contentURI.startsWith("direct://");
                     contentURI = isDirect ? contentURI.substring("direct://".length) : contentURI;
-                    playList.push( new _MasterPlayItem(bandwidth, mediaType, MyUtils.concatUrl(contentURI, _reqConfig.url), isDirect, renditionGroups) );
+                    playList.push( new _MasterPlayItem(bandwidth, mediaType, MyUtils.concatUrl(contentURI, _reqConfig.url), isDirect, _sortRenditionGroup(renditionGroups)) );
                     continue;
                 }
                 let keyIV = null;
@@ -260,7 +269,7 @@ var MyM3u8Parser = function(_reqConfig, _content){
             keyData: keyData,
             isMasterPlaylist: isMasterPlaylist,
             suffix: segmentType == "mpegts" ? "mpeg" : "mp4",
-            renditionData: renditionData
+            renditionData: _sortRendition(renditionData)
 		};
 	}
 	
@@ -271,6 +280,31 @@ var MyM3u8Parser = function(_reqConfig, _content){
 			return num != 0 ? num : b.bandwidth - a.bandwidth;
 		});
         return playList;
+	}
+    
+	function _sortRenditionGroup(list){
+		list.sort(function(a, b){
+            return b.type.localeCompare(a.type);
+		});
+        return list;
+	}
+    
+	function _sortRendition(data){
+        const sortFunc = function(list){
+            list.sort(function(a, b){
+                const num = b.type.localeCompare(a.type);
+                return num != 0 ? num : (b.bandwidth || 0) - (a.bandwidth || 0);
+            });
+        }
+        
+        for(let groupId in data){
+            const ren = data[groupId];
+            for(let type in ren){
+                sortFunc(ren[type]);
+            }
+        }
+        
+        return data;
 	}
     
     function _handleDiscontinuity(playList){

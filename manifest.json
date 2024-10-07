@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "__MSG_appName__",
     "description": "__MSG_appDescription__",
-    "version": "3.2.0",
+    "version": "3.3.0",
     "default_locale": "en",
     "homepage_url": "https://github.com/yangwk/m3u8-downloader",
     "icons": {
@@ -23,7 +23,8 @@
             "js/mydownloader.js", "js/mydownload.js", 
             "js/aes-js.js", "js/mym3u8processer.js", 
             "js/mychromem3u8processer.js", "js/mymp4racodecs.js",
-            "js/mym3u8builder.js", "js/mybootstrap.js"],
+            "js/mym3u8builder.js", "js/myyoutubetimedtextconverter.js", 
+            "js/mybaseprocesser.js", "js/mybootstrap.js"],
         "persistent": true
     },
     "content_scripts": [

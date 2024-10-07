@@ -23,7 +23,27 @@ _data {
             bandwidth: 0,
             codecs: "",  // optional
             isDirect: false,    // optional
-            duration: 0 // optional
+            duration: 0, // optional
+            renditions: // optional
+            [
+                {
+                    type: "",    // "AUDIO", "VIDEO", "SUBTITLES"
+                    uri: "",
+                    groupId: "",
+                    name: "",
+                    bandwidth: 0,    // optional
+                    isDirect: false,    // optional
+                    language: "",   // optional
+                    kind: ""    // optional, subtitles: asr, srt
+                }
+            ],
+            rendition:  // optional
+            [
+                {
+                    groupId: "",
+                    type: ""
+                }
+            ]
         }
     ]
 }
@@ -39,7 +59,7 @@ var MyM3u8Builder = function(_data){
         return _buffer.join("\n");
     }
     
-    function _quotedstring(s){
+    function _quotedString(s){
         return '"' + s + '"';
     }
     
@@ -56,12 +76,12 @@ var MyM3u8Builder = function(_data){
         for(let r in _data.playList){
             const item = _data.playList[r];
             if(item.key){
-                _write("#EXT-X-KEY:METHOD=" + item.key.method + (item.uri ? ",URI=" + _quotedstring(item.uri) : "") + (item.key.iv ? ",IV=" + item.key.iv : "") );
+                _write("#EXT-X-KEY:METHOD=" + item.key.method + (item.uri ? ",URI=" + _quotedString(item.uri) : "") + (item.key.iv ? ",IV=" + item.key.iv : "") );
                 continue;
             }
             
             if(item.isInitSec){
-                _write("#EXT-X-MAP:URI=" + _quotedstring(item.uri));
+                _write("#EXT-X-MAP:URI=" + _quotedString(item.uri));
             }else{
                 _write("#EXTINF:" + item.duration + ",");
                 _write(item.uri);
@@ -79,7 +99,19 @@ var MyM3u8Builder = function(_data){
         _buildBasic();
         for(let r in _data.playList){
             const item = _data.playList[r];
-            _write("#EXT-X-STREAM-INF:BANDWIDTH=" + item.bandwidth + (item.codecs ? ",CODECS=" + _quotedstring(item.codecs) : "") + (item.duration ? ",X-DIRECT-DURATION=" + item.duration : "") );
+            for(let j=0; item.renditions != null && j < item.renditions.length; j++){
+                const rendition = item.renditions[j];
+                _write("#EXT-X-MEDIA:TYPE=" + rendition.type + ",GROUP-ID=" + _quotedString(rendition.groupId) + ",NAME=" + _quotedString(rendition.name) + ",URI=" + _quotedString((rendition.isDirect ? "direct://" : "") + rendition.uri) + (rendition.bandwidth != null ? ",X-BANDWIDTH=" + rendition.bandwidth : "" ) 
+                    + (rendition.language ? ",LANGUAGE=" + _quotedString(rendition.language) : "")
+                    + (rendition.kind ? ",X-KIND=" + _quotedString(rendition.kind) : "") 
+                );
+            }
+            let renditionAttr = "";
+            for(let k=0; item.rendition != null && k < item.rendition.length; k++){
+                const rendition = item.rendition[k];
+                renditionAttr += ( "," + rendition.type + "=" + _quotedString(rendition.groupId) );
+            }
+            _write("#EXT-X-STREAM-INF:BANDWIDTH=" + item.bandwidth + (item.codecs ? ",CODECS=" + _quotedString(item.codecs) : "") + (item.duration ? ",X-DIRECT-DURATION=" + item.duration : "") + renditionAttr );
             _write((item.isDirect ? "direct://" : "") + item.uri);
         }
         return _flush();

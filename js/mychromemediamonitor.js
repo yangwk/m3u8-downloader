@@ -1,5 +1,10 @@
 var MyChromeMediaMonitor = (function () {
     
+    var _TabItem = function(title, favIconUrl){
+        this.title = title;
+        this.favIconUrl = favIconUrl;
+    };
+    
 	var _MediaItem = function(identifier, url, tabItem, method, mediaType, mime, length){
         this.identifier = identifier;
         this.url = url;
@@ -13,6 +18,7 @@ var MyChromeMediaMonitor = (function () {
         this.isMasterPlaylist = null;
         this.immutableInfo = false;
         this.requestData = null;
+        this.kind = null;   // reserve
         
         _MediaItem.prototype.buildInfo = function(result){
             if(this.immutableInfo){
@@ -421,10 +427,10 @@ var MyChromeMediaMonitor = (function () {
             if(MyChromeConfig.get("showTab") == "1"){
                 chrome.tabs.get(details.tabId, function(tab){
                     if(tab != null){
-                        mediaItem.tabItem = {
-                            title: tab.title,
-                            favIconUrl: tab.favIconUrl
-                        };
+                        mediaItem.tabItem = new _TabItem(
+                            tab.title,
+                            tab.favIconUrl
+                        );
                     }
                     if(MyChromeConfig.get("showDuration") == "1"){
                         _getMediaInfo(mediaItem);

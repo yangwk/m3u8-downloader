@@ -187,5 +187,8 @@
     },
     "settingsDownloaderPageSize": {
         "message": "下载器的页大小（byte）"
+    },
+    "settingsConvertSubtitles": {
+        "message": "转换字幕格式"
     }
 }

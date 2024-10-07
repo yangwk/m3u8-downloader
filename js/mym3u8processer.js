@@ -1,75 +1,35 @@
 var MyM3u8Processer = (function () {
 
-    const _cache = new Map();
+    function _completeCallback(buf, context, data){
     
-    function _handleStateCallback(data){
-        if(! (data.state == "interrupted" || data.state == "complete")){
-            return ;
-        }
-        
-        const control = MyDownload.downloadingHolder.get(data.id);
-        if (control == null) {
-            return;
-        }
-        if (data.state == "complete") {
-            MyDownload.downloadingHolder.delete(data.id);
-            MyDownload.downloadBatchHolder.complete(control.batchName, data.id);
-        }
-    
-        MyDownload.downloadTask();
-    }
-
-    function _downloadCallback(data){
-        _handleStateCallback(data);
-        
-        if(data.state != "complete"){
-            return;
-        }
-        const content = MyDownloader.getDownloadedContent(data.id);
-        if(content.length == 0){
-            _cache.delete(data.attributes.contextId);
-            return ;
-        }
-        const blob = new Blob(content);
-        MyUtils.readAsArrayBuffer(blob).then((buf) => {
-            if(data.attributes.phase == "key"){
-                const context = _cache.get( data.attributes.contextId );
-                if(context == null){
-                    return ;
-                }
-                context.parseResult.keyData.get(data.attributes.keyRef).content = _decodeKey(buf);
-            }else if(data.attributes.phase == "ts"){
-                const context = _cache.get( data.attributes.contextId );
-                if(context == null){
-                    return ;
-                }
-                const playItem = context.parseResult.playList[data.attributes.index];
-                playItem.content = _decodeContent(context.parseResult.keyData, playItem, buf);
-                context.completedCnt ++;
-                
-                context.total += playItem.content.byteLength;
-                const useChromeM3u8 = context.total > context.chromeM3u8.threshold;
-                if(useChromeM3u8){
-                    if(! context.chromeM3u8.basic){
-                        context.chromeM3u8.basic = true;
-                        MyChromeM3u8Processer.downloadM3u8Basic(context.chromeM3u8.data, context.parseResult, function(processerId){
-                            context.chromeM3u8.processerId = processerId;
-                            _doChromeM3u8(context);
-                        });
-                    }
-                    if(context.chromeM3u8.basic && context.chromeM3u8.processerId != null){
+        if(data.attributes.phase == "key"){
+            context.parseResult.keyData.get(data.attributes.keyRef).content = _decodeKey(buf);
+        }else if(data.attributes.phase == "ts"){
+            const playItem = context.parseResult.playList[data.attributes.index];
+            playItem.content = _decodeContent(context.parseResult.keyData, playItem, buf);
+            context.completedCnt ++;
+            
+            context.total += playItem.content.byteLength;
+            const useChromeM3u8 = context.total > context.chromeM3u8.threshold;
+            if(useChromeM3u8){
+                if(! context.chromeM3u8.basic){
+                    context.chromeM3u8.basic = true;
+                    MyChromeM3u8Processer.downloadM3u8Basic(context.chromeM3u8.data, context.parseResult, function(processerId){
+                        context.chromeM3u8.processerId = processerId;
                         _doChromeM3u8(context);
-                    }
+                    });
                 }
-                
-                if(context.completedCnt >= context.parseResult.playList.length){
-                    _cache.delete(context.id);
-                    ! useChromeM3u8 ? _mergeContent(context) : null;
+                if(context.chromeM3u8.basic && context.chromeM3u8.processerId != null){
+                    _doChromeM3u8(context);
                 }
             }
-        }).catch((e) => {
-            _cache.delete(data.attributes.contextId);
-        });
+            
+            if(context.completedCnt >= context.parseResult.playList.length){
+                MyBaseProcesser.deleteDownloadContext(context);
+                ! useChromeM3u8 ? _mergeContent(context) : null;
+            }
+        }
+
     }
     
     function _decodeKey(buf){
@@ -104,14 +64,10 @@ var MyM3u8Processer = (function () {
                 allBytes.push(context.parseResult.playList[p].content);
             }
             
-            let suffix = MyUtils.getSuffix(context.mediaName, false);
-            if(suffix && [ "m3u8", "m3u" ].includes(suffix.toLowerCase())){
-                suffix = "";
-            }
-            suffix = suffix || context.parseResult.suffix;
-            let fileName = context.downloadDirectory + "/" + MyUtils.trimSuffix(context.mediaName) + (shouldSplit ? "-" + (++mainIndex) : "") + "."+suffix;
+            const suffix = MyUtils.getSuffix(context.mediaName, false);
+            let fileName = context.downloadDirectory + "/" + MyUtils.trimSuffix(context.mediaName) + (shouldSplit ? "-" + (++mainIndex) : "") + (suffix ? "."+suffix : "");
             if(MyChromeConfig.get("newFolderAtRoot") == "0" && ! shouldSplit){
-                fileName = MyUtils.trimSuffix(context.mediaName) + "."+suffix;
+                fileName = context.mediaName;
             }
             
             _mergeContentImpl(allBytes, fileName, function(){
@@ -166,67 +122,8 @@ var MyM3u8Processer = (function () {
     }
     
     
-    function _downloadDownload(task){
-        MyDownload.downloadingHolder.actionIncr();
-        const id = _downloadDownloadImpl(task);
-        if(MyDownload.downloadBatchHolder.saveId(task.control.batchName, id)){
-            MyDownload.downloadingHolder.put(id, task.control);
-            MyDownload.downloadTask();
-        }
-    }
-    
-    function _downloadDownloadImpl(task){
-        const options = {
-            url: task.options.url,
-            method: task.options.method.toUpperCase(),
-            attributes: task.custom,
-            rangeBoundary: MyChromeConfig.get("downloaderPageSize")
-        };
-        return MyDownloader.download(options, _downloadCallback);
-    }
-    
-    function _downloadResume(id){
-        MyDownloader.resume(id, _downloadCallback);
-    }
-    
-    function _downloadRestart(id){
-        MyDownloader.restart(id, _downloadCallback);
-    }
-    
-    function _downloadPause(id){
-        MyDownloader.pause(id);
-    }
-    
-    function _downloadCancel(id){
-        const data = MyDownloader.cancel(id);
-        if(data != null){
-            _cache.delete(data.attributes.contextId);
-        }
-    }
-    
-    function _downloadMetric(){
-        return MyDownloader.metric();
-    }
-    
-    function _info(){
-        const info = MyDownloader.info();
-        info.push(_cache.size);
-        return info;
-    }
-    
-    function _saveDownloadContext(data){
-        _cache.set(data.id, data);
-    }
-    
     return {
-        downloadDownload: _downloadDownload,
-        downloadResume: _downloadResume,
-        downloadRestart: _downloadRestart,
-        downloadPause: _downloadPause,
-        downloadCancel: _downloadCancel,
-        downloadMetric: _downloadMetric,
-        info: _info,
-        saveDownloadContext: _saveDownloadContext
+        completeCallback: _completeCallback
     };
     
 })();

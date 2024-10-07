@@ -62,11 +62,12 @@ var MyVideox = (function () {
 
             _video.onended = function () {
                 _destroy();
+                _fireCallback(null);
             }
 
             _parent.appendChild(_video);
 			_video.play().catch((e) => {
-                // ignore
+                
             });
         }
 
@@ -121,12 +122,20 @@ var MyVideox = (function () {
 			}
         },
 		play: function(url){
-			var mv = new _MyVideo(document.body, function() {});
+            _videoCount ++;
+			var mv = new _MyVideo(document.body, function() {
+                _videoCount --;
+            });
 			mv.play(url);
 		},
 		info: function(){
 			return [_videoCount];
-		}
+		},
+        playCompleteSound: function(){
+            if(MyChromeConfig.get("playSoundWhenComplete") == "1"){
+                this.play( chrome.extension.getURL("complete.mp3") );
+            }
+        }
     };
 
 })();

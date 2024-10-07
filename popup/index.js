@@ -140,8 +140,11 @@ document.addEventListener("DOMContentLoaded", function () {
                                         const renItem = renTypeItem[k];
                                         const thisMediaType = renItem.type.toLowerCase();
                                         const opt2 = document.createElement("option");
-                                        opt2.value = renItem.url;
-                                        opt2.text = "[" + thisMediaType + " - " + renItem.name + "]";
+                                        opt2.value = renItem.url || "";
+                                        opt2.text = "[" + thisMediaType + (renItem.bandwidth != null ? " - " + MyUtils.formatBandwidth(renItem.bandwidth) : "") + " - " + renItem.name + "]";
+                                        opt2.dataset["direct"] = renItem.isDirect ? String(renItem.isDirect) : "";
+                                        opt2.dataset["kind"] = renItem.kind || "";
+                                        opt2.dataset["mediaType"] = thisMediaType;
                                         spl.appendChild(opt2);
                                         mtSet.add( thisMediaType );
                                     }
@@ -194,16 +197,17 @@ document.addEventListener("DOMContentLoaded", function () {
 			e.stopPropagation();
             var identifier = this.dataset["identifier"];
 			
-            let urlMaster = null, destroy = true, isDirect = false;
+            let urlMaster = null, destroy = true, isDirect = false, kind = null, mediaType = null;
             if(this.dataset["playlistId"]){
                 let spl = document.getElementById(this.dataset["playlistId"]);
                 urlMaster = spl[spl.selectedIndex].value;
                 destroy = spl.dataset["destroy"] ? true : false;
                 isDirect = spl[spl.selectedIndex].dataset["direct"] ? true : false;
+                kind = spl[spl.selectedIndex].dataset["kind"];
+                mediaType = spl[spl.selectedIndex].dataset["mediaType"];
             }
             
             var mediaName = document.getElementById(this.dataset["nameId"]).value.trim();
-			mediaName = mediaName || MyUtils.getLastPathName( urlMaster || this.dataset["url"] ) || MyUtils.genRandomString();
 			
             
 			chrome.runtime.sendMessage({
@@ -213,7 +217,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     destroy: destroy,
                     urlMaster: urlMaster,
                     isDirect: isDirect,
-					mediaName: MyUtils.escapeFileName(mediaName)
+					mediaName: mediaName,
+                    kind: kind,
+                    mediaType: mediaType
 				}
 			}, function(response){
 				destroy && loadMonitoredMedia();
@@ -239,7 +245,6 @@ document.addEventListener("DOMContentLoaded", function () {
 			}
             
 			var mediaName = document.getElementById("manual-name").value.trim();
-			mediaName = mediaName || MyUtils.getLastPathName(url) || MyUtils.genRandomString();
 			var mediaType = document.getElementById("manual-m3u8").checked ? "m3u8" : "video";
 			
             var methodDom = document.getElementById("manual-method");
@@ -253,7 +258,7 @@ document.addEventListener("DOMContentLoaded", function () {
 					url: url,
 					method: method,
                     headers: MyUtils.parseHeaders(headersContent),
-					mediaName: MyUtils.escapeFileName(mediaName),
+					mediaName: mediaName,
 					mediaType: mediaType
 				}
 			}, function(response){
@@ -264,6 +269,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		document.getElementById("manual-clean").onclick = function(e){
 			e.stopPropagation();
 			document.getElementById("manual-url").value = "";
+            document.getElementById("manual-headers").value = "";
 			document.getElementById("manual-name").value = "";
 		}
 		
@@ -540,6 +546,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 document.getElementById("settings-sd").checked = data.splitDiscontinuity == "1";
                 document.getElementById("settings-prothr").value = data.processerThreshold;
                 document.getElementById("settings-dps").value = data.downloaderPageSize;
+                document.getElementById("settings-cs").checked = data.convertSubtitles == "1";
                 document.getElementById("settings-mrenable").checked = data.matchingRuleEnable == "1";
                 document.getElementById("settings-mr").value = data.matchingRule;
 			});
@@ -581,6 +588,7 @@ document.addEventListener("DOMContentLoaded", function () {
             data.splitDiscontinuity = document.getElementById("settings-sd").checked ? "1" : "0";
             data.processerThreshold = parseInt(document.getElementById("settings-prothr").value, 10);
             data.downloaderPageSize = Math.min( Math.max( parseInt(document.getElementById("settings-dps").value, 10), 1024 ), 1024 * 1024 * 1024 );
+            data.convertSubtitles = document.getElementById("settings-cs").checked ? "1" : "0";
             data.matchingRuleEnable = document.getElementById("settings-mrenable").checked ? "1" : "0";
             data.matchingRule = document.getElementById("settings-mr").value.trim();
 			

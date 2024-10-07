@@ -44,13 +44,16 @@ var MyXMLHttpRequest = function (_settings) {
         if(_loadDelta.current == null){
             _loadDelta.current = new _LoadDeltaItem(0, 0, 0, false);
         }
+        if(_loadDelta.current.state == "interrupted" || _loadDelta.current.state == "complete"){
+            return ;
+        }
         _loadDelta.current.state = newState;
         
         let percent = 0 , speed = 0 , speedUnit = "B/s" , speedBS = 0 , remainSec = -1;
         if(_loadDelta.previous != null){
             const elapsed = Math.abs(_loadDelta.current.timeStamp - _loadDelta.previous.timeStamp);
             const bytes = Math.abs(_loadDelta.current.loaded - _loadDelta.previous.loaded);
-            speedBS = (elapsed == 0) ? bytes * 1000 : Math.floor(bytes / elapsed * 1000);
+            speedBS = (elapsed == 0) ? bytes : Math.floor(bytes / elapsed * 1000);
             if(1024 <= speedBS){
                 speed = Math.floor(speedBS / 1024);
                 speedUnit = "KB/s";
@@ -79,14 +82,13 @@ var MyXMLHttpRequest = function (_settings) {
 	}
     
 	function _fireError(fn){
+        
+        _fireChanged("interrupted");
+        
 		if(! _errored){
 			_errored = true;
             
-            try{
-                _fireChanged("interrupted");
-            }finally{
-                fn();
-            }
+            fn();
 		}
 	}
     
