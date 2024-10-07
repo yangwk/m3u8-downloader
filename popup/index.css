@@ -199,12 +199,12 @@ select {
 	cursor: default !important;
 }
 .download-progress-outer  {
-    background-color: #8080803d; 
+    background-color: #DFDEDF; 
     width: 100%; 
     height: 15px;
 }
 .download-progress-inner  {
-    background-color: blue;
+    background-color: #1A73E8;
     height: 100%;
 }
 span {

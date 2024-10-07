@@ -64,11 +64,10 @@ var MyM3u8Processer = (function () {
                 allBytes.push(context.parseResult.playList[p].content);
             }
             
-            let suffix = MyUtils.getSuffix(context.mediaName, false);
-            suffix = suffix || context.parseResult.suffix;
-            let fileName = context.downloadDirectory + "/" + MyUtils.trimSuffix(context.mediaName) + (shouldSplit ? "-" + (++mainIndex) : "") + "."+suffix;
+            const suffix = MyUtils.getSuffix(context.mediaName, false);
+            let fileName = context.downloadDirectory + "/" + MyUtils.trimSuffix(context.mediaName) + (shouldSplit ? "-" + (++mainIndex) : "") + (suffix ? "."+suffix : "");
             if(MyChromeConfig.get("newFolderAtRoot") == "0" && ! shouldSplit){
-                fileName = MyUtils.trimSuffix(context.mediaName) + "."+suffix;
+                fileName = context.mediaName;
             }
             
             _mergeContentImpl(allBytes, fileName, function(){

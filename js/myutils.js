@@ -246,6 +246,15 @@ var MyUtils = (function(){
                 return mime.substring(0, idx == -1 ? mime.length : idx);
             }
             return null;
+        },
+        buildMediaName: function(mediaName, url, suffix){
+            if(! mediaName){
+                mediaName = ( url && this.getLastPathName(url) ) || this.genRandomString();
+                if(suffix){
+                    mediaName = this.trimSuffix(mediaName) + "." + suffix;
+                }
+            }
+            return this.escapeFileName(mediaName);
         }
     };
 })();

@@ -208,7 +208,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             
             var mediaName = document.getElementById(this.dataset["nameId"]).value.trim();
-			mediaName = mediaName || MyUtils.getLastPathName( urlMaster || this.dataset["url"] ) || MyUtils.genRandomString();
 			
             
 			chrome.runtime.sendMessage({
@@ -218,7 +217,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     destroy: destroy,
                     urlMaster: urlMaster,
                     isDirect: isDirect,
-					mediaName: MyUtils.escapeFileName(mediaName),
+					mediaName: mediaName,
                     kind: kind,
                     mediaType: mediaType
 				}
@@ -246,7 +245,6 @@ document.addEventListener("DOMContentLoaded", function () {
 			}
             
 			var mediaName = document.getElementById("manual-name").value.trim();
-			mediaName = mediaName || MyUtils.getLastPathName(url) || MyUtils.genRandomString();
 			var mediaType = document.getElementById("manual-m3u8").checked ? "m3u8" : "video";
 			
             var methodDom = document.getElementById("manual-method");
@@ -260,7 +258,7 @@ document.addEventListener("DOMContentLoaded", function () {
 					url: url,
 					method: method,
                     headers: MyUtils.parseHeaders(headersContent),
-					mediaName: MyUtils.escapeFileName(mediaName),
+					mediaName: mediaName,
 					mediaType: mediaType
 				}
 			}, function(response){

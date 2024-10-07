@@ -157,6 +157,7 @@ var MyBootstrap = (function () {
         }
         const uniqueKey = MyUtils.genRandomString();
 		const downloadDirectory = chrome.i18n.getMessage("appName") + "-" + uniqueKey;
+        const mediaName = MyUtils.buildMediaName(data.mediaName, data.reqConfig.url, parseResult.suffix);
         
         MyBaseProcesser.saveDownloadContext({
             id: uniqueKey,
@@ -169,7 +170,7 @@ var MyBootstrap = (function () {
                     uniqueKey: uniqueKey,
                     downloadDirectory: downloadDirectory,
                     reqConfig: data.reqConfig,
-                    mediaName: data.mediaName
+                    mediaName: mediaName
                 },
                 threshold: MyChromeConfig.get("processerThreshold") * 1024 * 1024,
                 basic: false,
@@ -177,7 +178,7 @@ var MyBootstrap = (function () {
                 index: 0,
                 completedCnt: 0
             },
-            mediaName: data.mediaName,
+            mediaName: mediaName,
             mergeCallback: mergeCallback,
             completeCallback: MyM3u8Processer.completeCallback
         });
@@ -203,7 +204,7 @@ var MyBootstrap = (function () {
             
             MyDownload.download({
                 tasks: tasks, 
-                showName: data.mediaName + ".multiplekey"
+                showName: mediaName + ".multiplekey"
             }, stepDownloadTs);
         }
         
@@ -223,7 +224,7 @@ var MyBootstrap = (function () {
             
             MyDownload.download({
                 tasks: tasks, 
-                showName: data.mediaName + ".multiplets"
+                showName: mediaName + ".multiplets"
             }, null);
         }
         
@@ -237,26 +238,19 @@ var MyBootstrap = (function () {
 	function _downloadOther(data){
 		var downloadDirectory = chrome.i18n.getMessage("appName") + "-" + MyUtils.genRandomString();
 		downloadDirectory = MyChromeConfig.get("newFolderAtRoot") == "0" ? "" : downloadDirectory + "/";
-
-		var suffix = MyUtils.getSuffix(data.mediaName, false);
-		if(suffix){
-			suffix = "";
-		}else{
-			suffix = MyUtils.getSuffix(data.reqConfig.url, true);
-			suffix = suffix ? "."+suffix : "";
-		}
+        const mediaName = MyUtils.buildMediaName(data.mediaName, data.reqConfig.url, "");
 		
 		MyDownload.download({
             tasks: [{
                 options: {
                     url: data.reqConfig.url,
-                    filename: downloadDirectory + data.mediaName + suffix,
+                    filename: downloadDirectory + mediaName,
                     method: data.reqConfig.method,
                     headers: data.reqConfig.headers
                 },
                 target: "chrome"
             }], 
-            showName: data.mediaName + suffix
+            showName: mediaName
         }, function(){
 			MyVideox.playCompleteSound();
 		});
@@ -268,6 +262,7 @@ var MyBootstrap = (function () {
         const uniqueKey = MyUtils.genRandomString();
 		let downloadDirectory = chrome.i18n.getMessage("appName") + "-" + uniqueKey;
         downloadDirectory = MyChromeConfig.get("newFolderAtRoot") == "0" ? "" : downloadDirectory + "/";
+        const mediaName = MyUtils.buildMediaName(data.mediaName, data.reqConfig.url, kind);
         
         MyBaseProcesser.saveDownloadContext({
             id: uniqueKey,
@@ -278,14 +273,14 @@ var MyBootstrap = (function () {
             tasks: [{
                 options: {
                     url: data.reqConfig.url,
-                    filename: downloadDirectory + data.mediaName,
+                    filename: downloadDirectory + mediaName,
                     method: data.reqConfig.method,
                     headers: data.reqConfig.headers
                 },
                 target: "custom",
                 custom: { contextId: uniqueKey }
             }],
-            showName: data.mediaName
+            showName: mediaName
         }, null);
         
                 
@@ -311,11 +306,11 @@ var MyBootstrap = (function () {
                 tasks: [{
                     options: {
                         url: url,
-                        filename: downloadDirectory + data.mediaName
+                        filename: downloadDirectory + mediaName
                     },
                     target: "chrome"
                 }], 
-                showName: data.mediaName,
+                showName: mediaName,
                 priority: true
             }, function(){
                 URL.revokeObjectURL(url);
