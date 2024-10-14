@@ -2,32 +2,24 @@ var MyBaseProcesser = (function () {
 
     const _cache = new Map();
     
-    function _handleStateCallback(data){
-        if(! (data.state == "interrupted" || data.state == "complete")){
-            return ;
-        }
-        
+    function _complete(data){
         const control = MyDownload.downloadingHolder.get(data.id);
-        if (control == null) {
-            return;
-        }
-        if (data.state == "complete") {
+        if (control != null) {
             MyDownload.downloadingHolder.delete(data.id);
             MyDownload.downloadBatchHolder.complete(control.batchName, data.id);
         }
-    
+        
         MyDownload.downloadTask();
     }
 
     function _downloadCallback(data){
-        _handleStateCallback(data);
-        
         if(data.state != "complete"){
             return;
         }
         const content = MyDownloader.getDownloadedContent(data.id);
         if(content.length == 0){
             _cache.delete(data.attributes.contextId);
+            _complete(data);
             return ;
         }
         const blob = new Blob(content);
@@ -37,8 +29,11 @@ var MyBaseProcesser = (function () {
                 return ;
             }
             context.completeCallback && context.completeCallback(buf, context, data);
+            
+            _complete(data);
         }).catch((e) => {
             _cache.delete(data.attributes.contextId);
+            MyDownload.cancel(data.id);
         });
     }
     

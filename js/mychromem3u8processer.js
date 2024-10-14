@@ -25,7 +25,8 @@ var MyChromeM3u8Processer = (function () {
                     },
                     target: "chrome"
                 }],
-                showName: data.mediaName + "1.txt"
+                showName: data.mediaName + "1.txt",
+                priority: true
             }, stepDownloadm3u8processer2 );
 		}
 		
@@ -42,7 +43,8 @@ var MyChromeM3u8Processer = (function () {
                     },
                     target: "chrome"
                 }], 
-                showName: data.mediaName + "2.txt"
+                showName: data.mediaName + "2.txt",
+                priority: true
             }, stepDownloadm3u8playlist);
 		}
 		
@@ -76,7 +78,8 @@ var MyChromeM3u8Processer = (function () {
             }
 			MyDownload.download({
                 tasks: tasks, 
-                showName: data.mediaName + ".m3u8"
+                showName: data.mediaName + ".m3u8",
+                priority: true
             }, function(){
                 callback(processerId);
             });
