@@ -11,7 +11,7 @@ var MyChromeM3u8Processer = (function () {
         mediaName: ""
     }
     */
-	function _downloadM3u8Basic(data, parseResult, callback){
+	function _downloadM3u8Basic(data, parseResult, playListCnt, callback){
 		var processerId = null;
 		
 		function stepDownloadm3u8processer1(){
@@ -54,7 +54,7 @@ var MyChromeM3u8Processer = (function () {
             var shouldSplit = parseResult.discontinuity.length > 1;
             for(var r=0; r<parseResult.discontinuity.length; r++){
                 var m3u8Name = MyUtils.padStart(r.toString(), 10,"0") + "-"
-                    + (shouldSplit ? "1" : "0") + "-" + parseResult.playList.length + "-"
+                    + (shouldSplit ? "1" : "0") + "-" + playListCnt + "-"
                     + parseResult.discontinuity[r].start + "-" + parseResult.discontinuity[r].end + "-"
                     + data.uniqueKey + ".m3u8";
                 if(r == 0){
@@ -89,9 +89,10 @@ var MyChromeM3u8Processer = (function () {
 
     function _downloadM3u8Ts(data, playItem, callback){
         const allBytes = [ playItem.content ];
-        const blob = new Blob(allBytes, {type: "application/octet-stream"});
+        const blob = new Blob(allBytes, {type: "text/plain"}); // faster Chrome security check
+        
         const url = URL.createObjectURL(blob);
-        var fileName = data.uniqueKey + "-" + MyUtils.padStart(playItem.sequence.toString(), 10,"0") + ".ts";
+        var fileName = data.uniqueKey + "-" + MyUtils.padStart(playItem.logicSequence.toString(), 10,"0") + ".ts";
         
         MyDownload.download({
             tasks: [{

@@ -21,7 +21,7 @@ var MyDownloader = (function () {
         this.loadedOriginal = 0;
         this.content = [];
         this.request = null;
-        this.rangeBoundary = rangeBoundary || 50 * 1024 * 1024;
+        this.rangeBoundary = rangeBoundary;
         this.rangeMode = false;
 	}
     

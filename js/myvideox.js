@@ -89,12 +89,11 @@ var MyVideox = (function () {
 				new MyAsyncM3u8Parser(reqConfig).parse(function(result){
                     var parseResult = (result == null || result.playList == null || result.playList.length == 0) ? null : result;
                     if(parseResult != null && parseResult.isMasterPlaylist){
-                        for(let x in parseResult.playList){
-                            if(parseResult.playList[x].isDirect){
-                                callback( parseResult );
-                                return ;
-                            }
+                        if(parseResult.duration != null && parseResult.duration > 0){
+                            callback( parseResult );
+                            return ;
                         }
+
                         new MyAsyncM3u8Parser({
                             url: parseResult.playList[0].url,
                             method: options.method,

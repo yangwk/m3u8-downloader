@@ -19,7 +19,7 @@ var MyChromeConfig = (function () {
 		playSoundWhenComplete: "1",
         splitDiscontinuity: "1",
         processerThreshold: 500,
-        downloaderPageSize: 50 * 1024 * 1024,
+        downloaderPageSize: 5 * 1024 * 1024,
         convertSubtitles: "1",
         matchingRuleEnable: "0",
         matchingRule:   '[\r\n' +

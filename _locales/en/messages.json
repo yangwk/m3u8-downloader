@@ -190,5 +190,11 @@
     },
     "settingsConvertSubtitles": {
         "message": "convert subtitles"
+    },
+    "live": {
+        "message": "live"
+    },
+    "stopLive": {
+        "message": "stop live"
     }
 }

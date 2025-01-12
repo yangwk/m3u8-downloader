@@ -1,40 +1,15 @@
 var MyUtils = (function(){
 	
-	function _findTag(rootDom, tagNames, result) {
-        if (rootDom == null) {
-            return;
-        }
-		
-		for(var t in tagNames){
-			if(rootDom.tagName == tagNames[t]){
-				result.push(rootDom);
-				break;
-			}
-		}
-
-        if (rootDom.tagName == "IFRAME" || rootDom.tagName == "FRAME") {
-            _findTag(rootDom.contentDocument, tagNames, result);
-        } else {
-            if (rootDom.children != null && rootDom.children.length > 0) {
-                for (var x in rootDom.children) {
-                    _findTag(rootDom.children[x], tagNames, result);
-                }
-            }
-        }
-    }
-	
     return {
-        findMediaElement: function() {
-            var result = [];
-            _findTag(document, ["VIDEO", "APPLET", "OBJECT", "EMBED", "AUDIO"], result);
-            return result;
-        },
 		genRandomString: function() {
 			var array = new Uint32Array(1);
             crypto.getRandomValues(array);
             return Date.now().toString() + array[0];
 		},
 		clone: function(obj, exclusions, inverse){
+            if(obj == null){
+                return null;
+            }
             if(inverse == null){
                 inverse = false;
             }
@@ -255,6 +230,15 @@ var MyUtils = (function(){
                 }
             }
             return this.escapeFileName(mediaName);
+        },
+        delay: function(delayMs, callback){
+            new Promise((resolve, reject) => {
+                delayMs <=0 ? resolve() : setTimeout(() => { resolve(); }, delayMs);
+            }).then(() => {
+                callback();
+            }).catch((e) => {
+                throw e;
+            });
         }
     };
 })();

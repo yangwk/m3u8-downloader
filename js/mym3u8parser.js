@@ -5,12 +5,14 @@ very simple parser:
 */
 var MyM3u8Parser = function(_reqConfig, _content){
 	
-	var _PlayItem = function(sequence, url, keyRef, keyIV){
+	var _PlayItem = function(logicSequence, sequence, url, keyRef, keyIV, duration){
+        this.logicSequence = logicSequence;
 		this.sequence = sequence;
 		this.url = url;
         this.discontinuity = false;
         this.keyRef = keyRef;
         this.keyIV = keyIV;
+        this.duration = duration;
         this.content = null;
 	}
     
@@ -136,7 +138,7 @@ var MyM3u8Parser = function(_reqConfig, _content){
         var isMasterPlaylist = false, bandwidth = 0, mediaType = null, renditionGroups = null, renditionData = {};
         var firstDiscSequence = 0, firstDiscIndex = -1, discIndex = -1;
         const emptyCheck = " \f\n\r\t\v";
-        var segmentType = "mpegts"; // mpegts, fmp4
+        var targetDuration = 0, hasEnd = false, playlistType = null, segmentType = "mpegts"; // mpegts, fmp4
 		while((statement = _readStatement()) != null){
 			if(! statement){
 				continue;
@@ -213,7 +215,7 @@ var MyM3u8Parser = function(_reqConfig, _content){
                     }
                 } else if(tag == "EXTINF"){
 					var commaIdx = statement.indexOf(",");
-                    duration += _parseAttributeValue(statement.substring("#EXTINF:".length, commaIdx == -1 ? statement.length : commaIdx).trim(), 2);
+                    duration = _parseAttributeValue(statement.substring("#EXTINF:".length, commaIdx == -1 ? statement.length : commaIdx).trim(), 2);
 				} else if(tag == "EXT-X-DISCONTINUITY"){
                     if(playList.length > 0){
                         playList[playList.length-1].discontinuity = true;
@@ -233,7 +235,13 @@ var MyM3u8Parser = function(_reqConfig, _content){
                     contentURI = _parseAttributeValue(nameValue["URI"], 4);
                     isInitializationSection = true;
                     segmentType = "fmp4";
-				} 
+				} else if(tag == "EXT-X-TARGETDURATION"){
+                    targetDuration = _parseAttributeValue(statement.substring("#EXT-X-TARGETDURATION:".length).trim(), 0);
+                } else if(tag == "EXT-X-ENDLIST"){
+                    hasEnd = true;
+                } else if(tag == "EXT-X-PLAYLIST-TYPE"){
+                    playlistType = _parseAttributeValue(statement.substring("#EXT-X-PLAYLIST-TYPE:".length).trim(), 4);
+                }
 			}
             
             if(isURI || isInitializationSection){
@@ -248,12 +256,12 @@ var MyM3u8Parser = function(_reqConfig, _content){
                 }
                 let keyIV = null;
                 let key = keyData.get(keyRef);
+                const ivSequence = discIndex >= 0 ? firstDiscSequence+(index-discIndex) : firstSequence+index;
                 if(key != null && key.iv == null){
-                    const ivSequence = discIndex >= 0 ? firstDiscSequence+(index-discIndex) : firstSequence+index;
                     let iv = _parseAttributeValue("0x" + ivSequence.toString(16), 1);
                     keyIV = new Uint8Array(_paddingIV(iv));
                 }
-				playList.push( new _PlayItem(firstSequence+logicIndex, MyUtils.concatUrl(contentURI, _reqConfig.url), keyRef, keyIV) );
+				playList.push( new _PlayItem(firstSequence+logicIndex, ivSequence, MyUtils.concatUrl(contentURI, _reqConfig.url), keyRef, keyIV, duration) );
 				if(isURI){  // Media Initialization Section can not change the Media Sequence Number
                     index ++;
                 }
@@ -263,13 +271,15 @@ var MyM3u8Parser = function(_reqConfig, _content){
         
 
 		return {
-			duration: duration,
+			duration: isMasterPlaylist ? duration : playList.map(p => p.duration).reduce((acc, curr) => acc + curr, 0) ,
 			playList: isMasterPlaylist ? _sortPlayList(playList) : playList,
             discontinuity: ! isMasterPlaylist ? _handleDiscontinuity(playList) : null,
             keyData: keyData,
             isMasterPlaylist: isMasterPlaylist,
             suffix: segmentType == "mpegts" ? "mpeg" : "mp4",
-            renditionData: _sortRendition(renditionData)
+            renditionData: _sortRendition(renditionData),
+            targetDuration: targetDuration,
+            isLive: ! isMasterPlaylist && ! playlistType && ! hasEnd
 		};
 	}
 	

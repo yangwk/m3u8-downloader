@@ -190,5 +190,11 @@
     },
     "settingsConvertSubtitles": {
         "message": "转换字幕格式"
+    },
+    "live": {
+        "message": "直播"
+    },
+    "stopLive": {
+        "message": "停止直播"
     }
 }

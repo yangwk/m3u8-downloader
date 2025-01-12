@@ -89,6 +89,7 @@ document.addEventListener("DOMContentLoaded", function () {
 						'<span class="badge">' + obj.method + '</span>' +
 						'<span class="badge">' + obj.mediaType + '</span>' +
 						( obj.mime ? '<span class="badge">' + obj.mime + '</span>' : '' ) +
+                        ( obj.isLive ? '<span class="badge" data-msg="live">live</span>' : '' ) +
 						'<input type="text" data-place="inputFileName" id="' + nameId + '" />'
 					);
 					dom.innerHTML = html;
@@ -345,7 +346,27 @@ document.addEventListener("DOMContentLoaded", function () {
 				);
 				dom.innerHTML = html;
 				contentDom.appendChild(dom);
+                
+                if(obj.attributes && obj.attributes.isLive){
+                    var dom2 = document.createElement("span");
+                    dom2.innerHTML = '<span class="badge badge-b" data-msg="stopLive">stopLive</span>';
+                    dom2.dataset["contextId"] = obj.attributes.contextId;
+                    dom2.addEventListener("click", stopM3u8LiveDownload, { once: true });
+                    dom.appendChild(dom2);
+                }
 			}
+		}
+        
+		function stopM3u8LiveDownload(e){
+			e.stopPropagation();
+			var contextId = this.dataset["contextId"];
+			chrome.runtime.sendMessage({
+				action: "stopm3u8livedownload",
+				data: {
+					id: contextId
+				}
+			}, function(response){
+			});
 		}
 		
 		function metricDownloadDownloading(data, custom){
@@ -600,14 +621,13 @@ document.addEventListener("DOMContentLoaded", function () {
 			});
 		};
         
-        document.getElementById("settings-mr").onclick = function(e){
+        document.getElementById("settings-mr").addEventListener("click", function(e){
             e.stopPropagation();
             if(! this.classList.contains("textarea-mr-max")){
                 this.classList.remove("textarea-mr");
                 this.classList.add("textarea-mr-max");
             }
-        };
-        
+        }, { once: true });
         
 		document.getElementById("settings-popupintab").onclick = function(e){
 			e.stopPropagation();
