@@ -197,7 +197,7 @@ var MyM3u8Processer = (function () {
         }
         
         function end(){
-            _stopDownload(context);
+            _stopDownload(context, false);
         }
         
         function calcDelay(period){
@@ -296,7 +296,7 @@ var MyM3u8Processer = (function () {
                         method: data.reqConfig.method
                     },
                     target: "custom",
-                    custom: { phase: "key", contextId: uniqueKey, keyRef: keyRef }
+                    custom: { phase: "key", contextId: uniqueKey, keyRef: keyRef, useRangeMode: !context.isLive }
                 });
             });
             
@@ -323,7 +323,7 @@ var MyM3u8Processer = (function () {
                         method: data.reqConfig.method
                     },
                     target: "custom",
-                    custom: { phase: "ts", contextId: uniqueKey, index: x }
+                    custom: { phase: "ts", contextId: uniqueKey, index: x, useRangeMode: !context.isLive }
                 });
             }
             
@@ -352,8 +352,18 @@ var MyM3u8Processer = (function () {
         return true;
     }
     
+        
+    function purgeContext(context){
+        // for chrome
+        context.playListCnt = context.chromeM3u8.completedCnt;
+        context.parseResult.playList.splice(0);
+        
+    }
     
-    function _stopDownload(context){
+    function _stopDownload(context, forceStop){
+        if(forceStop){
+            purgeContext(context);
+        }
         context.isEnd = true;
         MyDownload.downloadBatchHolder.reuse(context.batchName, false);
         MyDownload.downloadBatchHolder.complete(context.batchName);
@@ -368,7 +378,7 @@ var MyM3u8Processer = (function () {
     function _stopDownloadByContextId(id){
         const context = MyBaseProcesser.getDownloadContext(id);
         if(context != null){
-            _stopDownload(context);
+            _stopDownload(context, true);
         }
     }
     

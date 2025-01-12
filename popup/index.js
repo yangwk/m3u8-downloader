@@ -470,6 +470,9 @@ document.addEventListener("DOMContentLoaded", function () {
     
         function metricDownloadDownloadingCustom(contentDom, obj, custom){
             const data = custom[obj.id];
+            if(data == null){
+                return;
+            }
             const itemDom = document.createElement("div");
             itemDom.innerHTML = '<hr/><div class="line-wrapping">' + data.url + '</div>';
             const statusDom = document.createElement("div");

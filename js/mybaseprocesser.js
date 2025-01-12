@@ -47,7 +47,8 @@ var MyBaseProcesser = (function () {
             url: task.options.url,
             method: task.options.method.toUpperCase(),
             attributes: task.custom,
-            rangeBoundary: MyChromeConfig.get("downloaderPageSize")
+            rangeBoundary: MyChromeConfig.get("downloaderPageSize"),
+            useRangeMode: task.custom == null || task.custom.useRangeMode == true
         };
         return MyDownloader.download(options, _downloadCallback);
     }

@@ -104,7 +104,7 @@ m3u8处理程序处理完毕后，自动打开处理后的文件所处位置
 
 * 直播
 
-补充图片
+![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/live01.png)
 
 ## 注意事项
 
