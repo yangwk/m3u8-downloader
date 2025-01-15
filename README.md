@@ -96,8 +96,6 @@ m3u8处理程序处理完毕后，自动打开处理后的文件所处位置
 
 ![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/11.png)
 
-![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/13.png)
-
 * 社交
 
 ![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/12.png)

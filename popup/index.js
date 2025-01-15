@@ -571,6 +571,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 document.getElementById("settings-prothr").value = data.processerThreshold;
                 document.getElementById("settings-dps").value = data.downloaderPageSize;
                 document.getElementById("settings-cs").checked = data.convertSubtitles == "1";
+                document.getElementById("settings-bseq").checked = data.stopBrokenSequence == "1";
                 document.getElementById("settings-mrenable").checked = data.matchingRuleEnable == "1";
                 document.getElementById("settings-mr").value = data.matchingRule;
 			});
@@ -613,6 +614,7 @@ document.addEventListener("DOMContentLoaded", function () {
             data.processerThreshold = parseInt(document.getElementById("settings-prothr").value, 10);
             data.downloaderPageSize = Math.min( Math.max( parseInt(document.getElementById("settings-dps").value, 10), 1024 ), 1024 * 1024 * 1024 );
             data.convertSubtitles = document.getElementById("settings-cs").checked ? "1" : "0";
+            data.stopBrokenSequence = document.getElementById("settings-bseq").checked ? "1" : "0";
             data.matchingRuleEnable = document.getElementById("settings-mrenable").checked ? "1" : "0";
             data.matchingRule = document.getElementById("settings-mr").value.trim();
 			

@@ -213,7 +213,9 @@ var MyM3u8Processer = (function () {
         function comparePlayList(newPlayList, lastMaxSequence){
             const changedPlayList = newPlayList.filter(newPi => newPi.sequence > lastMaxSequence);
             if(changedPlayList.length > 0){
-                if(changedPlayList[0].sequence == lastMaxSequence + 1){
+                if(MyChromeConfig.get("stopBrokenSequence") == "0"){
+                    return changedPlayList;
+                }else if(MyChromeConfig.get("stopBrokenSequence") == "1" && changedPlayList[0].sequence == lastMaxSequence + 1){
                     return changedPlayList;
                 }
             }
@@ -354,10 +356,12 @@ var MyM3u8Processer = (function () {
     
         
     function purgeContext(context){
-        // for chrome
-        context.playListCnt = context.chromeM3u8.completedCnt;
-        context.parseResult.playList.splice(0);
-        
+        if(context.useChromeM3u8){
+            context.playListCnt = context.chromeM3u8.completedCnt;
+            context.parseResult.playList.splice(0);
+        }else{
+            context.playListCnt = context.completedCnt;
+        }
     }
     
     function _stopDownload(context, forceStop){

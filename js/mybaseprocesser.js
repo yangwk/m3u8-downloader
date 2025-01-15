@@ -21,6 +21,7 @@ var MyBaseProcesser = (function () {
         MyUtils.readAsArrayBuffer(blob).then((buf) => {
             const context = _cache.get( data.attributes.contextId );
             if(context == null){
+                _complete(data);
                 return ;
             }
             context.completeCallback && context.completeCallback(buf, context, data);

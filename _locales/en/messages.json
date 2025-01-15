@@ -196,5 +196,8 @@
     },
     "stopLive": {
         "message": "stop live"
+    },
+    "settingsBrokenSequence": {
+        "message": "stop live downloads if broken sequence"
     }
 }

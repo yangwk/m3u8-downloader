@@ -196,5 +196,8 @@
     },
     "stopLive": {
         "message": "停止直播"
+    },
+    "settingsBrokenSequence": {
+        "message": "直播下载断序即停止"
     }
 }
