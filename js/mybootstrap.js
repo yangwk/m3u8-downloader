@@ -182,6 +182,12 @@ var MyBootstrap = (function () {
     
     
     function _downloadSubtitles(data, kind){
+        const suffix = MyUtils.getSuffix(data.reqConfig.url, true);
+        if(MyUtils.isM3u8(suffix)){
+            _downloadM3u8(data);
+            return ;
+        }
+        
         const uniqueKey = MyUtils.genRandomString();
 		let downloadDirectory = chrome.i18n.getMessage("appName") + "-" + uniqueKey;
         downloadDirectory = MyChromeConfig.get("newFolderAtRoot") == "0" ? "" : downloadDirectory + "/";

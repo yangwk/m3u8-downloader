@@ -187,7 +187,7 @@ var MyChromeMediaMonitor = (function () {
 			if(suffix){
 				suffix = suffix.toLowerCase();
 				
-				if(suffix == "m3u8" || suffix == "m3u"){
+				if(MyUtils.isM3u8(suffix)){
 					mediaType = "m3u8";
 				}else if(suffix == "ts" || suffix == "m4s"){
 					return null;

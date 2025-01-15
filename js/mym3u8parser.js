@@ -276,7 +276,7 @@ var MyM3u8Parser = function(_reqConfig, _content){
             discontinuity: ! isMasterPlaylist ? _handleDiscontinuity(playList) : null,
             keyData: keyData,
             isMasterPlaylist: isMasterPlaylist,
-            suffix: segmentType == "mpegts" ? "mpeg" : "mp4",
+            suffix: _determineSuffix(segmentType, playList.length > 0 ? playList[0].url : null),
             renditionData: _sortRendition(renditionData),
             targetDuration: targetDuration,
             isLive: ! isMasterPlaylist && ! playlistType && ! hasEnd
@@ -354,7 +354,16 @@ var MyM3u8Parser = function(_reqConfig, _content){
         }
         return isVideo ? "video" : "audio";
     }
-	
+    
+    function _determineSuffix(segmentType, url){
+        if(segmentType == "fmp4"){
+            return "mp4";
+        }else if(MyUtils.getSuffix(url, true) == "vtt"){
+            return "vtt";
+        }
+        return "mpeg";
+    }
+    
 	this.parse = function(){
 		try{
 			return _parse();

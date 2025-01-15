@@ -239,6 +239,13 @@ var MyUtils = (function(){
             }).catch((e) => {
                 throw e;
             });
+        },
+        isM3u8: function(suffix) {
+            if(suffix){
+                suffix = suffix.toLowerCase();
+                return (suffix == "m3u8" || suffix == "m3u");
+            }
+            return false;
         }
     };
 })();
