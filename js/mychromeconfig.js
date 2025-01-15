@@ -10,7 +10,7 @@ var MyChromeConfig = (function () {
 		showTab: "1",
 		showDuration: "1",
 		monitoredQueueMax: 50,
-		downloadingMax: 3,
+		downloadingMax: 6,
 		downloadBatchMax: 5,
 		popupWidth: 462,
 		popupHeight: 435,
@@ -19,8 +19,9 @@ var MyChromeConfig = (function () {
 		playSoundWhenComplete: "1",
         splitDiscontinuity: "1",
         processerThreshold: 500,
-        downloaderPageSize: 50 * 1024 * 1024,
+        downloaderPageSize: 5 * 1024 * 1024,
         convertSubtitles: "1",
+        stopBrokenSequence: "1",
         matchingRuleEnable: "0",
         matchingRule:   '[\r\n' +
                         '    {\r\n         "url": {\r\n             "host": "*.googlevideo.com",\r\n             "pathname": null\r\n         },\r\n         "rule": {\r\n             "identifier": {\r\n                 "pathIndex": null,\r\n                 "queryParam": ["id"]\r\n             },\r\n             "ignorer": {\r\n                 "queryParam": ["range", "rn"]\r\n             }\r\n         }\r\n     },\r\n' +

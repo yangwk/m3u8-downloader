@@ -21,7 +21,7 @@ var MyDownloader = (function () {
         this.loadedOriginal = 0;
         this.content = [];
         this.request = null;
-        this.rangeBoundary = rangeBoundary || 50 * 1024 * 1024;
+        this.rangeBoundary = rangeBoundary;
         this.rangeMode = false;
 	}
     
@@ -29,6 +29,10 @@ var MyDownloader = (function () {
         const id = MyUtils.genRandomString();
         const op = MyUtils.clone(options);
         _data.set(id, new _DownloadItem(id, op.url, op.method, op.attributes, op.rangeBoundary));
+        if(! op.useRangeMode){
+            _downloadImpl(id, op.url, op.method, null, false, false, callback);
+            return id;
+        }
         const header = {
             "Range": "bytes=0-0"
         };

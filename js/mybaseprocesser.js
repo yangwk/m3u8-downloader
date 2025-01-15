@@ -6,7 +6,7 @@ var MyBaseProcesser = (function () {
         const control = MyDownload.downloadingHolder.get(data.id);
         if (control != null) {
             MyDownload.downloadingHolder.delete(data.id);
-            MyDownload.downloadBatchHolder.complete(control.batchName, data.id);
+            MyDownload.downloadBatchHolder.complete(control.batchName);
         }
         
         MyDownload.downloadTask();
@@ -17,23 +17,19 @@ var MyBaseProcesser = (function () {
             return;
         }
         const content = MyDownloader.getDownloadedContent(data.id);
-        if(content.length == 0){
-            _cache.delete(data.attributes.contextId);
-            _complete(data);
-            return ;
-        }
         const blob = new Blob(content);
         MyUtils.readAsArrayBuffer(blob).then((buf) => {
             const context = _cache.get( data.attributes.contextId );
             if(context == null){
+                _complete(data);
                 return ;
             }
             context.completeCallback && context.completeCallback(buf, context, data);
             
             _complete(data);
         }).catch((e) => {
-            _cache.delete(data.attributes.contextId);
             MyDownload.cancel(data.id);
+            _cache.delete(data.attributes.contextId);
         });
     }
     
@@ -52,7 +48,8 @@ var MyBaseProcesser = (function () {
             url: task.options.url,
             method: task.options.method.toUpperCase(),
             attributes: task.custom,
-            rangeBoundary: MyChromeConfig.get("downloaderPageSize")
+            rangeBoundary: MyChromeConfig.get("downloaderPageSize"),
+            useRangeMode: task.custom == null || task.custom.useRangeMode == true
         };
         return MyDownloader.download(options, _downloadCallback);
     }
@@ -77,11 +74,29 @@ var MyBaseProcesser = (function () {
     }
     
     function _saveDownloadContext(context){
-        _cache.set(context.id, context);
+        const thisContext = _cache.get(context.id);
+        if(thisContext == null){
+            _cache.set(context.id, context);
+            return context;
+        }
+        return thisContext;
     }
     
     function _deleteDownloadContext(context){
         _cache.delete(context.id);
+    }
+    
+    function _updateDownloadContext(newContext){
+        const context = _cache.get(newContext.id);
+        if(context != null){
+            for(var k in newContext){
+				context[k] = newContext[k];
+			}
+        }
+    }
+    
+    function _getDownloadContext(id){
+        return _cache.get(id);
     }
     
     return {
@@ -91,7 +106,9 @@ var MyBaseProcesser = (function () {
         downloadCancel: _downloadCancel,
         info: _info,
         saveDownloadContext: _saveDownloadContext,
-        deleteDownloadContext: _deleteDownloadContext
+        deleteDownloadContext: _deleteDownloadContext,
+        updateDownloadContext: _updateDownloadContext,
+        getDownloadContext: _getDownloadContext
     };
     
 })();

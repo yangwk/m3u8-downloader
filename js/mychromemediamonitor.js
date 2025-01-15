@@ -15,10 +15,11 @@ var MyChromeMediaMonitor = (function () {
         this.length = length;
         this.duration = null;
         this.parseResult = null;
-        this.isMasterPlaylist = null;
+        this.isMasterPlaylist = false;
         this.immutableInfo = false;
         this.requestData = null;
         this.kind = null;   // reserve
+        this.isLive = false;
         
         _MediaItem.prototype.buildInfo = function(result){
             if(this.immutableInfo){
@@ -27,7 +28,8 @@ var MyChromeMediaMonitor = (function () {
             this.duration = result == null ? null : result.duration;
             if(this.mediaType == "m3u8"){
                 this.parseResult = result;
-                this.isMasterPlaylist = result == null ? null : result.isMasterPlaylist;
+                this.isMasterPlaylist = result == null ? false : result.isMasterPlaylist;
+                this.isLive = result == null ? false : result.isLive;
             }
             this.immutableInfo = true;
         }
@@ -185,7 +187,7 @@ var MyChromeMediaMonitor = (function () {
 			if(suffix){
 				suffix = suffix.toLowerCase();
 				
-				if(suffix == "m3u8" || suffix == "m3u"){
+				if(MyUtils.isM3u8(suffix)){
 					mediaType = "m3u8";
 				}else if(suffix == "ts" || suffix == "m4s"){
 					return null;

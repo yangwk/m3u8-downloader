@@ -89,6 +89,7 @@ document.addEventListener("DOMContentLoaded", function () {
 						'<span class="badge">' + obj.method + '</span>' +
 						'<span class="badge">' + obj.mediaType + '</span>' +
 						( obj.mime ? '<span class="badge">' + obj.mime + '</span>' : '' ) +
+                        ( obj.isLive ? '<span class="badge" data-msg="live">live</span>' : '' ) +
 						'<input type="text" data-place="inputFileName" id="' + nameId + '" />'
 					);
 					dom.innerHTML = html;
@@ -345,7 +346,27 @@ document.addEventListener("DOMContentLoaded", function () {
 				);
 				dom.innerHTML = html;
 				contentDom.appendChild(dom);
+                
+                if(obj.attributes && obj.attributes.isLive){
+                    var dom2 = document.createElement("span");
+                    dom2.innerHTML = '<span class="badge badge-b" data-msg="stopLive">stopLive</span>';
+                    dom2.dataset["contextId"] = obj.attributes.contextId;
+                    dom2.addEventListener("click", stopM3u8LiveDownload, { once: true });
+                    dom.appendChild(dom2);
+                }
 			}
+		}
+        
+		function stopM3u8LiveDownload(e){
+			e.stopPropagation();
+			var contextId = this.dataset["contextId"];
+			chrome.runtime.sendMessage({
+				action: "stopm3u8livedownload",
+				data: {
+					id: contextId
+				}
+			}, function(response){
+			});
 		}
 		
 		function metricDownloadDownloading(data, custom){
@@ -449,6 +470,9 @@ document.addEventListener("DOMContentLoaded", function () {
     
         function metricDownloadDownloadingCustom(contentDom, obj, custom){
             const data = custom[obj.id];
+            if(data == null){
+                return;
+            }
             const itemDom = document.createElement("div");
             itemDom.innerHTML = '<hr/><div class="line-wrapping">' + data.url + '</div>';
             const statusDom = document.createElement("div");
@@ -547,6 +571,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 document.getElementById("settings-prothr").value = data.processerThreshold;
                 document.getElementById("settings-dps").value = data.downloaderPageSize;
                 document.getElementById("settings-cs").checked = data.convertSubtitles == "1";
+                document.getElementById("settings-bseq").checked = data.stopBrokenSequence == "1";
                 document.getElementById("settings-mrenable").checked = data.matchingRuleEnable == "1";
                 document.getElementById("settings-mr").value = data.matchingRule;
 			});
@@ -589,6 +614,7 @@ document.addEventListener("DOMContentLoaded", function () {
             data.processerThreshold = parseInt(document.getElementById("settings-prothr").value, 10);
             data.downloaderPageSize = Math.min( Math.max( parseInt(document.getElementById("settings-dps").value, 10), 1024 ), 1024 * 1024 * 1024 );
             data.convertSubtitles = document.getElementById("settings-cs").checked ? "1" : "0";
+            data.stopBrokenSequence = document.getElementById("settings-bseq").checked ? "1" : "0";
             data.matchingRuleEnable = document.getElementById("settings-mrenable").checked ? "1" : "0";
             data.matchingRule = document.getElementById("settings-mr").value.trim();
 			
@@ -600,14 +626,13 @@ document.addEventListener("DOMContentLoaded", function () {
 			});
 		};
         
-        document.getElementById("settings-mr").onclick = function(e){
+        document.getElementById("settings-mr").addEventListener("click", function(e){
             e.stopPropagation();
             if(! this.classList.contains("textarea-mr-max")){
                 this.classList.remove("textarea-mr");
                 this.classList.add("textarea-mr-max");
             }
-        };
-        
+        }, { once: true });
         
 		document.getElementById("settings-popupintab").onclick = function(e){
 			e.stopPropagation();

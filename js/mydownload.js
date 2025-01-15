@@ -15,29 +15,44 @@ var MyDownload = (function () {
 				}
 			},
 			offer: function(taskData, callback){
-				var batchName = MyUtils.genRandomString();
                 var copyTaskData = MyUtils.clone(taskData);
+                const isUpdate = copyTaskData.batchName != null;
+				var batchName = isUpdate ? copyTaskData.batchName : MyUtils.genRandomString();
 				var copyTasks = copyTaskData.tasks;
 				for(var x in copyTasks){
 					var task = copyTasks[x];
-					task.control == null ? task.control = {} : null;
+					task.control = {};
 					task.control.batchName = batchName;
 					task.control.fileName = task.options.filename;
                     task.control.url = task.options.url;
                     task.control.canResume = false;
                     task.control.target = task.target;
 				}
+                if(isUpdate){
+                    for(var x in _queue){
+                        if(_queue[x].batchName == batchName){
+                            _queue[x].tasks.push(...copyTasks);
+                            _queue[x].mustCompleteCnt += copyTasks.length;
+                            break;
+                        }
+                    }
+                    return batchName;
+                }
+                
 				var batch = {
 					batchName: batchName,
 					tasks: copyTasks,
 					showName: copyTaskData.showName,
 					completedCnt: 0,
 					mustCompleteCnt: copyTasks.length,
+                    logicMustCompleteCnt: copyTasks.length,
 					downloadIds: [],
                     priority: copyTaskData.priority || false,
+                    attributes: copyTaskData.attributes,
 					callback: callback
 				};
 				_queue.push(batch);
+                return batchName;
 			},
             element: function(){
                 for(var x in _queue){
@@ -86,15 +101,23 @@ var MyDownload = (function () {
 				}
                 return false;
 			},
-			complete: function(batchName, id){
+			complete: function(batchName){
 				for(var x=0; x<_queue.length; x++){
 					var batch = _queue[x];
 					if(batch.batchName == batchName){
-						batch.completedCnt ++;
-						if(batch.completedCnt >= batch.mustCompleteCnt){
+						batch.completedCnt = Math.min(batch.completedCnt + 1, batch.mustCompleteCnt);
+						if(batch.completedCnt >= batch.logicMustCompleteCnt){
 							_queue.splice(x, 1);
-							batch.callback == null ? null : batch.callback( batch.downloadIds );
+							batch.callback && batch.callback( batch.downloadIds );
 						}
+						break;
+					}
+				}
+			},
+            reuse: function(batchName, flag){
+				for(var x in _queue){
+					if(_queue[x].batchName == batchName){
+						_queue[x].logicMustCompleteCnt = flag ? Number.MAX_SAFE_INTEGER : _queue[x].mustCompleteCnt ;
 						break;
 					}
 				}
@@ -155,7 +178,8 @@ var MyDownload = (function () {
 				waitCnt: batch.tasks.length,
 				completedCnt: batch.completedCnt,
 				triggeredCnt: batch.downloadIds.length,
-				sum: batch.mustCompleteCnt
+				sum: batch.mustCompleteCnt,
+                attributes: batch.attributes
 			});
 		});
 		
@@ -169,9 +193,9 @@ var MyDownload = (function () {
 	
 	
 	function _download(taskData, callback){
-        _downloadBatchHolder.offer(taskData, callback);
+        var batchName = _downloadBatchHolder.offer(taskData, callback);
         _downloadTask();
-        return true;
+        return batchName;
 	}
     
     
@@ -198,7 +222,9 @@ var MyDownload = (function () {
 	function _cancelDownload(id, recurse){
         const callback = function(){
             const control = _downloadingHolder.get(id);
-			_downloadingHolder.delete(id);
+            if (control != null) {
+                _downloadingHolder.delete(id);
+            }
             
             if(recurse){
                 if (control != null) {

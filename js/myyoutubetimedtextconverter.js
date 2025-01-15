@@ -55,7 +55,6 @@ var MyYoutubeTimedTextConverter = function(){
         if(!content){
             return null;
         }
-        let data = null;
         const parser = new DOMParser();
         const doc = parser.parseFromString(content, "text/xml");
         const errorNode = doc.querySelector("parsererror");
@@ -90,15 +89,15 @@ var MyYoutubeTimedTextConverter = function(){
     
     
     function _formatSrt(result){
-        const _buffer = [];
+        const buffer = [];
         for(let r in result){
             const item = result[r];
-            _buffer.push(item.sequence);
-            _buffer.push(MyUtils.formatHmsMs(item.appearMs) + " --> " + MyUtils.formatHmsMs(item.disappearMs));
-            _buffer.push(item.text + "\n");
+            buffer.push(item.sequence);
+            buffer.push(MyUtils.formatHmsMs(item.appearMs) + " --> " + MyUtils.formatHmsMs(item.disappearMs));
+            buffer.push(item.text + "\n");
         }
         
-        return _buffer.join("\n");
+        return buffer.join("\n");
     }
     
 	this.convertToSrt = function(content){

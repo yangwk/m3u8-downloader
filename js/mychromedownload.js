@@ -18,7 +18,7 @@ var MyChromeDownload = (function () {
 
 		if (delta.state && delta.state.current == "complete") {
 			MyDownload.downloadingHolder.delete(delta.id);
-			MyDownload.downloadBatchHolder.complete(control.batchName, delta.id);
+			MyDownload.downloadBatchHolder.complete(control.batchName);
 		}
 		
 		if (delta.state){
@@ -69,7 +69,6 @@ var MyChromeDownload = (function () {
 		}catch(err){
 			MyDownload.downloadingHolder.actionDecr();
 			MyDownload.downloadBatchHolder.clearWhenInterrupted(task.control.batchName);
-			throw err;
 		}
 	}
     

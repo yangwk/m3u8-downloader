@@ -85,8 +85,10 @@ var MyBootstrap = (function () {
                     url: chrome.extension.getURL("popup/index.html")
                 }, function(){});
                 sendResponse({success: true});
-			}
-			
+			}else if(request.action == "stopm3u8livedownload"){
+                MyM3u8Processer.stopDownloadByContextId(request.data.id);
+                sendResponse({success: true});
+            }
 		});
         
         _updateIcon(! MyChromeMediaMonitor.isEmpty() );
@@ -123,7 +125,7 @@ var MyBootstrap = (function () {
 			mediaName: data.mediaName
 		};
 		if(data.mediaItem.mediaType == "m3u8"){
-			_downloadM3u8(toSend, data.mediaItem.parseResult);
+			_downloadM3u8(toSend, data.mediaItem.parseResult != null && data.mediaItem.parseResult.isLive ? null : data.mediaItem.parseResult );
 		}else if(data.mediaItem.mediaType == "subtitles"){
             _downloadSubtitles(toSend, data.mediaItem.kind);
         }else{
@@ -152,86 +154,7 @@ var MyBootstrap = (function () {
 	
     
     function _downloadM3u8CustomImpl(data, parseResult){
-        if(parseResult.isMasterPlaylist){
-            return ;
-        }
-        const uniqueKey = MyUtils.genRandomString();
-		const downloadDirectory = chrome.i18n.getMessage("appName") + "-" + uniqueKey;
-        const mediaName = MyUtils.buildMediaName(data.mediaName, data.reqConfig.url, parseResult.suffix);
-        
-        MyBaseProcesser.saveDownloadContext({
-            id: uniqueKey,
-            downloadDirectory: downloadDirectory,
-            parseResult: parseResult,
-            completedCnt: 0,
-            total: 0,
-            chromeM3u8 : {
-                data : {
-                    uniqueKey: uniqueKey,
-                    downloadDirectory: downloadDirectory,
-                    reqConfig: data.reqConfig,
-                    mediaName: mediaName
-                },
-                threshold: MyChromeConfig.get("processerThreshold") * 1024 * 1024,
-                basic: false,
-                processerId: null,
-                index: 0,
-                completedCnt: 0
-            },
-            mediaName: mediaName,
-            mergeCallback: mergeCallback,
-            completeCallback: MyM3u8Processer.completeCallback
-        });
-        stepDownloadKey();
-        
-        function stepDownloadKey(){
-            if(parseResult.keyData.size == 0){
-                stepDownloadTs();
-                return ;
-            }
-            const tasks = [];
-            parseResult.keyData.forEach(function(key, keyRef){
-                tasks.push({
-                    options: {
-                        url: key.url,
-                        filename: downloadDirectory + "/custom/key-" + keyRef,
-                        method: data.reqConfig.method
-                    },
-                    target: "custom",
-                    custom: { phase: "key", contextId: uniqueKey, keyRef: keyRef }
-                });
-            });
-            
-            MyDownload.download({
-                tasks: tasks, 
-                showName: mediaName + ".multiplekey"
-            }, stepDownloadTs);
-        }
-        
-        function stepDownloadTs(){
-            const tasks = [];
-            for(let x in parseResult.playList){
-                tasks.push({
-                    options: {
-                        url: parseResult.playList[x].url,
-                        filename: downloadDirectory + "/custom/ts-" + x,
-                        method: data.reqConfig.method
-                    },
-                    target: "custom",
-                    custom: { phase: "ts", contextId: uniqueKey, index: x }
-                });
-            }
-            
-            MyDownload.download({
-                tasks: tasks, 
-                showName: mediaName + ".multiplets"
-            }, null);
-        }
-        
-        function mergeCallback(){
-            MyVideox.playCompleteSound();
-        }
-        
+        MyM3u8Processer.downloadM3u8(data, parseResult);
     }
 	
     
@@ -259,6 +182,12 @@ var MyBootstrap = (function () {
     
     
     function _downloadSubtitles(data, kind){
+        const suffix = MyUtils.getSuffix(data.reqConfig.url, true);
+        if(MyUtils.isM3u8(suffix)){
+            _downloadM3u8(data);
+            return ;
+        }
+        
         const uniqueKey = MyUtils.genRandomString();
 		let downloadDirectory = chrome.i18n.getMessage("appName") + "-" + uniqueKey;
         downloadDirectory = MyChromeConfig.get("newFolderAtRoot") == "0" ? "" : downloadDirectory + "/";
