@@ -4,7 +4,7 @@ var MyAsyncM3u8Parser = function (_reqConfig) {
         const uniqueKey = MyUtils.genRandomString();
         const mediaName = MyUtils.buildMediaName("", _reqConfig.url, "");
 		
-        MyBaseProcesser.saveDownloadContext({
+        MyBaseProcessor.saveDownloadContext({
             id: uniqueKey,
             completeCallback: completeCallback
         });
@@ -26,7 +26,7 @@ var MyAsyncM3u8Parser = function (_reqConfig) {
         function completeCallback(buf, context){
             const content = new TextDecoder().decode(buf);
             
-            MyBaseProcesser.deleteDownloadContext(context);
+            MyBaseProcessor.deleteDownloadContext(context);
             
             callback(content);
         }

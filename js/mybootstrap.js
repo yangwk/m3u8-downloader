@@ -74,7 +74,7 @@ var MyBootstrap = (function () {
                     videox: MyVideox.info(),
                     download: MyDownload.info(),
                     notification: MyChromeNotification.info(),
-                    processer: MyBaseProcesser.info(),
+                    processor: MyBaseProcessor.info(),
                     downloader: MyDownloader.info(),
                     matchingRule: MyUrlRuleMatcher.info()
                 });
@@ -100,7 +100,7 @@ var MyBootstrap = (function () {
                 }, function(){});
                 sendResponse({success: true});
 			}else if(request.action == "stopm3u8livedownload"){
-                MyM3u8Processer.stopDownloadByContextId(request.data.id);
+                MyM3u8Processor.stopDownloadByContextId(request.data.id);
                 sendResponse({success: true});
             }
 		});
@@ -169,7 +169,7 @@ var MyBootstrap = (function () {
 	
     
     function _downloadM3u8CustomImpl(data, parseResult){
-        MyM3u8Processer.downloadM3u8(data, parseResult);
+        MyM3u8Processor.downloadM3u8(data, parseResult);
     }
 	
     
@@ -205,7 +205,7 @@ var MyBootstrap = (function () {
         downloadDirectory = MyChromeConfig.get("newFolderAtRoot") == "0" ? "" : downloadDirectory + "/";
         
         
-        MyBaseProcesser.saveDownloadContext({
+        MyBaseProcessor.saveDownloadContext({
             id: uniqueKey,
             completeCallback: completeCallback
         });
@@ -259,7 +259,7 @@ var MyBootstrap = (function () {
                 MyVideox.playCompleteSound();
             });
             
-            MyBaseProcesser.deleteDownloadContext(context);
+            MyBaseProcessor.deleteDownloadContext(context);
         }
     }
 	

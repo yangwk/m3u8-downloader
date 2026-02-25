@@ -596,7 +596,7 @@ document.addEventListener("DOMContentLoaded", function () {
 				document.getElementById("settings-nfar").checked = data.newFolderAtRoot == "1";
 				document.getElementById("settings-pswc").checked = data.playSoundWhenComplete == "1";
                 document.getElementById("settings-sd").checked = data.splitDiscontinuity == "1";
-                document.getElementById("settings-prothr").value = data.processerThreshold;
+                document.getElementById("settings-prothr").value = data.processorThreshold;
                 document.getElementById("settings-dps").value = data.downloaderPageSize;
                 document.getElementById("settings-cs").checked = data.convertSubtitles == "1";
                 document.getElementById("settings-bseq").checked = data.stopBrokenSequence == "1";
@@ -655,7 +655,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			data.newFolderAtRoot = document.getElementById("settings-nfar").checked ? "1" : "0";
 			data.playSoundWhenComplete = document.getElementById("settings-pswc").checked ? "1" : "0";
             data.splitDiscontinuity = document.getElementById("settings-sd").checked ? "1" : "0";
-            data.processerThreshold = parseInt(document.getElementById("settings-prothr").value, 10);
+            data.processorThreshold = parseInt(document.getElementById("settings-prothr").value, 10);
             data.downloaderPageSize = Math.min( Math.max( parseInt(document.getElementById("settings-dps").value, 10), 1024 ), 1024 * 1024 * 1024 );
             data.convertSubtitles = document.getElementById("settings-cs").checked ? "1" : "0";
             data.stopBrokenSequence = document.getElementById("settings-bseq").checked ? "1" : "0";

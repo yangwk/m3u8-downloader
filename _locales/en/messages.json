@@ -5,8 +5,8 @@
     "appDescription": {
         "message": "This extension can monitor and download m3u8 stream, and video, audio media."
     },
-    "processerName": {
-        "message": "m3u8 downloader processer - $1"
+    "processorName": {
+        "message": "m3u8 downloader processor - $1"
     },
     "notificationYes": {
         "message": "yes"
@@ -179,8 +179,8 @@
     "filter": {
         "message": "filter"
     },
-    "settingsProcesserThreshold": {
-        "message": "the threshold (MB) of non-live m3u8 processer mode"
+    "settingsProcessorThreshold": {
+        "message": "the threshold (MB) of non-live m3u8 processor mode"
     },
     "settingsMatchingRule": {
         "message": "matching rule"

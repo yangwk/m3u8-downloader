@@ -1,4 +1,4 @@
-var MyM3u8Processer = (function () {
+var MyM3u8Processor = (function () {
 
     function _completeCallback(buf, context, data){
     
@@ -113,7 +113,7 @@ var MyM3u8Processer = (function () {
                 callback && callback();
                 return ;
             }
-            MyChromeM3u8Processer.downloadM3u8Ts(context.chromeM3u8.data, context.parseResult.playList[x], function(){
+            MyChromeM3u8Processor.downloadM3u8Ts(context.chromeM3u8.data, context.parseResult.playList[x], function(){
                 context.chromeM3u8.completedCnt ++;
                 chromeM3u8Complete();
             });
@@ -127,8 +127,8 @@ var MyM3u8Processer = (function () {
                     if(context.isLive){
                         context.parseResult.discontinuity = [{ start: 0, end: context.playListCnt-1 }];
                     }
-                    MyChromeM3u8Processer.downloadM3u8Basic(context.chromeM3u8.data, context.parseResult, context.playListCnt, function(processerId){
-                        MyChromeM3u8Processer.openM3u8Processer(context.chromeM3u8.data, processerId);
+                    MyChromeM3u8Processor.downloadM3u8Basic(context.chromeM3u8.data, context.parseResult, context.playListCnt, function(processorId){
+                        MyChromeM3u8Processor.openM3u8Processor(context.chromeM3u8.data, processorId);
                     });
                 }
                 callback && callback();
@@ -163,7 +163,7 @@ var MyM3u8Processer = (function () {
                     end();
                     return ;
                 }
-                if(MyBaseProcesser.getDownloadContext(context.id) == null){
+                if(MyBaseProcessor.getDownloadContext(context.id) == null){
                     return ;
                 }
                 const changedPlayList = comparePlayList(parseResult.playList, context.lastMaxSequence);
@@ -252,7 +252,7 @@ var MyM3u8Processer = (function () {
         const mediaName = MyUtils.buildMediaName(data.mediaName, data.reqConfig.url, parseResult.suffix);
 		const downloadDirectory = MyUtils.buildDownloadDirectory(mediaName, uniqueKey);
         
-        const context = MyBaseProcesser.saveDownloadContext({
+        const context = MyBaseProcessor.saveDownloadContext({
             id: uniqueKey,
             downloadDirectory: downloadDirectory,
             parseResult: parseResult,
@@ -265,7 +265,7 @@ var MyM3u8Processer = (function () {
                     reqConfig: data.reqConfig,
                     mediaName: mediaName
                 },
-                threshold: parseResult.isLive ? 0 : MyChromeConfig.get("processerThreshold") * 1024 * 1024,
+                threshold: parseResult.isLive ? 0 : MyChromeConfig.get("processorThreshold") * 1024 * 1024,
                 index: 0,
                 completedCnt: 0
             },
@@ -344,7 +344,7 @@ var MyM3u8Processer = (function () {
                 }
             }, null);
                         
-            MyBaseProcesser.updateDownloadContext({
+            MyBaseProcessor.updateDownloadContext({
                 id: uniqueKey,
                 batchName: batchName
             });
@@ -373,7 +373,7 @@ var MyM3u8Processer = (function () {
         context.isEnd = true;
         MyDownload.downloadBatchHolder.reuse(context.batchName, false);
         MyDownload.downloadBatchHolder.complete(context.batchName);
-        MyBaseProcesser.deleteDownloadContext(context);
+        MyBaseProcessor.deleteDownloadContext(context);
         if(! context.useChromeM3u8){
             _mergeContent(context);
         }else if(context.isLive){
@@ -382,7 +382,7 @@ var MyM3u8Processer = (function () {
     }
     
     function _stopDownloadByContextId(id){
-        const context = MyBaseProcesser.getDownloadContext(id);
+        const context = MyBaseProcessor.getDownloadContext(id);
         if(context != null){
             _stopDownload(context, true);
         }

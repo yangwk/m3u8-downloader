@@ -1,4 +1,4 @@
-var MyChromeM3u8Processer = (function () {
+var MyChromeM3u8Processor = (function () {
 	
     /*
     data = {
@@ -12,34 +12,34 @@ var MyChromeM3u8Processer = (function () {
     }
     */
 	function _downloadM3u8Basic(data, parseResult, playListCnt, callback){
-		var processerId = null;
+		var processorId = null;
 		
-		function stepDownloadm3u8processer1(){
-			var processerName = MyUtils.isWindowsPlatform() ? "processer.bat" : "processer.sh.command" ;
+		function stepDownloadm3u8processor1(){
+			var processorName = MyUtils.isWindowsPlatform() ? "processor.bat" : "processor.sh.command" ;
 			
 			MyDownload.download({
                 tasks: [{
                     options: {
-                        url: chrome.extension.getURL(processerName),
-                        filename: data.downloadDirectory + "/processer/"+processerName
+                        url: chrome.extension.getURL(processorName),
+                        filename: data.downloadDirectory + "/processor/"+processorName
                     },
                     target: "chrome"
                 }],
                 showName: data.mediaName + "1.txt",
                 priority: true
-            }, stepDownloadm3u8processer2 );
+            }, stepDownloadm3u8processor2 );
 		}
 		
-		stepDownloadm3u8processer1();
+		stepDownloadm3u8processor1();
 		
-		function stepDownloadm3u8processer2(ids){
-			processerId = ids[0];
+		function stepDownloadm3u8processor2(ids){
+			processorId = ids[0];
 			
 			MyDownload.download({
                 tasks: [{
                     options: {
-                        url: chrome.extension.getURL("processer.txt"),
-                        filename: data.downloadDirectory + "/processer/" + MyUtils.trimSuffix(data.mediaName) + ".txt"
+                        url: chrome.extension.getURL("processor.txt"),
+                        filename: data.downloadDirectory + "/processor/" + MyUtils.trimSuffix(data.mediaName) + ".txt"
                     },
                     target: "chrome"
                 }], 
@@ -71,7 +71,7 @@ var MyChromeM3u8Processer = (function () {
                 }else{
                     tasks.push({
                         options: {
-                            url: chrome.extension.getURL("processer.m3u8"),
+                            url: chrome.extension.getURL("processor.m3u8"),
                             filename: data.downloadDirectory + "/m3u8/" + m3u8Name
                         },
                         target: "chrome"
@@ -83,7 +83,7 @@ var MyChromeM3u8Processer = (function () {
                 showName: data.mediaName + ".m3u8",
                 priority: true
             }, function(){
-                callback(processerId);
+                callback(processorId);
             });
 		}
     }
@@ -118,12 +118,12 @@ var MyChromeM3u8Processer = (function () {
     }
 	
     
-	function _openM3u8Processer(data, processerId){
+	function _openM3u8Processor(data, processorId){
         MyVideox.playCompleteSound();
         
-        MyChromeDownload.open(processerId, {
+        MyChromeDownload.open(processorId, {
             title: data.mediaName,
-            message: chrome.i18n.getMessage("notificationOpenDownload", chrome.i18n.getMessage("processerName", data.mediaName) )
+            message: chrome.i18n.getMessage("notificationOpenDownload", chrome.i18n.getMessage("processorName", data.mediaName) )
         });
 	}
     
@@ -131,6 +131,6 @@ var MyChromeM3u8Processer = (function () {
 	return {
 		downloadM3u8Basic: _downloadM3u8Basic,
         downloadM3u8Ts: _downloadM3u8Ts,
-        openM3u8Processer: _openM3u8Processer
+        openM3u8Processor: _openM3u8Processor
 	}
 })();
