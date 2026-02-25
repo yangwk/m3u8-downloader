@@ -18,7 +18,7 @@ var MyChromeConfig = (function () {
 		newFolderAtRoot: "1",
 		playSoundWhenComplete: "1",
         splitDiscontinuity: "1",
-        processerThreshold: 500,
+        processorThreshold: 500,
         downloaderPageSize: 5 * 1024 * 1024,
         convertSubtitles: "1",
         stopBrokenSequence: "1",

@@ -1,4 +1,4 @@
-var MyBaseProcesser = (function () {
+var MyBaseProcessor = (function () {
 
     const _cache = new Map();
     

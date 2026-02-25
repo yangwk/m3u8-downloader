@@ -21,7 +21,7 @@ var MyDownload = (function () {
 				var copyTasks = copyTaskData.tasks;
 				for(var x in copyTasks){
 					var task = copyTasks[x];
-                    task.proxy = ( task.target == "custom" ? true : task.proxy || false ) && MyChromeConfig.get("proxyAddressEnable") == "1";
+                    task.proxy = MyChromeConfig.get("proxyAddressEnable") == "1";
 					task.control = {};
 					task.control.batchName = batchName;
 					task.control.fileName = task.options.filename;
@@ -220,7 +220,7 @@ var MyDownload = (function () {
         if(task.target == "chrome"){
             MyChromeDownload.downloadTask(task);
         }else if(task.target == "custom"){
-            MyBaseProcesser.downloadDownload(task);
+            MyBaseProcessor.downloadDownload(task);
         }
 	}
 
@@ -246,7 +246,7 @@ var MyDownload = (function () {
         if(control.target == "chrome"){
             MyChromeDownload.cancel(id, callback);
         }else if(control.target == "custom"){
-            MyBaseProcesser.downloadCancel(id);
+            MyBaseProcessor.downloadCancel(id);
             callback();
         }
         
@@ -260,7 +260,7 @@ var MyDownload = (function () {
         if(control.target == "chrome"){
             MyChromeDownload.resume(id);
         }else if(control.target == "custom"){
-            MyBaseProcesser.downloadResume(id);
+            MyBaseProcessor.downloadResume(id);
         }
     }
     
@@ -270,7 +270,7 @@ var MyDownload = (function () {
             return ;
         }
         if(control.target == "custom"){
-            MyBaseProcesser.downloadRestart(id);
+            MyBaseProcessor.downloadRestart(id);
         }
     }
     

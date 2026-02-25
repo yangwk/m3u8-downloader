@@ -20,15 +20,29 @@ var MyBootstrap = (function () {
                     return ;
                 }
 				var mediaItem = request.data.destroy ? MyChromeMediaMonitor.take(request.data.identifier) : MyChromeMediaMonitor.element(request.data.identifier);
+                if(mediaItem == null){
+                    sendResponse({success: true});
+                    return ;
+                }
+                
                 if(request.data.urlMaster){
                     mediaItem.url = request.data.urlMaster;
                     mediaItem.parseResult = null;
                     mediaItem.requestData = null;
                 }
+        
+                let isM3u8 = false;
                 if(request.data.isDirect){
                     mediaItem.mediaType = "video";
+                }else{
+                    const suffix = MyUtils.getSuffix(mediaItem.url, true);
+                    if(MyUtils.isM3u8(suffix)){
+                        mediaItem.mediaType = "m3u8";
+                        isM3u8 = true;
+                    }
                 }
-                if(request.data.mediaType == "subtitles"){
+                
+                if(request.data.mediaType == "subtitles" && !isM3u8){
                     mediaItem.mediaType = request.data.mediaType;
                     mediaItem.kind = request.data.kind;
                 }
@@ -60,7 +74,7 @@ var MyBootstrap = (function () {
                     videox: MyVideox.info(),
                     download: MyDownload.info(),
                     notification: MyChromeNotification.info(),
-                    processer: MyBaseProcesser.info(),
+                    processor: MyBaseProcessor.info(),
                     downloader: MyDownloader.info(),
                     matchingRule: MyUrlRuleMatcher.info()
                 });
@@ -86,7 +100,7 @@ var MyBootstrap = (function () {
                 }, function(){});
                 sendResponse({success: true});
 			}else if(request.action == "stopm3u8livedownload"){
-                MyM3u8Processer.stopDownloadByContextId(request.data.id);
+                MyM3u8Processor.stopDownloadByContextId(request.data.id);
                 sendResponse({success: true});
             }
 		});
@@ -155,7 +169,7 @@ var MyBootstrap = (function () {
 	
     
     function _downloadM3u8CustomImpl(data, parseResult){
-        MyM3u8Processer.downloadM3u8(data, parseResult);
+        MyM3u8Processor.downloadM3u8(data, parseResult);
     }
 	
     
@@ -164,12 +178,6 @@ var MyBootstrap = (function () {
         const mediaName = MyUtils.buildMediaName(data.mediaName, data.reqConfig.url, "");
 		let downloadDirectory = MyUtils.buildDownloadDirectory(mediaName, uniqueKey);
         downloadDirectory = MyChromeConfig.get("newFolderAtRoot") == "0" ? "" : downloadDirectory + "/";
-        
-		
-        MyBaseProcesser.saveDownloadContext({
-            id: uniqueKey,
-            completeCallback: completeCallback
-        });
         
 		MyDownload.download({
             tasks: [{
@@ -180,51 +188,24 @@ var MyBootstrap = (function () {
                     headers: data.reqConfig.headers,
                     body: data.reqConfig.body
                 },
-                target: "custom",
-                custom: { contextId: uniqueKey }
+                target: "chrome"
             }], 
             showName: mediaName
-        }, null);
+        }, function(){
+            MyVideox.playCompleteSound();
+        });
 		
-        function completeCallback(buf, context){
-            const blob = new Blob([ buf ], {type: "application/octet-stream"});
-            const url = URL.createObjectURL(blob);
-            
-            MyDownload.download({
-                tasks: [{
-                    options: {
-                        url: url,
-                        filename: downloadDirectory + mediaName
-                    },
-                    target: "chrome"
-                }], 
-                showName: mediaName,
-                priority: true
-            }, function(){
-                URL.revokeObjectURL(url);
-                
-                MyVideox.playCompleteSound();
-            });
-            
-            MyBaseProcesser.deleteDownloadContext(context);
-        }
 	}
     
     
     function _downloadSubtitles(data, kind){
-        const suffix = MyUtils.getSuffix(data.reqConfig.url, true);
-        if(MyUtils.isM3u8(suffix)){
-            _downloadM3u8(data);
-            return ;
-        }
-        
         const uniqueKey = MyUtils.genRandomString();
         const mediaName = MyUtils.buildMediaName(data.mediaName, data.reqConfig.url, kind);
 		let downloadDirectory = MyUtils.buildDownloadDirectory(mediaName, uniqueKey);
         downloadDirectory = MyChromeConfig.get("newFolderAtRoot") == "0" ? "" : downloadDirectory + "/";
         
         
-        MyBaseProcesser.saveDownloadContext({
+        MyBaseProcessor.saveDownloadContext({
             id: uniqueKey,
             completeCallback: completeCallback
         });
@@ -278,7 +259,7 @@ var MyBootstrap = (function () {
                 MyVideox.playCompleteSound();
             });
             
-            MyBaseProcesser.deleteDownloadContext(context);
+            MyBaseProcessor.deleteDownloadContext(context);
         }
     }
 	

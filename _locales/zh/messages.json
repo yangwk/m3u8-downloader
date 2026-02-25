@@ -5,7 +5,7 @@
     "appDescription": {
         "message": "此插件支持监控和下载：m3u8流媒体、视频、音频"
     },
-    "processerName": {
+    "processorName": {
         "message": "m3u8下载器 处理器 - $1"
     },
     "notificationYes": {
@@ -179,7 +179,7 @@
     "filter": {
         "message": "过滤"
     },
-    "settingsProcesserThreshold": {
+    "settingsProcessorThreshold": {
         "message": "非直播m3u8处理器模式的阈值（MB）"
     },
     "settingsMatchingRule": {
