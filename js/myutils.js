@@ -88,7 +88,7 @@ var MyUtils = (function(){
 			return addStr + str;
 		},
 		formatHms: function(sec){
-			var fsec = sec < 1 ? 1 : Number(sec.toFixed(0));
+			var fsec = sec < 1 ? 1 : Math.trunc(sec);
 			var hour = Math.trunc(fsec / 3600);
 			var tail = fsec % 3600;
 			var minute = Math.trunc(tail / 60);

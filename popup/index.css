@@ -111,15 +111,15 @@ hr {
     border-top-color: #00ff00;
     height: 0;
     border-bottom-width: 0;
-	margin-top: 1px;
-    margin-bottom: 1px;
+	margin-top: 2px;
+    margin-bottom: 2px;
 }
 .favIcon {
 	max-width: 18px;
     max-height: 18px;
 }
 input[type="text"] , input[type="number"] {
-    padding: 0;
+    padding: 2px;
     margin: 1px 0px 1px 0px;
 	display: inline-block;
     height: 1.3em;
@@ -137,10 +137,10 @@ input[type="text"] , input[type="number"] {
     transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
 }
 input[type="text"] {
-    width: calc(100% - 2px);
+    width: calc(100% - 6px);
 }
 input[type="number"] {
-	width: 75px;
+	width: 79px;
 }
 input[type="checkbox"] {
     margin: 0px 3px 3px 0px;
@@ -159,8 +159,8 @@ textarea {
 	margin: 2px 0px 0px 0px;
 	line-height: 1.5;
 	resize: none;
-    width: calc(100% - 2px);
-	padding: 0;
+    width: calc(100% - 6px);
+	padding: 2px;
 	border-style: solid;
     border-width: 1px;
 	border-radius: 4px;

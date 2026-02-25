@@ -39,7 +39,7 @@
         "message": "刷新"
     },
     "url": {
-        "message": "URL地址"
+        "message": "URL"
     },
     "monitorFromTab": {
         "message": "来自标签页"
@@ -51,7 +51,7 @@
         "message": "删除"
     },
     "inputValidURL": {
-        "message": "输入合法的URL地址"
+        "message": "输入合法的URL"
     },
     "inputValidHeaders": {
         "message": "输入合法的请求头"
@@ -123,7 +123,7 @@
         "message": "插件弹窗高度最大像素"
     },
     "submit": {
-        "message": "应用"
+        "message": "提交"
     },
 	"copyUrl": {
         "message": "复制URL"

@@ -3,7 +3,7 @@
         "message": "m3u8 downloader"
     },
     "appDescription": {
-        "message": "This extension can monitor and download m3u8 stream, and video, audio media."
+        "message": "This extension can monitor and download m3u8 stream, video, and audio."
     },
     "processorName": {
         "message": "m3u8 downloader processor - $1"
@@ -45,7 +45,7 @@
         "message": "from tab"
     },
     "inputFileName": {
-        "message": "input the name of the file to be saved"
+        "message": "input the filename to save"
     },
     "delete": {
         "message": "delete"
@@ -150,7 +150,7 @@
         "message": "create subdirectory at download root folder"
     },
 	"settingsPlaySoundWhenComplete": {
-        "message": "play sound when complete"
+        "message": "play sound when download complete"
     },
 	"settingsSplitDiscontinuity": {
         "message": "split to handle discontinuity m3u8 playlist"
@@ -189,7 +189,7 @@
         "message": "the page size (byte) of downloader"
     },
     "settingsConvertSubtitles": {
-        "message": "convert subtitles"
+        "message": "convert subtitles format"
     },
     "live": {
         "message": "live"
@@ -198,7 +198,7 @@
         "message": "stop live"
     },
     "settingsBrokenSequence": {
-        "message": "stop live downloads if broken sequence"
+        "message": "stop live download if broken sequence"
     },
     "settingsProxyAddress": {
         "message": "proxy address"
