@@ -357,7 +357,7 @@ var MyM3u8Processer = (function () {
     }
     
         
-    function purgeContext(context){
+    function _purgeContext(context){
         if(context.useChromeM3u8){
             context.playListCnt = context.chromeM3u8.completedCnt;
             context.parseResult.playList.splice(0);
@@ -368,7 +368,7 @@ var MyM3u8Processer = (function () {
     
     function _stopDownload(context, forceStop){
         if(forceStop){
-            purgeContext(context);
+            _purgeContext(context);
         }
         context.isEnd = true;
         MyDownload.downloadBatchHolder.reuse(context.batchName, false);

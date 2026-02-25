@@ -52,20 +52,30 @@ var MyChromeDownload = (function () {
 			task.options.conflictAction = "prompt";
 		}
         
-        if(task.proxy){
-            const proxyData = {
-                url: task.options.url,
-                method: task.options.method,
-                header: MyUtils.headersToHeader(task.options.headers),
-                body: null
-            };
-            
-            task.options.url = MyChromeConfig.get("proxyAddress") + "/proxy/index";
-            task.options.method = "POST";
-            task.options.headers = [ { name: "Content-Type", value: "application/json" } ];
-            task.options.body = JSON.stringify(proxyData);
-        }
-		
+        const toStringFunc = task.proxy ? MyUtils.toHexString : MyUtils.toPureString ;
+        toStringFunc.call(MyUtils, task.options.body, function(content){
+            if(task.proxy){
+                const proxyData = {
+                    url: task.options.url,
+                    method: task.options.method,
+                    header: MyUtils.headersToHeader(task.options.headers),
+                    body: content
+                };
+                
+                task.options.url = MyChromeConfig.get("proxyAddress") + "/proxy/index";
+                task.options.method = "POST";
+                task.options.headers = [ { name: "Content-Type", value: "application/json" } ];
+                task.options.body = JSON.stringify(proxyData);
+                
+                _downloadTaskImpl(task);
+            }else{
+                _downloadTaskImpl(task);
+            }
+        });
+    }
+
+
+    function _downloadTaskImpl(task){
 		try{
 			// sync calculate, incr firstly, decr if error
 			MyDownload.downloadingHolder.actionIncr();

@@ -142,7 +142,10 @@ var MyUtils = (function(){
             return (sc >= 200 && sc < 300) || sc == 304 ;
 		},
         isChromeTarget: function(downloadId){
-            return ! (typeof downloadId == "string" || downloadId instanceof String );
+            return ! this.isString(downloadId);
+        },
+        isString: function(obj){
+            return typeof obj == "string" || obj instanceof String;
         },
         formatBandwidth: function(bandwidth){
             let dividend = 1 , unit = "bps";
@@ -265,6 +268,18 @@ var MyUtils = (function(){
                         strArr.push(hex);
                     });
                     callback( strArr.join("") );
+                }).catch((e) => {
+                    throw e;
+                });
+            }else{
+                callback(null);
+            }
+        },
+        toPureString: function(blob, callback){
+            if(blob instanceof Blob){
+                this.readAsArrayBuffer(blob).then((buf) => {
+                    const content = new TextDecoder().decode(buf);
+                    callback( content );
                 }).catch((e) => {
                     throw e;
                 });
