@@ -7,8 +7,6 @@ var MyChromeConfig = (function () {
 	
 	var _config = {
 		environment: "nothing",
-		showTab: "1",
-		showDuration: "1",
 		monitoredQueueMax: 50,
 		downloadingMax: 3,
 		downloadBatchMax: 5,

@@ -23,7 +23,7 @@ var MyChromeMediaMonitor = (function () {
         
         _MediaItem.prototype.buildInfo = function(result){
             if(this.immutableInfo){
-                throw "illegal state";
+                return;
             }
             this.duration = result == null ? null : result.duration;
             if(this.mediaType == "m3u8"){
@@ -415,27 +415,15 @@ var MyChromeMediaMonitor = (function () {
             }
             mediaItem.requestData = requestData;
             
-            if(MyChromeConfig.get("showTab") == "1"){
-                chrome.tabs.get(details.tabId, function(tab){
-                    if(tab != null){
-                        mediaItem.tabItem = new _TabItem(
-                            tab.title,
-                            tab.favIconUrl
-                        );
-                    }
-                    if(MyChromeConfig.get("showDuration") == "1"){
-                        _getMediaInfo(mediaItem);
-                    }else{
-                        _monitoredQueue.offer(mediaItem);
-                    }
-                });
-            }else{
-                if(MyChromeConfig.get("showDuration") == "1"){
-                    _getMediaInfo(mediaItem);
-                }else{
-                    _monitoredQueue.offer(mediaItem);
+            chrome.tabs.get(details.tabId, function(tab){
+                if(tab != null){
+                    mediaItem.tabItem = new _TabItem(
+                        tab.title,
+                        tab.favIconUrl
+                    );
                 }
-            }
+                _getMediaInfo(mediaItem);
+            });
         }
     }
 	

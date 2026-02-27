@@ -104,9 +104,6 @@
     "settingsEnvironmentMobile": {
         "message": "mobile"
     },
-    "settingsShowTab": {
-        "message": "the monitored details show tab information"
-    },
     "settingsMonitorMax": {
         "message": "maximum number of the monitored"
     },
@@ -130,9 +127,6 @@
     },
 	"settingsPopupInTab": {
         "message": "open the extension popup in tab"
-    },
-	"settingsShowDuration": {
-        "message": "the monitored details show duration"
     },
 	"duration": {
         "message": "duration"

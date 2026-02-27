@@ -585,8 +585,6 @@ document.addEventListener("DOMContentLoaded", function () {
 						break;
 					}
 				}
-				document.getElementById("settings-tab").checked = data.showTab == "1";
-				document.getElementById("settings-duration").checked = data.showDuration == "1";
 				document.getElementById("settings-mntmax").value = data.monitoredQueueMax;
 				document.getElementById("settings-dlingmax").value = data.downloadingMax;
 				document.getElementById("settings-dlbtmax").value = data.downloadBatchMax;
@@ -644,13 +642,11 @@ document.addEventListener("DOMContentLoaded", function () {
 			var data = {};
 			var senv = document.getElementById("settings-environment");
 			data.environment = senv[senv.selectedIndex].value;
-			data.showTab = document.getElementById("settings-tab").checked ? "1" : "0";
 			data.monitoredQueueMax = parseInt(document.getElementById("settings-mntmax").value, 10);
 			data.downloadingMax = parseInt(document.getElementById("settings-dlingmax").value, 10);
 			data.downloadBatchMax = parseInt(document.getElementById("settings-dlbtmax").value, 10);
 			data.popupWidth = parseInt(document.getElementById("settings-popwidth").value, 10);
 			data.popupHeight = parseInt(document.getElementById("settings-popheight").value, 10);
-			data.showDuration = document.getElementById("settings-duration").checked ? "1" : "0";
 			data.promptWhenExist = document.getElementById("settings-pwe").checked ? "1" : "0";
 			data.newFolderAtRoot = document.getElementById("settings-nfar").checked ? "1" : "0";
 			data.playSoundWhenComplete = document.getElementById("settings-pswc").checked ? "1" : "0";

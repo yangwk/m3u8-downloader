@@ -117,6 +117,10 @@ hr {
 .favIcon {
 	max-width: 18px;
     max-height: 18px;
+    display: inline-block;
+    line-height: 1;
+    text-align: center;
+    vertical-align: middle;
 }
 input[type="text"] , input[type="number"] {
     padding: 2px;
@@ -145,6 +149,8 @@ input[type="number"] {
 input[type="checkbox"] {
     margin: 0px 3px 3px 0px;
     vertical-align: middle;
+    width: 16px;
+    height: 16px;
 }
 .not-select {
 	user-select: none;
@@ -185,6 +191,7 @@ select {
     border: 1px solid #ccc;
     border-radius: 4px;
     display: inline-block;
+    padding: 2px;
 }
 .empty-select {
     border: 0px;

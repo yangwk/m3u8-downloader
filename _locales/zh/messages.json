@@ -104,9 +104,6 @@
     "settingsEnvironmentMobile": {
         "message": "手机"
     },
-    "settingsShowTab": {
-        "message": "监控详情显示标签页信息"
-    },
     "settingsMonitorMax": {
         "message": "监控数最大值"
     },
@@ -130,9 +127,6 @@
     },
 	"settingsPopupInTab": {
         "message": "标签页打开插件弹窗"
-    },
-	"settingsShowDuration": {
-        "message": "监控详情显示长度"
     },
 	"duration": {
         "message": "长度"
