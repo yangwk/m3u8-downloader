@@ -15,10 +15,14 @@ var MyChromeDownload = (function () {
 				// TODO interrupted and can't resume
 			}
 		}
+        
+        if (delta.state){
+            control.state = delta.state.current;
+        }
 
 		if (delta.state && delta.state.current == "complete") {
 			MyDownload.downloadingHolder.delete(delta.id);
-			MyDownload.downloadBatchHolder.complete(control.batchName);
+			MyDownload.downloadBatchHolder.complete(control.batchName, delta.id, control);
 			if(control.hideInDownloadList){
 				chrome.downloads.erase({id: delta.id}, function(){
 					if(chrome.runtime.lastError){

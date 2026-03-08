@@ -422,7 +422,7 @@ document.addEventListener("DOMContentLoaded", function () {
             var dom2 = document.createElement("span");
             dom2.innerHTML = '<span class="badge badge-b" data-msg="cancel">cancel</span>';
             dom2.dataset["downloadId"] = obj.id;
-            dom2.addEventListener("click", cancelDownload);
+            dom2.addEventListener("click", cancelDownload, { once: true });
             
             contentDom.appendChild(dom);
             dom.appendChild(dom2);
@@ -431,7 +431,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 var dom3 = document.createElement("span");
                 dom3.innerHTML = '<span class="badge badge-b" data-msg="resume">resume</span>';
                 dom3.dataset["downloadId"] = obj.id;
-                dom3.addEventListener("click", resumeDownload);
+                dom3.addEventListener("click", resumeDownload, { once: true });
                 
                 dom.appendChild(dom3);
             }
@@ -453,7 +453,6 @@ document.addEventListener("DOMContentLoaded", function () {
 				}
 			}, function(response){
 			});
-            this.removeEventListener("click", cancelDownload);
 		}
 		
 		function resumeDownload(e){
@@ -466,7 +465,6 @@ document.addEventListener("DOMContentLoaded", function () {
 				}
 			}, function(response){
 			});
-            this.removeEventListener("click", resumeDownload);
 		}
         
 		function copyDownloadUrl(e){
@@ -490,9 +488,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                 }, function(response){
                 });
-                dom.removeEventListener("click", onceClickHandler);
             };
-            dom.addEventListener("click", onceClickHandler);
+            dom.addEventListener("click", onceClickHandler, { once: true });
             return dom;
         }
     

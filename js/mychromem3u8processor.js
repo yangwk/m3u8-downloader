@@ -6,7 +6,8 @@ var MyChromeM3u8Processor = (function () {
         downloadDirectory: "",
         reqConfig: {
             url: "",
-            method: ""
+            method: "",
+            headers: null
         }, 
         mediaName: ""
     }

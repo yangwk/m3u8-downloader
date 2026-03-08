@@ -30,6 +30,8 @@ var MyDownload = (function () {
                     task.control.target = task.target;
                     task.control.hideInDownloadList = task.hideInDownloadList || false;
                     task.control.batchShowName = copyTaskData.showName;
+                    task.control.removeDownloadId = task.removeDownloadId || false;
+                    task.control.state = null;
 				}
                 if(isUpdate){
                     for(var x in _queue){
@@ -49,9 +51,10 @@ var MyDownload = (function () {
 					completedCnt: 0,
 					mustCompleteCnt: copyTasks.length,
                     logicMustCompleteCnt: copyTasks.length,
-					downloadIds: [],
+					downloadIds: new Set(),
                     priority: copyTaskData.priority || false,
                     attributes: copyTaskData.attributes,
+                    downloadIdSize: 0,
 					callback: callback
 				};
 				_queue.push(batch);
@@ -90,30 +93,33 @@ var MyDownload = (function () {
 					}
 				}
 				if(batch != null){
-					for(var w in batch.downloadIds){
-						_cancelDownload(batch.downloadIds[w], false);
+					for(const id of batch.downloadIds){
+						_cancelDownload(id, false);
 					}
 				}
 			},
 			saveId: function(batchName, id){
 				for(var x in _queue){
 					if(_queue[x].batchName == batchName){
-                        // XXX live m3u8 will continue to grow
-						_queue[x].downloadIds.push(id);
+						_queue[x].downloadIds.add(id);
+                        _queue[x].downloadIdSize ++;
 						return true;
 					}
 				}
                 return false;
 			},
-			complete: function(batchName){
+			complete: function(batchName, id, control){
 				for(var x=0; x<_queue.length; x++){
 					var batch = _queue[x];
 					if(batch.batchName == batchName){
 						batch.completedCnt = Math.min(batch.completedCnt + 1, batch.mustCompleteCnt);
 						if(batch.completedCnt >= batch.logicMustCompleteCnt){
 							_queue.splice(x, 1);
-							batch.callback && batch.callback( batch.downloadIds );
+							batch.callback && batch.callback( Array.from( batch.downloadIds ) );
 						}
+                        if(id != null && control != null && control.removeDownloadId){
+                            batch.downloadIds.delete(id);
+                        }
 						break;
 					}
 				}
@@ -182,7 +188,7 @@ var MyDownload = (function () {
 				showName: batch.showName,
 				waitCnt: batch.tasks.length,
 				completedCnt: batch.completedCnt,
-				triggeredCnt: batch.downloadIds.length,
+				triggeredCnt: batch.downloadIdSize,
 				sum: batch.mustCompleteCnt,
                 attributes: batch.attributes
 			});

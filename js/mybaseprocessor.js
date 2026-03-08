@@ -6,13 +6,18 @@ var MyBaseProcessor = (function () {
         const control = MyDownload.downloadingHolder.get(data.id);
         if (control != null) {
             MyDownload.downloadingHolder.delete(data.id);
-            MyDownload.downloadBatchHolder.complete(control.batchName);
+            MyDownload.downloadBatchHolder.complete(control.batchName, data.id, control);
         }
         
         MyDownload.downloadTask();
     }
 
     function _downloadCallback(data){
+        const control = MyDownload.downloadingHolder.get(data.id);
+        if (control != null) {
+            control.state = data.state;
+        }
+
         if(data.state != "complete"){
             return;
         }

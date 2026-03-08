@@ -289,6 +289,15 @@ var MyUtils = (function(){
         },
         buildDownloadDirectory: function(mediaName, uniqueKey){
             return mediaName + "-" + uniqueKey;
+        },
+        deleteNotReserved(reservedKeySet, dataMap){
+            const keysToDelete = new Set();
+            dataMap.forEach((value, key) => {
+                if (!reservedKeySet.has(key)) {
+                    keysToDelete.add(key);
+                }
+            });
+            keysToDelete.forEach(key => dataMap.delete(key));
         }
     };
 })();
