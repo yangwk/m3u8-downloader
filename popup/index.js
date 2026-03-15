@@ -73,7 +73,6 @@ document.addEventListener("DOMContentLoaded", function () {
 		
 		function loadMonitoredMedia(){
 			var contentDom = document.getElementById("monitor-content");
-			contentDom.innerHTML = "......";
 			
 			chrome.runtime.sendMessage({
 				action: "loadmonitoredmedia"
@@ -770,7 +769,6 @@ document.addEventListener("DOMContentLoaded", function () {
         
 		function loadRunningInfo(){
 			var contentDom = document.getElementById("running-content");
-			contentDom.innerHTML = "......";
 			
 			chrome.runtime.sendMessage({
 				action: "loadrunninginfo"
