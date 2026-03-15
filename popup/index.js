@@ -508,7 +508,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
             const itemDom = document.createElement("div");
-            itemDom.innerHTML = '<hr/><div class="line-wrapping" title="' + obj.batchShowName + '">' + data.url + '</div>';
+            itemDom.innerHTML = '<hr/><div class="line-wrapping download-url" title="' + obj.batchShowName + '">' + data.url + '</div>';
             const statusDom = document.createElement("div");
             statusDom.className = "line-wrapping";
             const progressDom1 = document.createElement("div");

@@ -18,6 +18,9 @@ var MyChromeDownload = (function () {
         
         if (delta.state){
             control.state = delta.state.current;
+            if(control.stateRecordTime == null){
+                control.stateRecordTime = Date.now();
+            }
         }
 
 		if (delta.state && delta.state.current == "complete") {

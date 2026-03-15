@@ -32,6 +32,7 @@ var MyDownload = (function () {
                     task.control.batchShowName = copyTaskData.showName;
                     task.control.removeDownloadId = task.removeDownloadId || false;
                     task.control.state = null;
+                    task.control.stateRecordTime = null;
 				}
                 if(isUpdate){
                     for(var x in _queue){
@@ -147,7 +148,16 @@ var MyDownload = (function () {
 				_actionCount = Math.max(-- _actionCount, 0);
 			},
 			actionValidate: function(){
-				return _actionCount < MyChromeConfig.get("downloadingMax");
+				//return _actionCount < MyChromeConfig.get("downloadingMax");
+                
+                let checkCount = 0;
+                _map.forEach(function(control, id){
+                    // final state is counted within the time limit, for pause and then resume
+                    if(control.state == "in_progress" || (control.state != "in_progress" && Math.abs(Date.now() - (control.stateRecordTime || Date.now())) < 3000 ) ){
+                        checkCount ++;
+                    }
+				});
+                return checkCount < MyChromeConfig.get("downloadingMax");
 			},
 			length: function(){
 				return _map.size;

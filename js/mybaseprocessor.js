@@ -15,7 +15,13 @@ var MyBaseProcessor = (function () {
     function _downloadCallback(data){
         const control = MyDownload.downloadingHolder.get(data.id);
         if (control != null) {
+            if(control.state != data.state){
+                MyDownload.downloadTask();
+            }
             control.state = data.state;
+            if(control.stateRecordTime == null){
+                control.stateRecordTime = Date.now();
+            }
         }
 
         if(data.state != "complete"){

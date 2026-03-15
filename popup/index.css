@@ -203,15 +203,20 @@ select {
 	display: inline-block !important;
 	cursor: default !important;
 }
+/* download begin */
 .download-progress-outer  {
     background-color: #DFDEDF; 
     width: 100%; 
     height: 15px;
 }
 .download-progress-inner  {
-    background-color: #1A73E8;
+    background-color: #5bc0de;
     height: 100%;
 }
+.download-url {
+    color: #337ab7;
+}
+/* download end */
 span {
     display: inline-block;
 }
@@ -222,6 +227,7 @@ label {
     word-break: break-all;
     white-space: normal;
 }
+/* modal begin */
 .modal-content {
     position: fixed;
     top: 0;
@@ -235,7 +241,7 @@ label {
     visibility: hidden;
 }
 .modal-content.popup {
-    transition: transform 1s ease 0s;
+    transition: transform 0.7s ease 0s;
     transform: translateX(400px);
     visibility: visible;
 }
@@ -265,3 +271,4 @@ label {
     position: relative;
     max-height: 80px;
 }
+/* modal end */
