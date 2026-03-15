@@ -3,7 +3,7 @@
         "message": "m3u8下载器"
     },
     "appDescription": {
-        "message": "此插件支持监控和下载：m3u8流媒体、视频、音频"
+        "message": "此扩展程序支持监控和下载：m3u8流媒体、视频、音频"
     },
     "processorName": {
         "message": "m3u8下载器 处理器 - $1"
@@ -202,5 +202,20 @@
     },
     "manualMethod": {
         "message": "请求方法"
+    },
+    "closePopup": {
+        "message": "左键单击关闭当前，右键单击关闭全部"
+    },
+    "errorCode0001": {
+        "message": "不支持下载主播放列表"
+    },
+    "errorCode0002": {
+        "message": "请输入合法的URL"
+    },
+    "errorCode0003": {
+        "message": "下载批次数最大值已达到"
+    },
+    "errorCode0004": {
+        "message": "网络错误 $1"
     }
 }

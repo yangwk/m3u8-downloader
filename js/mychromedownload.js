@@ -36,16 +36,7 @@ var MyChromeDownload = (function () {
 		}
 	});
 	
-	chrome.downloads.onErased.addListener(function(id){
-		var control = MyDownload.downloadingHolder.get(id);
-		if (control == null) {
-			return;
-		}
-		
-		MyDownload.downloadBatchHolder.clearWhenInterrupted( control.batchName );
-	});
-	
-	
+
 	function _downloadTask(task){
 		if(task.options.method){
 			task.options.method = task.options.method.toUpperCase();

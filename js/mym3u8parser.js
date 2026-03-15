@@ -367,7 +367,8 @@ var MyM3u8Parser = function(_reqConfig, _content){
 	this.parse = function(){
 		try{
 			return _parse();
-		}catch(err){
+		}catch(e){
+            MyLogger.error(MyUtils.obtainExceptionContent(e));
 		}
         return null;
 	};

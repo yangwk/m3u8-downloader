@@ -35,6 +35,7 @@ var MyBaseProcessor = (function () {
         }).catch((e) => {
             MyDownload.cancel(data.id);
             _cache.delete(data.attributes.contextId);
+            MyLogger.error(MyUtils.obtainExceptionContent(e));
         });
     }
     

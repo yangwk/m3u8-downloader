@@ -237,7 +237,11 @@ document.addEventListener("DOMContentLoaded", function () {
                     mediaType: mediaType
 				}
 			}, function(response){
-				destroy && loadMonitoredMedia();
+                if(!response.success){
+                    __logError(response.message);
+                }else{
+                    destroy && loadMonitoredMedia();
+                }
 			});
 		}
 		
@@ -250,12 +254,14 @@ document.addEventListener("DOMContentLoaded", function () {
 			e.stopPropagation();
 			var url = document.getElementById("manual-url").value.trim();
             if(! url){
+                __logError(chrome.i18n.getMessage("errorCode0002"));
 				document.getElementById("manual-url").focus();
 				return ;
 			}
 			try{
 				new URL(url);
 			}catch(err){
+                __logError(chrome.i18n.getMessage("errorCode0002"));
 				document.getElementById("manual-url").focus();
 				return ;
 			}
@@ -278,6 +284,9 @@ document.addEventListener("DOMContentLoaded", function () {
 					mediaType: mediaType
 				}
 			}, function(response){
+                if(!response.success){
+                    __logError(response.message);
+                }
 			});
 		}
 		
@@ -288,7 +297,7 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("manual-headers").value = "";
 			document.getElementById("manual-name").value = "";
 		}
-		
+        
 	})();
 	
 	
@@ -780,5 +789,69 @@ document.addEventListener("DOMContentLoaded", function () {
 		}
 		
 	})();
+    
+    
+    //logger
+	(function(){
+        chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+            if(request.action == "log.error"){
+                onLogError(request.data.message);
+				sendResponse({success: true});
+			}
+        });
+        
+        const _logBus = new Array();
+        const _modalContainer = document.getElementById("modal-container");
+        const _modalPrimary = document.getElementById("modal-primary");
+        
+        function onLogError(message){
+            _logBus.push(message);
+            logNext(false);
+        }
+        
+        document.getElementById("modal-close").onclick = function(e){
+			e.stopPropagation();
+			logNext(true);
+		};
+        
+        document.getElementById("modal-close").addEventListener('contextmenu', function(e) {
+            e.stopPropagation();
+            e.preventDefault();
+            clearLog();
+        });
+        
+        
+        _modalContainer.addEventListener("logError", (e) => {
+            onLogError(e.data.message);
+        });
+        
+        function logNext(force){
+            if(!force && _modalContainer.classList.contains("popup")){
+                return ;
+            }
+            const message = _logBus.shift();
+            if(message != null){
+                _modalPrimary.innerText = message;
+                if(! _modalContainer.classList.contains("popup")){
+                    _modalContainer.classList.add("popup");
+                }
+            }else{
+                clearLog();
+            }
+        }
+        
+        function clearLog(){
+            _logBus.splice(0);
+            _modalContainer.classList.remove("popup");
+            _modalPrimary.innerText = "";
+        }
+        
+    })();
 	
+    function __logError(message){
+        const ev = new Event("logError");
+        ev.data = { message: message };
+        document.getElementById("modal-container").dispatchEvent(ev);
+    }
+    
 });

@@ -8,15 +8,17 @@ var MyBootstrap = (function () {
 	function _start() {
 		chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 			if(request.action == "downloadmedia"){
-                if(MyDownload.canDownload()){
-                    _downloadMedia(request.data);
+                if(!MyDownload.canDownload()){
+                    sendResponse({success: false, message: chrome.i18n.getMessage("errorCode0003")});
+                    return ;
                 }
+                _downloadMedia(request.data);
 				sendResponse({success: true});
 			}else if(request.action == "loadmonitoredmedia"){
 				sendResponse(MyChromeMediaMonitor.view());
 			}else if(request.action == "downloadmonitoredmedia"){
                 if(!MyDownload.canDownload()){
-                    sendResponse({success: true});
+                    sendResponse({success: false, message: chrome.i18n.getMessage("errorCode0003")});
                     return ;
                 }
 				var mediaItem = request.data.destroy ? MyChromeMediaMonitor.take(request.data.identifier) : MyChromeMediaMonitor.element(request.data.identifier);

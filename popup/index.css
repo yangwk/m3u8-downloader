@@ -72,7 +72,6 @@ a {
     display: inline-block;
     min-width: 10px;
     padding: 3px 7px;
-    font-size: 12px;
     line-height: 1;
     color: #fff;
     text-align: center;
@@ -115,8 +114,8 @@ hr {
     margin-bottom: 2px;
 }
 .favIcon {
-	max-width: 18px;
-    max-height: 18px;
+	max-width: 22px;
+    max-height: 22px;
     display: inline-block;
     line-height: 1;
     text-align: center;
@@ -127,7 +126,6 @@ input[type="text"] , input[type="number"] {
     margin: 1px 0px 1px 0px;
 	display: inline-block;
     height: 1.3em;
-    font-size: 13px;
     line-height: 1;
     color: #555;
     background-color: #fff;
@@ -147,7 +145,7 @@ input[type="number"] {
 	width: 79px;
 }
 input[type="checkbox"] {
-    margin: 0px 3px 3px 0px;
+    margin: 0px 2px 2px 0px;
     vertical-align: middle;
     width: 16px;
     height: 16px;
@@ -223,4 +221,47 @@ label {
 .line-wrapping {
     word-break: break-all;
     white-space: normal;
+}
+.modal-content {
+    position: fixed;
+    top: 0;
+    left: -400px;
+    width: 400px;
+    z-index: 1000;
+    overflow: hidden;
+    background-color: #f2dede;
+    margin: 0;
+    padding: 0;
+    visibility: hidden;
+}
+.modal-content.popup {
+    transition: transform 1s ease 0s;
+    transform: translateX(400px);
+    visibility: visible;
+}
+.close-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    line-height: 1rem;
+}
+.close-btn:hover {
+    background: rgba(255, 255, 255, 0.7);
+}
+.modal-body {
+    width: calc(100% - 21px);
+    text-align: center;
+    padding: 1px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: 100%;
+    position: relative;
+    max-height: 80px;
 }

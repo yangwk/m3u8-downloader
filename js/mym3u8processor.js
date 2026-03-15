@@ -267,6 +267,7 @@ var MyM3u8Processor = (function () {
     
     function _downloadM3u8(data, parseResult){
         if(parseResult.isMasterPlaylist){
+            MyLogger.error(chrome.i18n.getMessage("errorCode0001"));
             return false;
         }
 

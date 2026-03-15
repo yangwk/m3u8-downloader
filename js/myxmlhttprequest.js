@@ -164,6 +164,7 @@ var MyXMLHttpRequest = function (_settings) {
             _fireError(callback.error);
         };
         xhr.onerror = function () {
+            MyLogger.error(chrome.i18n.getMessage("errorCode0004", _settings.url));
             _fireError(callback.error);
         };
         xhr.onabort = function () {

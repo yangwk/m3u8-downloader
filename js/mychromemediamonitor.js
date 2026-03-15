@@ -416,7 +416,7 @@ var MyChromeMediaMonitor = (function () {
             mediaItem.requestData = requestData;
             
             chrome.tabs.get(details.tabId, function(tab){
-                if(tab != null){
+                if(tab != null && (tab.title || tab.favIconUrl)){
                     mediaItem.tabItem = new _TabItem(
                         tab.title,
                         tab.favIconUrl

@@ -298,6 +298,21 @@ var MyUtils = (function(){
                 }
             });
             keysToDelete.forEach(key => dataMap.delete(key));
+        },
+        obtainExceptionContent: function(e){
+            let message = null;
+            if(e != null){
+                if(e instanceof Error){
+                    if(e.stack){
+                        message = e.stack;
+                    }else{
+                        message = e.toString();
+                    }
+                }else{
+                    message = e.toString();
+                }
+            }
+            return message;
         }
     };
 })();

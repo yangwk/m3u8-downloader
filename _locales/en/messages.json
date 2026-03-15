@@ -3,7 +3,7 @@
         "message": "m3u8 downloader"
     },
     "appDescription": {
-        "message": "This extension can monitor and download m3u8 stream, video, and audio."
+        "message": "This extension can monitor and download m3u8 stream, video, and audio"
     },
     "processorName": {
         "message": "m3u8 downloader processor - $1"
@@ -202,5 +202,20 @@
     },
     "manualMethod": {
         "message": "request method"
+    },
+    "closePopup": {
+        "message": "left-click close current, right-click close all"
+    },
+    "errorCode0001": {
+        "message": "download main playlist is not supported"
+    },
+    "errorCode0002": {
+        "message": "please input a valid URL"
+    },
+    "errorCode0003": {
+        "message": "maximum number of download batch has been reached"
+    },
+    "errorCode0004": {
+        "message": "network error $1"
     }
 }
