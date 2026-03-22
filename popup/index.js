@@ -97,12 +97,12 @@ document.addEventListener("DOMContentLoaded", function () {
 						'<hr/>' +
 						'<span class="badge badge-url" data-title="url">' + obj.url + '</span>' +
 						( obj.tabItem ? '<span data-title="monitorFromTab">' + ( obj.tabItem.favIconUrl ? '<img class="favIcon" src="'+ obj.tabItem.favIconUrl +'"/>' : '' ) + '<span class="badge">' + obj.tabItem.title + '</span></span>' : '' ) +
-						( obj.duration ? '<span class="badge" data-title="duration">' + MyUtils.formatHms(obj.duration) + '</span>' : '' ) +
+						( obj.duration ? '<span class="badge media-duration" data-title="duration">' + MyUtils.formatHms(obj.duration) + '</span>' : '' ) +
 						( obj.length ? '<span class="badge">' + obj.length + '</span>' : '' ) +
 						'<span class="badge">' + obj.method + '</span>' +
 						'<span class="badge">' + obj.mediaType + '</span>' +
 						( obj.mime ? '<span class="badge">' + obj.mime + '</span>' : '' ) +
-                        ( obj.isLive ? '<span class="badge" data-msg="live">live</span>' : '' ) +
+                        ( obj.isLive ? '<span class="badge media-live" data-msg="live">live</span>' : '' ) +
 						'<input type="text" data-place="inputFileName" id="' + nameId + '" />'
 					);
 					dom.innerHTML = html;
@@ -539,13 +539,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 }else{
                     progressDom1.style.display = "none";
                 }
-                cancelDom.style.display = "block";
+                cancelDom.style.display = "inline-block";
                 resumeDom.style.display = "none";
                 if(data.restart){
                     pauseDom.style.display = "none";
-                    restartDom.style.display = "block";
+                    restartDom.style.display = "inline-block";
                 }else{
-                    pauseDom.style.display = data.resumable ? "block" : "none";
+                    pauseDom.style.display = data.resumable ? "inline-block" : "none";
                     restartDom.style.display = "none";
                 }
             }else if(data.state == "interrupted"){
@@ -553,13 +553,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 statusDom.style.display = "block";
                 progressDom1.style.display = "none";
                 pauseDom.style.display = "none";
-                cancelDom.style.display = "block";
+                cancelDom.style.display = "inline-block";
                 if(data.restart){
                     resumeDom.style.display = "none";
-                    restartDom.style.display = "block";
+                    restartDom.style.display = "inline-block";
                 }else{
-                    resumeDom.style.display = data.resumable ? "block" : "none";
-                    restartDom.style.display = !data.resumable ? "block" : "none";
+                    resumeDom.style.display = data.resumable ? "inline-block" : "none";
+                    restartDom.style.display = !data.resumable ? "inline-block" : "none";
                 }
             }else if(data.state == "complete"){
                 statusDom.style.display = "none";
@@ -593,6 +593,7 @@ document.addEventListener("DOMContentLoaded", function () {
 				document.getElementById("settings-mntmax").value = data.monitoredQueueMax;
 				document.getElementById("settings-dlingmax").value = data.downloadingMax;
 				document.getElementById("settings-dlbtmax").value = data.downloadBatchMax;
+                document.getElementById("settings-batchc").checked = data.batchConcurrent == "1";
 				document.getElementById("settings-popwidth").value = data.popupWidth;
 				document.getElementById("settings-popheight").value = data.popupHeight;
 				document.getElementById("settings-pwe").checked = data.promptWhenExist == "1";
@@ -650,6 +651,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			data.monitoredQueueMax = parseInt(document.getElementById("settings-mntmax").value, 10);
 			data.downloadingMax = parseInt(document.getElementById("settings-dlingmax").value, 10);
 			data.downloadBatchMax = parseInt(document.getElementById("settings-dlbtmax").value, 10);
+            data.batchConcurrent = document.getElementById("settings-batchc").checked ? "1" : "0";
 			data.popupWidth = parseInt(document.getElementById("settings-popwidth").value, 10);
 			data.popupHeight = parseInt(document.getElementById("settings-popheight").value, 10);
 			data.promptWhenExist = document.getElementById("settings-pwe").checked ? "1" : "0";

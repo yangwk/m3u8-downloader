@@ -1,17 +1,17 @@
 var MyDownload = (function () {
 	
 	var _downloadBatchHolder = (function(){
-		var _queue = new Array();
+		var _queue = new Map();
 		return {
 			isFull: function(){
-				return _queue.length >= MyChromeConfig.get("downloadBatchMax");
+				return _queue.size >= MyChromeConfig.get("downloadBatchMax");
 			},
 			length: function(){
-				return _queue.length;
+				return _queue.size;
 			},
 			forEach: function(callback){
-				for(var x in _queue){
-					callback(_queue[x]);
+                for (const [batchName, batch] of _queue) {
+					callback(batch);
 				}
 			},
 			offer: function(taskData, callback){
@@ -35,13 +35,12 @@ var MyDownload = (function () {
                     task.control.stateRecordTime = null;
 				}
                 if(isUpdate){
-                    for(var x in _queue){
-                        if(_queue[x].batchName == batchName){
-                            _queue[x].tasks.push(...copyTasks);
-                            _queue[x].mustCompleteCnt += copyTasks.length;
-                            break;
-                        }
+                    const batch = _queue.get(batchName);
+                    if(batch != null){
+                        batch.tasks.push(...copyTasks);
+                        batch.mustCompleteCnt += copyTasks.length;
                     }
+
                     return batchName;
                 }
                 
@@ -58,41 +57,56 @@ var MyDownload = (function () {
                     downloadIdSize: 0,
 					callback: callback
 				};
-				_queue.push(batch);
+				_queue.set(batchName, batch);
                 return batchName;
 			},
-            element: function(){
-                for(var x in _queue){
-                    if(_queue[x].priority && _queue[x].tasks.length > 0){
-                        return { batchName: _queue[x].batchName, priority: _queue[x].priority };
+            takeTasks: function(actionData, actionMax, multiple){
+                const tasks = [];
+                if(!multiple){
+                    // priority is always taken
+                    for (const [batchName, batch] of _queue) {
+                        if(batch.priority){
+                            const task = batch.tasks.shift();
+                            if(task != null){
+                                tasks.push(task);
+                            }
+                        }
+                    }
+                    const allActionCount = Array.from(actionData.values()).map(p => p.actionCount).reduce((acc, curr) => acc + curr, 0);
+                    const remainCount = actionMax - allActionCount;
+                    if(remainCount > 0){
+                        let cnt = 0;
+                        for (const [batchName, batch] of _queue) {
+                            const task = batch.tasks.shift();
+                            if(task != null){
+                                tasks.push(task);
+                                cnt ++;
+                            }
+                            if(cnt >= remainCount){
+                                break;
+                            }
+                        }
+                    }
+                    
+                    return tasks;
+                }
+                for (const [batchName, batch] of _queue) {
+                    const countInfo = actionData.get(batch.batchName);
+                    const remainCount = (batch.priority || countInfo == null) ? actionMax : Math.max(actionMax - countInfo.actionCount, 0);
+                    for(let a=0; a<remainCount; a++){
+                        const task = batch.tasks.shift();
+                        if(task == null){
+                            break;
+                        }
+                        tasks.push(task);
                     }
                 }
-                for(var x in _queue){
-                    if(_queue[x].tasks.length > 0){
-                        return { batchName: _queue[x].batchName, priority: _queue[x].priority };
-                    }
-                }
-                return null;
-            },
-			takeTask: function(batchName){
-                var task = null;
-                for(var x in _queue){
-                    if(_queue[x].batchName == batchName){
-                        task = _queue[x].tasks.shift();
-                        break;
-                    }
-                }
-				return task;
+				return tasks;
 			},
 			clearWhenInterrupted: function(batchName){
-				var batch = null;
-				for(var x=0; x<_queue.length; x++){
-					if(_queue[x].batchName == batchName){
-						batch = _queue[x];
-						_queue.splice(x, 1);
-						break;
-					}
-				}
+				const batch = _queue.get(batchName);
+                _queue.delete(batchName);
+                
 				if(batch != null){
 					for(const id of batch.downloadIds){
 						_cancelDownload(id, false);
@@ -100,38 +114,33 @@ var MyDownload = (function () {
 				}
 			},
 			saveId: function(batchName, id){
-				for(var x in _queue){
-					if(_queue[x].batchName == batchName){
-						_queue[x].downloadIds.add(id);
-                        _queue[x].downloadIdSize ++;
-						return true;
-					}
+                const batch = _queue.get(batchName);
+                if(batch != null){
+                    batch.downloadIds.add(id);
+                    batch.downloadIdSize ++;
+                    return true;
 				}
                 return false;
 			},
 			complete: function(batchName, id, control){
-				for(var x=0; x<_queue.length; x++){
-					var batch = _queue[x];
-					if(batch.batchName == batchName){
-						batch.completedCnt = Math.min(batch.completedCnt + 1, batch.mustCompleteCnt);
-						if(batch.completedCnt >= batch.logicMustCompleteCnt){
-							_queue.splice(x, 1);
-							batch.callback && batch.callback( Array.from( batch.downloadIds ) );
-						}
-                        if(id != null && control != null && control.removeDownloadId){
-                            batch.downloadIds.delete(id);
-                        }
-						break;
-					}
-				}
+                const batch = _queue.get(batchName);
+                
+                if(batch != null){
+                    batch.completedCnt = Math.min(batch.completedCnt + 1, batch.mustCompleteCnt);
+                    if(batch.completedCnt >= batch.logicMustCompleteCnt){
+                        _queue.delete(batchName);
+                        batch.callback && batch.callback( Array.from( batch.downloadIds ) );
+                    }
+                    if(id != null && control != null && control.removeDownloadId){
+                        batch.downloadIds.delete(id);
+                    }
+                }
 			},
             reuse: function(batchName, flag){
-				for(var x in _queue){
-					if(_queue[x].batchName == batchName){
-						_queue[x].logicMustCompleteCnt = flag ? Number.MAX_SAFE_INTEGER : _queue[x].mustCompleteCnt ;
-						break;
-					}
-				}
+                const batch = _queue.get(batchName);
+                if(batch != null){
+                    batch.logicMustCompleteCnt = flag ? Number.MAX_SAFE_INTEGER : batch.mustCompleteCnt ;
+                }
 			}
 		};
 	})();
@@ -139,25 +148,26 @@ var MyDownload = (function () {
 	
 	var _downloadingHolder = (function(){
         var _map = new Map();
-		var _actionCount = 0;
         return {
-			actionIncr: function(){
-				_actionCount ++;
-			},
-			actionDecr: function(){
-				_actionCount = Math.max(-- _actionCount, 0);
-			},
 			actionValidate: function(){
-				//return _actionCount < MyChromeConfig.get("downloadingMax");
+                const data = new Map();
                 
-                let checkCount = 0;
                 _map.forEach(function(control, id){
+                    let countInfo = data.get(control.batchName);
+                    if(countInfo == null){
+                        countInfo = { actionCount: 0 };
+                        data.set(control.batchName, countInfo);
+                    }
+                    
+                    if(control.state == "complete"){
+                        return ;
+                    }
                     // final state is counted within the time limit, for pause and then resume
                     if(control.state == "in_progress" || (control.state != "in_progress" && Math.abs(Date.now() - (control.stateRecordTime || Date.now())) < 3000 ) ){
-                        checkCount ++;
+                        countInfo.actionCount ++;
                     }
 				});
-                return checkCount < MyChromeConfig.get("downloadingMax");
+                return data;
 			},
 			length: function(){
 				return _map.size;
@@ -170,7 +180,6 @@ var MyDownload = (function () {
 			},
         	delete: function (k) {
         		_map.delete(k);
-				this.actionDecr();
         	},
 			forEach: function(callback){
 				_map.forEach(function(v, k){
@@ -220,23 +229,26 @@ var MyDownload = (function () {
 	}
     
     
-	function _downloadTask(){
-        var batch = _downloadBatchHolder.element();
-        if(batch == null){
+    function _downloadTask(){
+        MyUtils.delay(1, _downloadTaskImpl);
+    }
+    
+	function _downloadTaskImpl(){
+        const actionMax = MyChromeConfig.get("downloadingMax");
+        const actionData = _downloadingHolder.actionValidate();
+        const multiple = MyChromeConfig.get("batchConcurrent") == "1";
+        const tasks = _downloadBatchHolder.takeTasks(actionData, actionMax, multiple);
+        if(tasks == null || tasks.length == 0){
             return ;
         }
-        if(! batch.priority && !_downloadingHolder.actionValidate()){
-			return;
-		}
         
-		var task = _downloadBatchHolder.takeTask(batch.batchName);
-		if(task == null){
-			return ;
-		}
-        if(task.target == "chrome"){
-            MyChromeDownload.downloadTask(task);
-        }else if(task.target == "custom"){
-            MyBaseProcessor.downloadDownload(task);
+        for(let x in tasks){
+            const task = tasks[x];
+            if(task.target == "chrome"){
+                MyChromeDownload.downloadTask(task);
+            }else if(task.target == "custom"){
+                MyBaseProcessor.downloadDownload(task);
+            }
         }
 	}
 

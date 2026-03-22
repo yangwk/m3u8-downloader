@@ -75,27 +75,20 @@ var MyChromeDownload = (function () {
 
     function _downloadTaskImpl(task){
 		try{
-			// sync calculate, incr firstly, decr if error
-			MyDownload.downloadingHolder.actionIncr();
-			
 			chrome.downloads.download(task.options, function (id) {
 				if(chrome.runtime.lastError){
-					MyDownload.downloadingHolder.actionDecr();
 					MyDownload.downloadBatchHolder.clearWhenInterrupted(task.control.batchName);
 				}else{
 					if(id){
 						if(MyDownload.downloadBatchHolder.saveId(task.control.batchName, id)){
                             MyDownload.downloadingHolder.put(id, task.control);
-                            MyDownload.downloadTask();
                         }
 					}else{
-						MyDownload.downloadingHolder.actionDecr();
 						MyDownload.downloadBatchHolder.clearWhenInterrupted(task.control.batchName);
 					}
 				}
 			});
 		}catch(err){
-			MyDownload.downloadingHolder.actionDecr();
 			MyDownload.downloadBatchHolder.clearWhenInterrupted(task.control.batchName);
 		}
 	}

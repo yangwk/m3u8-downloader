@@ -108,7 +108,7 @@
         "message": "监控数最大值"
     },
     "settingsDlingMax": {
-        "message": "正在下载任务数最大值"
+        "message": "每批次正在下载任务数最大值"
     },
     "settingsDlBatchMax": {
         "message": "下载批次数最大值"
@@ -205,6 +205,9 @@
     },
     "closePopup": {
         "message": "左键单击关闭当前，右键单击关闭全部"
+    },
+    "settingsBatchConcurrent": {
+        "message": "多批次并发下载"
     },
     "errorCode0001": {
         "message": "不支持下载主播放列表"

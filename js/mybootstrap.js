@@ -12,8 +12,8 @@ var MyBootstrap = (function () {
                     sendResponse({success: false, message: chrome.i18n.getMessage("errorCode0003")});
                     return ;
                 }
+                sendResponse({success: true});
                 _downloadMedia(request.data);
-				sendResponse({success: true});
 			}else if(request.action == "loadmonitoredmedia"){
 				sendResponse(MyChromeMediaMonitor.view());
 			}else if(request.action == "downloadmonitoredmedia"){

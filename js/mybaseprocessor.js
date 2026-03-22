@@ -7,9 +7,7 @@ var MyBaseProcessor = (function () {
         if (control != null) {
             MyDownload.downloadingHolder.delete(data.id);
             MyDownload.downloadBatchHolder.complete(control.batchName, data.id, control);
-        }
-        
-        MyDownload.downloadTask();
+        }        
     }
 
     function _downloadCallback(data){
@@ -47,11 +45,9 @@ var MyBaseProcessor = (function () {
     
      
     function _downloadDownload(task){
-        MyDownload.downloadingHolder.actionIncr();
         _downloadDownloadImpl(task, function(id){
             if(MyDownload.downloadBatchHolder.saveId(task.control.batchName, id)){
                 MyDownload.downloadingHolder.put(id, task.control);
-                MyDownload.downloadTask();
             }
         });
     }

@@ -108,7 +108,7 @@
         "message": "maximum number of the monitored"
     },
     "settingsDlingMax": {
-        "message": "maximum number of downloading task"
+        "message": "maximum number of downloading task per batch"
     },
     "settingsDlBatchMax": {
         "message": "maximum number of download batch"
@@ -205,6 +205,9 @@
     },
     "closePopup": {
         "message": "left-click close current, right-click close all"
+    },
+    "settingsBatchConcurrent": {
+        "message": "multiple batches concurrent download"
     },
     "errorCode0001": {
         "message": "download main playlist is not supported"

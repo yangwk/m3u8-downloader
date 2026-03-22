@@ -10,6 +10,7 @@ var MyChromeConfig = (function () {
 		monitoredQueueMax: 50,
 		downloadingMax: 3,
 		downloadBatchMax: 5,
+        batchConcurrent: "1",
 		popupWidth: 490,
 		popupHeight: 435,
 		promptWhenExist: "0",

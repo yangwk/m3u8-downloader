@@ -264,11 +264,17 @@ label {
 .modal-body {
     width: calc(100% - 21px);
     text-align: center;
-    padding: 1px;
+    padding: 5px 1px 5px 1px;
     overflow-x: hidden;
     overflow-y: auto;
-    height: 100%;
     position: relative;
     max-height: 80px;
+    color: red;
 }
 /* modal end */
+.media-live {
+    background-color: #ec971f;
+}
+.media-duration {
+    background-color: #5bc0de;
+}

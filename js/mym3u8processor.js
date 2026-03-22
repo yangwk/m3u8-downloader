@@ -175,8 +175,7 @@ var MyM3u8Processor = (function () {
             return ;
         }
         
-        const delayMs = ( context.parseResult.targetDuration || 2 ) * 1000;
-        MyUtils.delay(delayMs, loadM3u8);
+        MyUtils.delay(( context.parseResult.targetDuration || 2 ) * 1000, loadM3u8);
         context.isScheduled = true;
         
         function loadM3u8() {
@@ -223,14 +222,14 @@ var MyM3u8Processor = (function () {
                         return ;
                     }
                     
-                    MyUtils.delay(delayMs, loadM3u8);
+                    MyUtils.delay(( context.parseResult.targetDuration || 2 ) * 1000, loadM3u8);
                 }else{
                     context.noChangedCnt ++;
                     if(context.noChangedCnt >= 3){
                         _stopDownload(context);
                         return ;
                     }
-                    MyUtils.delay(delayMs, loadM3u8);
+                    MyUtils.delay(( context.parseResult.targetDuration || 2 ) * 1000, loadM3u8);
                 }
             });
         }
@@ -402,7 +401,7 @@ var MyM3u8Processor = (function () {
                 MyDownload.downloadBatchHolder.complete(context.batchName);
                 MyBaseProcessor.deleteDownloadContext(context);
             }else{
-                  _processM3u8(context);
+                _processM3u8(context);
             }                  
         }
     }
