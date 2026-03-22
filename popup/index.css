@@ -268,7 +268,7 @@ label {
     overflow-x: hidden;
     overflow-y: auto;
     position: relative;
-    max-height: 80px;
+    max-height: 30px;
     color: red;
 }
 /* modal end */

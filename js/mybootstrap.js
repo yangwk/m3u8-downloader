@@ -78,7 +78,8 @@ var MyBootstrap = (function () {
                     notification: MyChromeNotification.info(),
                     processor: MyBaseProcessor.info(),
                     downloader: MyDownloader.info(),
-                    matchingRule: MyUrlRuleMatcher.info()
+                    matchingRule: MyUrlRuleMatcher.info(),
+                    logger: MyLogger.info()
                 });
 			}else if(request.action == "download.restart"){
                 MyDownload.restart(request.data.id);
@@ -104,6 +105,11 @@ var MyBootstrap = (function () {
 			}else if(request.action == "stopm3u8livedownload"){
                 MyM3u8Processor.stopDownloadByContextId(request.data.id);
                 sendResponse({success: true});
+            }else if(request.action == "log.snapshot"){
+                sendResponse(MyLogger.snapshot());
+            }else if(request.action == "log.remove"){
+                sendResponse({success: true});
+                MyLogger.remove(request.data);
             }
 		});
         

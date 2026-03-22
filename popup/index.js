@@ -793,19 +793,14 @@ document.addEventListener("DOMContentLoaded", function () {
     
     //logger
 	(function(){
-        chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-            if(request.action == "log.error"){
-                onLogError(request.data.message);
-				sendResponse({success: true});
-			}
-        });
         
         const _logBus = new Array();
+        let _currentId = null;
         const _modalContainer = document.getElementById("modal-container");
         const _modalPrimary = document.getElementById("modal-primary");
         
-        function onLogError(message){
-            _logBus.push(message);
+        function onLogError(item){
+            _logBus.push(item);
             logNext(false);
         }
         
@@ -817,7 +812,7 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("modal-close").addEventListener('contextmenu', function(e) {
             e.stopPropagation();
             e.preventDefault();
-            clearLog();
+            clearLog(true);
         });
         
         
@@ -829,22 +824,60 @@ document.addEventListener("DOMContentLoaded", function () {
             if(!force && _modalContainer.classList.contains("popup")){
                 return ;
             }
-            const message = _logBus.shift();
-            if(message != null){
+            if(_currentId != null){
+                removeRemoteLog( [ _currentId ] );
+            }
+            
+            const item = _logBus.shift();
+            if(item != null){
+                const message = MyUtils.isString(item) ? item : item.message;
+                _currentId = MyUtils.isString(item) ? null : item.id;
                 _modalPrimary.innerText = message;
                 if(! _modalContainer.classList.contains("popup")){
                     _modalContainer.classList.add("popup");
                 }
             }else{
-                clearLog();
+                clearLog(false);
             }
         }
         
-        function clearLog(){
-            _logBus.splice(0);
+        function clearLog(force){
+            if(force){
+                removeRemoteLog("");
+            }
             _modalContainer.classList.remove("popup");
             _modalPrimary.innerText = "";
+            _logBus.splice(0);
+            _currentId = null;
         }
+        
+        function removeRemoteLog(ids){
+            chrome.runtime.sendMessage({
+                action: "log.remove",
+                data: ids
+            }, function(response){
+            });
+        }
+        
+        function loadRemoteLog(){
+            chrome.runtime.sendMessage({
+                action: "log.snapshot"
+            }, function(response){
+                const data = response;
+                for(const item of data){
+                    onLogError(item);
+                }
+            });
+        }
+        
+        chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+            if(request.action == "log.error"){
+                onLogError(request.data);
+				sendResponse({success: true});
+			}
+        });
+
+        MyUtils.delay(10000, loadRemoteLog);
         
     })();
 	
