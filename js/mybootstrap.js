@@ -198,7 +198,7 @@ var MyBootstrap = (function () {
                 },
                 target: "chrome"
             }], 
-            showName: mediaName
+            showName: MyUtils.buildSimpleShowName( mediaName )
         }, function(){
             MyVideox.playCompleteSound();
         });
@@ -229,7 +229,7 @@ var MyBootstrap = (function () {
                 target: "custom",
                 custom: { contextId: uniqueKey }
             }],
-            showName: mediaName
+            showName: MyUtils.buildSimpleShowName( mediaName )
         }, null);
         
                 
@@ -259,7 +259,7 @@ var MyBootstrap = (function () {
                     },
                     target: "chrome"
                 }], 
-                showName: mediaName,
+                showName: MyUtils.buildSimpleShowName( mediaName ),
                 priority: true
             }, function(){
                 URL.revokeObjectURL(url);

@@ -214,9 +214,28 @@ var MyUtils = (function(){
             }
             return null;
         },
+        outerWidth: function(dom){
+            // only consider px
+            const style = window.getComputedStyle(dom);
+            const marginWidth = parseFloat( style.marginLeft || 0 ) + parseFloat( style.marginRight || 0 );
+            return dom.offsetWidth + marginWidth;
+        },
         outerHeight: function(dom){
-            const marginHeight = parseFloat( dom.style.marginTop || 0 ) + parseFloat( dom.style.marginBottom || 0 );
+            const style = window.getComputedStyle(dom);
+            const marginHeight = parseFloat( style.marginTop || 0 ) + parseFloat( style.marginBottom || 0 );
             return dom.offsetHeight + marginHeight;
+        },
+        notContentWidth: function(dom){
+            const style = window.getComputedStyle(dom);
+            return parseFloat( style.paddingLeft || 0 ) + parseFloat( style.paddingRight || 0 ) 
+                + parseFloat( style.borderLeftWidth || 0 ) + parseFloat( style.borderRightWidth || 0 )
+                + parseFloat( style.marginLeft || 0 ) + parseFloat( style.marginRight || 0 );
+        },
+        notContentHeight: function(dom){
+            const style = window.getComputedStyle(dom);
+            return parseFloat( style.paddingTop || 0 ) + parseFloat( style.paddingBottom || 0 ) 
+                + parseFloat( style.borderTopWidth || 0 ) + parseFloat( style.borderBottomWidth || 0 )
+                + parseFloat( style.marginTop || 0 ) + parseFloat( style.marginBottom || 0 );
         },
         getMimeType: function(mime){
             if(mime){
@@ -313,6 +332,89 @@ var MyUtils = (function(){
                 }
             }
             return message;
+        },
+        diffArray: function(oldArr, newArr){
+            if(oldArr.length != newArr.length){
+                return true;
+            }
+            for(let r=0; r<oldArr.length; r++){
+                if(this.diffObject(oldArr[r], newArr[r])){
+                    return true;
+                }
+            }
+            return false;
+        },
+        diffArrayBuffer: function(oldArr, newArr){
+            if(oldArr.byteLength != newArr.byteLength){
+                return true;
+            }
+            const oldView = new DataView(oldArr);
+            const newView = new DataView(newArr);
+            for(let r=0; r<oldArr.byteLength; r++){
+                if(this.diffObject(oldView.getUint8(r), newView.getUint8(r))){
+                    return true;
+                }
+            }
+            return false;
+        },
+        diffObject: function(oldObj, newObj){
+            if(oldObj == null && newObj == null){
+                return false;
+            }
+            else if((oldObj == null && newObj != null) || (oldObj != null && newObj == null)){
+                return true;
+            }
+            else if(oldObj instanceof Array && newObj instanceof Array){
+                return this.diffArray(oldObj, newObj);
+            }
+            else if(oldObj instanceof Set && newObj instanceof Set){
+                if(oldObj.size != newObj.size){
+                    return true;
+                }
+                return this.diffArray(Array.from(oldObj), Array.from(newObj));
+            }
+            else if(oldObj instanceof Map && newObj instanceof Map){
+                if(oldObj.size != newObj.size){
+                    return true;
+                }
+                if(this.diffArray(Array.from(oldObj.keys()), Array.from(newObj.keys()))){
+                    return true;
+                }
+                for(const [key, value] of oldObj){
+                    if(this.diffObject(value, newObj.get(key))){
+                        return true;
+                    }
+                }
+            }
+            else if(ArrayBuffer.isView(oldObj) && ArrayBuffer.isView(newObj)){
+                if(oldObj.byteLength != newObj.byteLength){
+                    return true;
+                }
+                return this.diffArrayBuffer(oldObj.buffer, newObj.buffer);
+            }
+            else if(oldObj instanceof ArrayBuffer && newObj instanceof ArrayBuffer){
+                return this.diffArrayBuffer(oldObj, newObj);
+            }
+            else if(oldObj instanceof Object && newObj instanceof Object && Object.getPrototypeOf(oldObj) === Object.getPrototypeOf(newObj)){
+                const oldKey = Array.from(Object.keys(oldObj));
+                const newKey = Array.from(Object.keys(newObj));
+                if(this.diffArray(oldKey, newKey)){
+                    return true;
+                }
+                for(const key of oldKey){
+                    if(this.diffObject(oldObj[key], newObj[key])){
+                        return true;
+                    }
+                }
+            }
+            else if(oldObj !== newObj){
+                return true;
+            }
+            
+            return false;
+        },
+        buildSimpleShowName: function(name){
+            return name + ".main";
         }
     };
 })();

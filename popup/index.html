@@ -27,15 +27,13 @@
 					<span id="monitor-count" class="badge" data-title="monitorMonitoredCount">-</span>
                     <span class="badge badge-b" id="monitor-reload" data-msg="reload">reload</span>
 					<span class="badge badge-b" id="monitor-clean" data-msg="clean">clean</span>
-                    <span>
-                        <select id="monitor-filter" class="empty-select" data-title="filter" >
-                          <option value="">&nbsp;</option>
-                          <option value="m3u8">m3u8</option>
-                          <option value="video">video</option>
-                          <option value="audio">audio</option>
-                        </select>
-                    </span>
-					<span><input type="text" id="monitor-copyholder" class="copyholder" /></span>
+                    <select id="monitor-filter" class="empty-select select-tweak1" data-title="filter" >
+                      <option value="">&nbsp;</option>
+                      <option value="m3u8">m3u8</option>
+                      <option value="video">video</option>
+                      <option value="audio">audio</option>
+                    </select>
+					<span class="ver-mid"><input type="text" id="monitor-copyholder" class="copyholder" /></span>
 				</div>
 				<div id="monitor-content">
 				</div>
@@ -69,7 +67,7 @@
 					<span class="badge badge-c" id="download-batch-show" data-msg="downloadBatchShow">batch</span>
 					<span id="download-batch-count" class="badge" data-title="downloadBatchCount">-</span>
                     <span class="badge badge-b" id="download-reload" data-msg="reload" data-title="downloadReloadTip">reload</span>
-                    <span><input type="text" id="download-copyholder" class="copyholder" /></span>
+                    <span class="ver-mid"><input type="text" id="download-copyholder" class="copyholder" /></span>
 				</div>
 				<div>
 					<div id="download-downloading-page" class="show">
@@ -137,7 +135,7 @@
 				</div>
                 <div>
                     <label class="not-select" data-msg="settingsDownloaderPageSize">dps</label>
-                    <input type="number" id="settings-dps" />
+                    <input type="number" step="1048576" id="settings-dps" />
 				</div>
                 <div>
                     <label class="not-select" data-msg="settingsConvertSubtitles">cs</label>
@@ -154,12 +152,12 @@
 				<div>
 					<label class="not-select" data-msg="settingsProxyAddress">pa</label>
                     <input type="checkbox" id="settings-paenable" />
-                    <input type="text" id="settings-pa" />
+                    <input type="text" id="settings-pa" data-place="inputValidURL" />
 				</div>
 				<div>
 					<label class="not-select" data-msg="settingsMatchingRule">mr</label>
                     <input type="checkbox" id="settings-mrenable" />
-                    <textarea id="settings-mr" class="textarea-mr"></textarea>
+                    <textarea id="settings-mr" class="textarea-mr" data-place="inputValidMatchingRule"></textarea>
 				</div>
 				<div>
 					<span class="badge badge-b" id="settings-submit" data-msg="submit">submit</span>
@@ -178,8 +176,11 @@
 	</div>
     
     <div id="modal-container" class="modal-content">
-        <button id="modal-close" class="close-btn" data-title="closePopup">×</button>
-        <div id="modal-primary" class="modal-body line-wrapping"></div>
+        <div id="modal-inner">
+            <div id="modal-min" class="min-btn" data-title="minimizePopup">-</div>
+            <div id="modal-close" class="close-btn" data-title="closePopup">×</div>
+            <div id="modal-primary" class="modal-body line-wrapping"></div>
+        </div>
     </div>
   </body>
 </html>

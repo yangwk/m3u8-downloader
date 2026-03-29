@@ -69,7 +69,7 @@
         "message": "downloading task count"
     },
     "downloadBatchShow": {
-        "message": "batch"
+        "message": "download batch"
     },
     "downloadBatchCount": {
         "message": "batch count"
@@ -84,13 +84,13 @@
         "message": "the name of batch"
     },
     "downloadTaskWaitCnt": {
-        "message": "waiting tasks count"
+        "message": "waiting task count"
     },
     "downloadTaskCompletedCnt": {
-        "message": "completed tasks count"
+        "message": "completed task count"
     },
     "downloadTaskTriggeredCnt": {
-        "message": "triggered tasks count"
+        "message": "triggered task count"
     },
     "downloadTaskSum": {
         "message": "total number of task"
@@ -206,8 +206,14 @@
     "closePopup": {
         "message": "left-click close current, right-click close all"
     },
+    "minimizePopup": {
+        "message": "minimize"
+    },
     "settingsBatchConcurrent": {
         "message": "multiple batches concurrent download"
+    },
+    "inputValidMatchingRule": {
+        "message": "input valid matching rule"
     },
     "errorCode0001": {
         "message": "download main playlist is not supported"

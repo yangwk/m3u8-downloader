@@ -105,7 +105,7 @@ var MyM3u8Processor = (function () {
                 },
                 target: "chrome"
             }], 
-            showName: fileName,
+            showName: MyUtils.buildSimpleShowName( fileName ),
             priority: true
         }, function(){
             URL.revokeObjectURL(url);

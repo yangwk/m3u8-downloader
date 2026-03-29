@@ -135,7 +135,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         const mtSet = new Set();
                         const spl = document.createElement("select");
                         spl.id = playlistId;
-                        spl.className = "empty-select";
+                        spl.className = "empty-select select-tweak2";
                         for(let r in obj.parseResult.playList){
                             let pi = obj.parseResult.playList[r];
                             const opt = document.createElement("option");
@@ -424,7 +424,7 @@ document.addEventListener("DOMContentLoaded", function () {
         
         function metricDownloadDownloadingChrome(contentDom, obj){
             var dom = document.createElement("div");
-            var html = '<hr/><span class="badge badge-name" title="' + obj.batchShowName + '">' + obj.fileName + '</span>';
+            var html = '<hr/><span class="badge badge-name" data-title="downloadDatchName">'+obj.batchShowName+'</span><span class="badge badge-name" data-title="fileName">' + obj.fileName + '</span>';
             dom.innerHTML = html;
             
             var dom2 = document.createElement("span");
@@ -507,7 +507,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
             const itemDom = document.createElement("div");
-            itemDom.innerHTML = '<hr/><div class="line-wrapping download-url" title="' + obj.batchShowName + '">' + data.url + '</div>';
+            itemDom.innerHTML = '<hr/><div><span class="badge badge-name" data-title="downloadDatchName">'+obj.batchShowName+'</span></div><div class="line-wrapping download-url" data-title="url">' + data.url + '</div>';
             const statusDom = document.createElement("div");
             statusDom.className = "line-wrapping";
             const progressDom1 = document.createElement("div");
@@ -536,6 +536,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if(data.lengthComputable){
                     progressDom2.style.width = data.percent + "%";
                     progressDom1.style.display = "block";
+                    progressDom1.title = data.percent + "%";
                 }else{
                     progressDom1.style.display = "none";
                 }
@@ -614,10 +615,14 @@ document.addEventListener("DOMContentLoaded", function () {
 		
 		init();
 		
-		function windowResize(w, h){
-			document.body.style.width = w + "px";
-            const pnh = MyUtils.outerHeight( document.getElementById("page-nav") );
-			document.getElementById("page-wrapper").style.maxHeight = (h-pnh) + "px";
+		function windowResize(width, height){
+            const ncw1 = MyUtils.notContentWidth( document.body );
+			document.body.style.width = (width - ncw1) + "px";
+            
+            const oh1 = MyUtils.outerHeight( document.getElementById("page-nav") );
+            const nch1 = MyUtils.notContentHeight( document.getElementById("page-wrapper") );
+            const nch2 = MyUtils.notContentHeight( document.body );
+			document.getElementById("page-wrapper").style.maxHeight = (height - oh1 - nch1 - nch2) + "px";
 		}
         
         function doAutoReload(ar){
@@ -798,11 +803,36 @@ document.addEventListener("DOMContentLoaded", function () {
         let _currentId = null;
         const _modalContainer = document.getElementById("modal-container");
         const _modalPrimary = document.getElementById("modal-primary");
+        const _modalInner = document.getElementById("modal-inner");
+        
         
         function onLogError(item){
             _logBus.push(item);
             logNext(false);
         }
+        
+        document.getElementById("modal-min").onclick = function(e){
+			e.stopPropagation();
+            
+            _modalInner.classList.remove("show");
+            _modalInner.classList.add("hide");
+			_modalContainer.classList.remove("popup");
+            _modalContainer.classList.add("min");
+            
+            _modalContainer.addEventListener('transitionend', function(e2) {
+                e2.stopPropagation();
+                
+                _modalContainer.addEventListener('click', function(e3) {
+                    e3.stopPropagation();
+                    
+                    _modalInner.classList.remove("hide");
+                    _modalInner.classList.add("show");
+                    _modalContainer.classList.remove("min");
+                    _modalContainer.classList.add("popup");
+                }, { once: true });
+            }, { once: true });
+            
+		};
         
         document.getElementById("modal-close").onclick = function(e){
 			e.stopPropagation();
@@ -821,7 +851,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
         
         function logNext(force){
-            if(!force && _modalContainer.classList.contains("popup")){
+            if(!force && ( _modalContainer.classList.contains("popup") || _modalContainer.classList.contains("min") )){
                 return ;
             }
             if(_currentId != null){
@@ -877,7 +907,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			}
         });
 
-        MyUtils.delay(10000, loadRemoteLog);
+        loadRemoteLog();
         
     })();
 	

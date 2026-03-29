@@ -11,7 +11,7 @@ var MyChromeConfig = (function () {
 		downloadingMax: 3,
 		downloadBatchMax: 5,
         batchConcurrent: "1",
-		popupWidth: 490,
+		popupWidth: 494,
 		popupHeight: 435,
 		promptWhenExist: "0",
 		newFolderAtRoot: "1",

@@ -106,7 +106,7 @@ var MyChromeM3u8Processor = (function () {
                 target: "chrome",
                 hideInDownloadList: true
             }], 
-            showName: fileName,
+            showName: MyUtils.buildSimpleShowName( fileName ),
             priority: true
         }, function(){
             URL.revokeObjectURL(url);

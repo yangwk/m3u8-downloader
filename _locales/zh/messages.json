@@ -69,7 +69,7 @@
         "message": "正在下载任务总数"
     },
     "downloadBatchShow": {
-        "message": "批次"
+        "message": "下载批次"
     },
     "downloadBatchCount": {
         "message": "批次总数"
@@ -114,10 +114,10 @@
         "message": "下载批次数最大值"
     },
     "settingsPopupWidth": {
-        "message": "插件弹窗宽度最大像素"
+        "message": "扩展程序弹窗宽度最大像素"
     },
     "settingsPopupHeight": {
-        "message": "插件弹窗高度最大像素"
+        "message": "扩展程序弹窗高度最大像素"
     },
     "submit": {
         "message": "提交"
@@ -126,7 +126,7 @@
         "message": "复制URL"
     },
 	"settingsPopupInTab": {
-        "message": "标签页打开插件弹窗"
+        "message": "标签页打开扩展程序弹窗"
     },
 	"duration": {
         "message": "长度"
@@ -206,8 +206,14 @@
     "closePopup": {
         "message": "左键单击关闭当前，右键单击关闭全部"
     },
+    "minimizePopup": {
+        "message": "最小化"
+    },
     "settingsBatchConcurrent": {
         "message": "多批次并发下载"
+    },
+    "inputValidMatchingRule": {
+        "message": "输入有效的匹配规则"
     },
     "errorCode0001": {
         "message": "不支持下载主播放列表"
