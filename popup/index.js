@@ -70,25 +70,28 @@ document.addEventListener("DOMContentLoaded", function () {
 				loadMonitoredMedia();
 			});
 		}
-		
+        
+        const _myDiffRendering = new MyDiffRendering();
+        
 		function loadMonitoredMedia(){
-			var contentDom = document.getElementById("monitor-content");
-			
 			chrome.runtime.sendMessage({
 				action: "loadmonitoredmedia"
 			}, function(response){
 				var data = response;
 				
-				contentDom.innerHTML = "";
                 let dataCount = 0;
                 let monitorFilter = document.getElementById("monitor-filter");
                 let targetMediaType = monitorFilter[monitorFilter.selectedIndex].value;
-				for(var x in data){
+                const filteredData = [];
+                for(var x in data){
 					var obj = data[x];
 					if(targetMediaType && obj.mediaType != targetMediaType){
                         continue;
                     }
+                    filteredData.push(obj);
                     dataCount ++;
+                }
+				function renderingOne(obj, x){
 					var nameId = "monitor-name-"+x;
 					var playlistId = "monitor-playlist-"+x;
                     
@@ -127,12 +130,8 @@ document.addEventListener("DOMContentLoaded", function () {
 					dom4.dataset["url"] = obj.url;
 					dom4.onclick = copyMonitoredUrl;
                     
-                    
-                    contentDom.appendChild(dom);
-                    
                     if(isMasterPlaylist){
                         let dom5 = document.createElement("span");
-                        const mtSet = new Set();
                         const spl = document.createElement("select");
                         spl.id = playlistId;
                         spl.className = "empty-select select-tweak2";
@@ -143,7 +142,6 @@ document.addEventListener("DOMContentLoaded", function () {
                             opt.text = pi.mediaType + " - " + MyUtils.formatBandwidth(pi.bandwidth);
                             opt.dataset["direct"] = pi.isDirect ? String(pi.isDirect) : "";
                             spl.appendChild(opt);
-                            mtSet.add( pi.mediaType );
                             
                             for(let z in pi.renditionGroups){
                                 const groupId = pi.renditionGroups[z].groupId;
@@ -160,12 +158,11 @@ document.addEventListener("DOMContentLoaded", function () {
                                         opt2.dataset["kind"] = renItem.kind || "";
                                         opt2.dataset["mediaType"] = thisMediaType;
                                         spl.appendChild(opt2);
-                                        mtSet.add( thisMediaType );
                                     }
                                 }
                             }
                         }
-                        spl.dataset["destroy"] = mtSet.size <= 1 ? String(true) : "";
+                        spl.dataset["destroy"] = "";
                         dom5.appendChild(spl);
                         dom.appendChild(dom5);
                     }
@@ -173,7 +170,20 @@ document.addEventListener("DOMContentLoaded", function () {
 					dom.appendChild(dom2);
 					dom.appendChild(dom3);
 					dom.appendChild(dom4);
+                    
+                    return dom;
 				}
+                
+                const contentDom = document.getElementById("monitor-content");
+                
+                if(_myDiffRendering.length() == 0){
+                    contentDom.innerHTML = "";
+                }
+                
+                _myDiffRendering.renderingAll({
+                    container: contentDom,
+                    renderingOne: renderingOne
+                }, filteredData);
                 
                 if(dataCount == 0){
                     contentDom.innerHTML = chrome.i18n.getMessage("nothing");
@@ -202,6 +212,7 @@ document.addEventListener("DOMContentLoaded", function () {
 					identifier: identifier
 				}
 			}, function(response){
+                _myDiffRendering.deleteByKey(identifier, (obj) => obj.identifier);
 				loadMonitoredMedia();
 			});
 		}
@@ -239,7 +250,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 if(!response.success){
                     __logError(response.message);
                 }else{
-                    destroy && loadMonitoredMedia();
+                    if(destroy){
+                        _myDiffRendering.deleteByKey(identifier, (obj) => obj.identifier);
+                        loadMonitoredMedia();
+                    }
                 }
 			});
 		}
@@ -367,18 +381,24 @@ document.addEventListener("DOMContentLoaded", function () {
 			var contentDom = document.getElementById("download-batch-content");
 			contentDom.innerHTML = data.length == 0 ? chrome.i18n.getMessage("nothing") : "";
 			document.getElementById("download-batch-count").innerHTML = data.length;
-			
+			if(data.length == 0){
+                return;
+            }
+            const fragment = document.createDocumentFragment();
+            const originalContentDom = contentDom;
+            contentDom = fragment;
+            
 			for(var x in data){
 				var obj = data[x];
 				
 				var dom = document.createElement("div");
 				var html = (
-					'<hr/>' +
+					'<hr/><div>' +
 					'<span class="badge badge-name" data-title="downloadDatchName">' + obj.showName + '</span>' +
 					'<span class="badge" data-title="downloadTaskWaitCnt">' + obj.waitCnt + '</span>' +
 					'<span class="badge" data-title="downloadTaskCompletedCnt">' + obj.completedCnt + '</span>' +
 					'<span class="badge" data-title="downloadTaskTriggeredCnt">' + obj.triggeredCnt + '</span>' +
-					'<span class="badge" data-title="downloadTaskSum">' + obj.sum + '</span>'
+					'<span class="badge" data-title="downloadTaskSum">' + obj.sum + '</span></div>'
 				);
 				dom.innerHTML = html;
 				contentDom.appendChild(dom);
@@ -391,6 +411,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     dom.appendChild(dom2);
                 }
 			}
+            
+            originalContentDom.appendChild(fragment);
 		}
         
 		function stopM3u8LiveDownload(e){
@@ -409,22 +431,28 @@ document.addEventListener("DOMContentLoaded", function () {
 			var contentDom = document.getElementById("download-downloading-content");
 			contentDom.innerHTML = data.length == 0 ? chrome.i18n.getMessage("nothing") : "";
 			document.getElementById("download-downloading-count").innerHTML = data.length;
-			
+            if(data.length == 0){
+                return;
+            }
+			const fragment = document.createDocumentFragment();
+            
 			for(var x in data){
 				var obj = data[x];
 				
                 if(MyUtils.isChromeTarget(obj.id)){
-                    metricDownloadDownloadingChrome(contentDom, obj);
+                    metricDownloadDownloadingChrome(fragment, obj);
                 }else{
-                    metricDownloadDownloadingCustom(contentDom, obj, custom);
+                    metricDownloadDownloadingCustom(fragment, obj, custom);
                 }
                 
 			}
+            
+            contentDom.appendChild(fragment);
 		}
         
         function metricDownloadDownloadingChrome(contentDom, obj){
             var dom = document.createElement("div");
-            var html = '<hr/><span class="badge badge-name" data-title="downloadDatchName">'+obj.batchShowName+'</span><span class="badge badge-name" data-title="fileName">' + obj.fileName + '</span>';
+            var html = '<hr/><div><span class="badge badge-name" data-title="downloadDatchName">'+obj.batchShowName+'</span><span class="badge badge-name" data-title="fileName">' + obj.fileName + '</span></div>';
             dom.innerHTML = html;
             
             var dom2 = document.createElement("span");
@@ -775,8 +803,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
         
 		function loadRunningInfo(){
-			var contentDom = document.getElementById("running-content");
-			
 			chrome.runtime.sendMessage({
 				action: "loadrunninginfo"
 			}, function(response){
@@ -788,7 +814,7 @@ document.addEventListener("DOMContentLoaded", function () {
 					arr.unshift( key );
 					html += ('<div><span class="badge">' + arr.join("&nbsp;&nbsp;&nbsp;&nbsp;") + '</span></div>');
 				}
-				
+				var contentDom = document.getElementById("running-content");
 				contentDom.innerHTML = html;
 			});
 		}

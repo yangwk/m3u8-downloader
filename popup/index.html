@@ -9,6 +9,7 @@
 	<link href="index.css" rel="stylesheet" type="text/css">
     <script src="../js/myreader.js" type="text/javascript"></script>
 	<script src="../js/myutils.js" type="text/javascript"></script>
+    <script src="../js/mydiffrendering.js" type="text/javascript"></script>
 	<script src="index.js" type="text/javascript"></script>
   </head>
   
@@ -35,8 +36,7 @@
                     </select>
 					<span class="ver-mid"><input type="text" id="monitor-copyholder" class="copyholder" /></span>
 				</div>
-				<div id="monitor-content">
-				</div>
+				<div id="monitor-content"></div>
 			</div>
 			<div id="manual-page" class="hide">
 				<div>
@@ -71,12 +71,10 @@
 				</div>
 				<div>
 					<div id="download-downloading-page" class="show">
-						<div id="download-downloading-content">
-						</div>
+						<div id="download-downloading-content"></div>
 					</div>
 					<div id="download-batch-page" class="hide">
-						<div id="download-batch-content">
-						</div>
+						<div id="download-batch-content"></div>
 					</div>
 				</div>
 			</div>
@@ -107,7 +105,7 @@
 				</div>
 				<div>
 					<label class="not-select" data-msg="settingsPopupWidth">popwidth</label>
-					<input type="number" step="20" min="490" max="4000" id="settings-popwidth" />
+					<input type="number" step="20" min="494" max="4000" id="settings-popwidth" />
 				</div>
 				<div>
 					<label class="not-select" data-msg="settingsPopupHeight">popheight</label>
@@ -169,8 +167,7 @@
                 <div>
 					<span class="badge badge-b" id="running-reload" data-msg="reload">reload</span>
 				</div>
-				<div id="running-content">
-				</div>
+				<div id="running-content"></div>
 			</div>
 		</div>
 	</div>
