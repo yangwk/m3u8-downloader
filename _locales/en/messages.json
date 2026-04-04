@@ -72,16 +72,16 @@
         "message": "download batch"
     },
     "downloadBatchCount": {
-        "message": "batch count"
+        "message": "download batch count"
     },
     "fileName": {
-        "message": "the name of file"
+        "message": "filename"
     },
     "cancel": {
         "message": "cancel"
     },
     "downloadDatchName": {
-        "message": "the name of batch"
+        "message": "the name of download batch"
     },
     "downloadTaskWaitCnt": {
         "message": "waiting task count"
@@ -170,8 +170,11 @@
     "downloadReloadTip": {
         "message": "reload before each operation"
     },
-    "filter": {
-        "message": "filter"
+    "filterMediaType": {
+        "message": "filter media type"
+    },
+    "filterDuration": {
+        "message": "filter duration"
     },
     "settingsProcessorThreshold": {
         "message": "the threshold (MB) of non-live m3u8 processor mode"
@@ -180,7 +183,7 @@
         "message": "matching rule"
     },
     "settingsDownloaderPageSize": {
-        "message": "the page size (byte) of downloader"
+        "message": "the page size (MB) of downloader"
     },
     "settingsConvertSubtitles": {
         "message": "convert subtitles format"
@@ -208,6 +211,9 @@
     },
     "minimizePopup": {
         "message": "minimize"
+    },
+    "log": {
+        "message": "log"
     },
     "settingsBatchConcurrent": {
         "message": "multiple batches concurrent download"

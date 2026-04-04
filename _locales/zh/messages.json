@@ -72,7 +72,7 @@
         "message": "下载批次"
     },
     "downloadBatchCount": {
-        "message": "批次总数"
+        "message": "下载批次总数"
     },
     "fileName": {
         "message": "文件名"
@@ -81,7 +81,7 @@
         "message": "取消"
     },
     "downloadDatchName": {
-        "message": "批次名称"
+        "message": "下载批次名称"
     },
     "downloadTaskWaitCnt": {
         "message": "待下载任务数"
@@ -99,7 +99,7 @@
         "message": "模拟环境"
     },
     "settingsEnvironmentPC": {
-        "message": "桌面"
+        "message": "电脑"
     },
     "settingsEnvironmentMobile": {
         "message": "手机"
@@ -170,8 +170,11 @@
     "downloadReloadTip": {
         "message": "每次操作前刷新"
     },
-    "filter": {
-        "message": "过滤"
+    "filterMediaType": {
+        "message": "过滤媒体类型"
+    },
+    "filterDuration": {
+        "message": "过滤长度"
     },
     "settingsProcessorThreshold": {
         "message": "非直播m3u8处理器模式的阈值（MB）"
@@ -180,7 +183,7 @@
         "message": "匹配规则"
     },
     "settingsDownloaderPageSize": {
-        "message": "下载器的页大小（byte）"
+        "message": "下载器的页大小（MB）"
     },
     "settingsConvertSubtitles": {
         "message": "转换字幕格式"
@@ -208,6 +211,9 @@
     },
     "minimizePopup": {
         "message": "最小化"
+    },
+    "log": {
+        "message": "日志"
     },
     "settingsBatchConcurrent": {
         "message": "多批次并发下载"

@@ -415,6 +415,54 @@ var MyUtils = (function(){
         },
         buildSimpleShowName: function(name){
             return name + ".main";
+        },
+        inRange: function(value, range, decorateLeftRightValue){
+            if(value == null || range == null){
+                return false;
+            }
+            const regex = /^(\s*\(\s*|\s*\[\s*)([^,\(\[\]\)]+?)\s*,\s*([^,\(\[\]\)]+?)(\s*\]\s*|\s*\)\s*)$/;
+            const arr = range.match(regex);
+            if(arr == null){
+                throw "invalid format";
+            }
+            const leftBracket = arr[1].trim();
+            let leftValue = arr[2].trim();
+            let rightValue = arr[3].trim();
+            const rightBracket = arr[4].trim();
+            
+            const infinity = "∞";
+            if(value == infinity){
+                return (leftValue == infinity && rightValue == infinity);
+            }
+            if(leftValue == infinity && rightValue == infinity){
+                return value == infinity;
+            }
+            
+            if(leftValue != infinity && rightValue != infinity && leftValue.localeCompare(rightValue) > 0){
+                throw "invalid format";
+            }
+            
+            if(decorateLeftRightValue != null){
+                const decorated = decorateLeftRightValue(leftValue, rightValue);
+                if(leftValue != infinity){
+                    leftValue = decorated[0];
+                }
+                if(rightValue != infinity){
+                    rightValue = decorated[1];
+                }
+            }
+            
+            if(leftBracket == "[" && rightBracket == ")"){
+                return ( leftValue == infinity ? true : leftValue.localeCompare(value) <= 0 ) && ( rightValue == infinity ? true : value.localeCompare(rightValue) < 0 );
+            }else if(leftBracket == "[" && rightBracket == "]"){
+                return ( leftValue == infinity ? true : leftValue.localeCompare(value) <= 0 ) && ( rightValue == infinity ? true : value.localeCompare(rightValue) <= 0 );
+            }else if(leftBracket == "(" && rightBracket == ")"){
+                return ( leftValue == infinity ? true : leftValue.localeCompare(value) < 0 ) && ( rightValue == infinity ? true : value.localeCompare(rightValue) < 0 );
+            }else if(leftBracket == "(" && rightBracket == "]"){
+                return ( leftValue == infinity ? true : leftValue.localeCompare(value) < 0 ) && ( rightValue == infinity ? true : value.localeCompare(rightValue) <= 0 );
+            }
+            
+            return false;
         }
     };
 })();

@@ -18,7 +18,7 @@ var MyChromeConfig = (function () {
 		playSoundWhenComplete: "1",
         splitDiscontinuity: "1",
         processorThreshold: 500,
-        downloaderPageSize: 5 * 1024 * 1024,
+        downloaderPageSize: 5,
         convertSubtitles: "1",
         stopBrokenSequence: "1",
         autoReload: 0,

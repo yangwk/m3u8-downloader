@@ -28,11 +28,22 @@
 					<span id="monitor-count" class="badge" data-title="monitorMonitoredCount">-</span>
                     <span class="badge badge-b" id="monitor-reload" data-msg="reload">reload</span>
 					<span class="badge badge-b" id="monitor-clean" data-msg="clean">clean</span>
-                    <select id="monitor-filter" class="empty-select select-tweak1" data-title="filter" >
+                    <select id="monitor-filter-mediatype" class="empty-select select-tweak1" data-title="filterMediaType" >
                       <option value="">&nbsp;</option>
                       <option value="m3u8">m3u8</option>
                       <option value="video">video</option>
                       <option value="audio">audio</option>
+                    </select>
+                    <select id="monitor-filter-duration" class="empty-select select-tweak1" data-title="filterDuration" >
+                      <option value="">&nbsp;</option>
+                      <option value="1">[00:00:01 , 00:00:30)</option>
+                      <option value="2">[00:00:30 , 00:01:00)</option>
+                      <option value="3">[00:01:00 , 00:03:00)</option>
+                      <option value="4">[00:03:00 , 00:06:00)</option>
+                      <option value="5">[00:06:00 , 00:10:00)</option>
+                      <option value="6">[00:10:00 , 00:30:00)</option>
+                      <option value="7">[00:30:00 , 01:00:00)</option>
+                      <option value="8">[01:00:00 , ∞)</option>
                     </select>
 					<span class="ver-mid"><input type="text" id="monitor-copyholder" class="copyholder" /></span>
 				</div>
@@ -44,11 +55,11 @@
                     <textarea id="manual-headers" class="textarea-headers" data-place="inputValidHeaders"></textarea>
 					<input type="text" data-place="inputFileName" id="manual-name" />
 				</div>
-				<div>
+				<div class="simple-row">
 					<label class="not-select" data-msg="manualM3u8Tip">m3u8</label>
 					<input type="checkbox" id="manual-m3u8" />
 				</div>
-                <div>
+                <div class="simple-row">
 					<label class="not-select" data-msg="manualMethod">method</label>
 					<select id="manual-method">
 					  <option value="GET">GET</option>
@@ -79,7 +90,7 @@
 				</div>
 			</div>
 			<div id="settings-page" class="hide">
-				<div>
+				<div class="simple-row">
 					<label class="not-select" data-msg="settingsEnvironment">environment</label>
 					<select id="settings-environment">
 					  <option value="nothing" data-msg="nothing">nothing</option>
@@ -87,74 +98,78 @@
 					  <option value="mobile" data-msg="settingsEnvironmentMobile">mobile</option>
 					</select>
 				</div>
-				<div>
+				<div class="simple-row">
 					<label class="not-select" data-msg="settingsMonitorMax">mntmax</label>
 					<input type="number" step="1" min="1" max="200" id="settings-mntmax" />
 				</div>
-				<div>
+				<div class="simple-row">
 					<label class="not-select" data-msg="settingsDlingMax">dlingmax</label>
 					<input type="number" step="1" min="1" max="10" id="settings-dlingmax" />
 				</div>
-				<div>
+				<div class="simple-row">
 					<label class="not-select" data-msg="settingsDlBatchMax">dlbtmax</label>
 					<input type="number" step="1" min="1" max="10" id="settings-dlbtmax" />
 				</div>
-                <div>
+                <div class="simple-row">
 					<label class="not-select" data-msg="settingsBatchConcurrent">batchc</label>
 					<input type="checkbox" id="settings-batchc" />
 				</div>
-				<div>
+				<div class="simple-row">
 					<label class="not-select" data-msg="settingsPopupWidth">popwidth</label>
 					<input type="number" step="20" min="494" max="4000" id="settings-popwidth" />
 				</div>
-				<div>
+				<div class="simple-row">
 					<label class="not-select" data-msg="settingsPopupHeight">popheight</label>
 					<input type="number" step="20" min="435" max="3000" id="settings-popheight" />
 				</div>
-				<div>
+				<div class="simple-row">
 					<label class="not-select" data-msg="settingsPromptWhenExist">pwe</label>
 					<input type="checkbox" id="settings-pwe" />
 				</div>
-				<div>
+				<div class="simple-row">
 					<label class="not-select" data-msg="settingsNewFolderAtRoot">nfar</label>
 					<input type="checkbox" id="settings-nfar" />
 				</div>
-				<div>
+				<div class="simple-row">
 					<label class="not-select" data-msg="settingsPlaySoundWhenComplete">pswc</label>
 					<input type="checkbox" id="settings-pswc" />
 				</div>
-				<div>
+				<div class="simple-row">
 					<label class="not-select" data-msg="settingsSplitDiscontinuity">sd</label>
 					<input type="checkbox" id="settings-sd" />
 				</div>
-				<div>
+				<div class="simple-row">
                     <label class="not-select" data-msg="settingsProcessorThreshold">prothr</label>
                     <input type="number" step="50" min="0" max="2000" id="settings-prothr" />
 				</div>
-                <div>
+                <div class="simple-row">
                     <label class="not-select" data-msg="settingsDownloaderPageSize">dps</label>
-                    <input type="number" step="1048576" id="settings-dps" />
+                    <input type="number" step="1" min="1" max="200" id="settings-dps" />
 				</div>
-                <div>
+                <div class="simple-row">
                     <label class="not-select" data-msg="settingsConvertSubtitles">cs</label>
                     <input type="checkbox" id="settings-cs" />
 				</div>
-                <div>
+                <div class="simple-row">
                     <label class="not-select" data-msg="settingsBrokenSequence">bseq</label>
                     <input type="checkbox" id="settings-bseq" />
 				</div>
-                <div>
+                <div class="simple-row">
                     <label class="not-select" data-msg="settingsAutoReload">ar</label>
                     <input type="number" step="2" min="0" max="60" id="settings-ar" />
 				</div>
-				<div>
+				<div class="simple-row">
 					<label class="not-select" data-msg="settingsProxyAddress">pa</label>
                     <input type="checkbox" id="settings-paenable" />
+                </div>
+                <div class="simple-row">
                     <input type="text" id="settings-pa" data-place="inputValidURL" />
 				</div>
-				<div>
+				<div class="simple-row">
 					<label class="not-select" data-msg="settingsMatchingRule">mr</label>
                     <input type="checkbox" id="settings-mrenable" />
+                </div>
+                <div class="simple-row">
                     <textarea id="settings-mr" class="textarea-mr" data-place="inputValidMatchingRule"></textarea>
 				</div>
 				<div>
@@ -172,7 +187,7 @@
 		</div>
 	</div>
     
-    <div id="modal-container" class="modal-content">
+    <div id="modal-container" class="modal-content" data-title="log">
         <div id="modal-inner">
             <div id="modal-min" class="min-btn" data-title="minimizePopup">-</div>
             <div id="modal-close" class="close-btn" data-title="closePopup">×</div>

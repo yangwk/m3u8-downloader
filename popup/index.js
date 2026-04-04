@@ -80,12 +80,19 @@ document.addEventListener("DOMContentLoaded", function () {
 				var data = response;
 				
                 let dataCount = 0;
-                let monitorFilter = document.getElementById("monitor-filter");
-                let targetMediaType = monitorFilter[monitorFilter.selectedIndex].value;
+                const filterMediaType = document.getElementById("monitor-filter-mediatype");
+                const filterDuration = document.getElementById("monitor-filter-duration");
+                const targetMediaType = filterMediaType[filterMediaType.selectedIndex].value;
+                const targetDuration = filterDuration[filterDuration.selectedIndex].value;
+                const targetDurationRange = filterDuration[filterDuration.selectedIndex].text;
                 const filteredData = [];
                 for(var x in data){
 					var obj = data[x];
 					if(targetMediaType && obj.mediaType != targetMediaType){
+                        continue;
+                    }
+                    if(targetDuration && obj.duration && ! MyUtils.inRange(MyUtils.padStart(MyUtils.formatHms(obj.duration), 20, "0"), targetDurationRange, 
+                        (left, right) => [ MyUtils.padStart(left, 20, "0"), MyUtils.padStart(right, 20, "0") ]) ){
                         continue;
                     }
                     filteredData.push(obj);
@@ -182,6 +189,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 
                 _myDiffRendering.renderingAll({
                     container: contentDom,
+                    getKey: (obj) => obj.identifier,
                     renderingOne: renderingOne
                 }, filteredData);
                 
@@ -212,7 +220,7 @@ document.addEventListener("DOMContentLoaded", function () {
 					identifier: identifier
 				}
 			}, function(response){
-                _myDiffRendering.deleteByKey(identifier, (obj) => obj.identifier);
+                _myDiffRendering.deleteByKey(identifier);
 				loadMonitoredMedia();
 			});
 		}
@@ -251,7 +259,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     __logError(response.message);
                 }else{
                     if(destroy){
-                        _myDiffRendering.deleteByKey(identifier, (obj) => obj.identifier);
+                        _myDiffRendering.deleteByKey(identifier);
                         loadMonitoredMedia();
                     }
                 }
@@ -668,9 +676,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 		
 		document.querySelectorAll('input[type="number"]').forEach(function(dom){
-            if(dom.id == "settings-dps"){
-                return ;
-            }
 			dom.onkeydown = function(){
 				return false;
 			};
@@ -692,7 +697,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			data.playSoundWhenComplete = document.getElementById("settings-pswc").checked ? "1" : "0";
             data.splitDiscontinuity = document.getElementById("settings-sd").checked ? "1" : "0";
             data.processorThreshold = parseInt(document.getElementById("settings-prothr").value, 10);
-            data.downloaderPageSize = Math.min( Math.max( parseInt(document.getElementById("settings-dps").value, 10), 1024 ), 1024 * 1024 * 1024 );
+            data.downloaderPageSize = parseInt(document.getElementById("settings-dps").value, 10);
             data.convertSubtitles = document.getElementById("settings-cs").checked ? "1" : "0";
             data.stopBrokenSequence = document.getElementById("settings-bseq").checked ? "1" : "0";
             data.autoReload = parseInt(document.getElementById("settings-ar").value, 10);

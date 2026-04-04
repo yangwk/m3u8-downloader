@@ -1,52 +1,50 @@
 var MyDiffRendering = function(){
     
+    var _DomLink = function(key, obj, dom){
+        this.key = key;
+        this.obj = obj;
+        this.dom = dom;
+    }
+    
     const _dataHolder = new Array();
-    const _dataDomMapping = new Map();
     
     let _container = null;
+    let _getKey = null;
     
     this.renderingAll = function(options, data){
-        const container = options.container;
+        _container = options.container;
+        _getKey = options.getKey;
         const renderingOne = options.renderingOne;
         const noDiffOne = options.noDiffOne;
-        _container = container;
     
         const isInit = _dataHolder.length == 0;
-        const fragment = isInit ? document.createDocumentFragment() : null;
+        let fragment = isInit ? document.createDocumentFragment() : null;
+        let isOverflow = false;
         let r=0;
         for(; r<data.length; r++){
             const newObj = data[r];
             data[r] = null;
             if(isInit){
-                const id = MyUtils.genRandomString();
-                _dataHolder.push(newObj);
-                _dataDomMapping.set(r, id);
                 const newDom = renderingOne(newObj, r);
-                if(newDom == null){
-                    continue;
-                }
-                newDom.id = id;
+                const key = _getKey(newObj);
+                _dataHolder.push(new _DomLink(key, newObj, newDom));
                 fragment.appendChild(newDom);
             }else{
-                const isOverflow = r >= _dataHolder.length;
-                const oldObj = isOverflow ? null : _dataHolder[r];
+                isOverflow = r >= _dataHolder.length;
+                const oldObj = isOverflow ? null : _dataHolder[r].obj;
                 if(MyUtils.diffObject(oldObj, newObj)){
-                    const id = MyUtils.genRandomString();
                     const newDom = renderingOne(newObj, r);
-                    if(newDom == null){
-                        continue;
-                    }
-                    newDom.id = id;
+                    const key = _getKey(newObj);
                     if(isOverflow){
-                        _dataHolder.push(newObj);
-                        container.appendChild(newDom);
-                        _dataDomMapping.set(r, id);
+                        if(fragment == null){
+                            fragment = document.createDocumentFragment();
+                        }
+                        _dataHolder.push(new _DomLink(key, newObj, newDom));
+                        fragment.appendChild(newDom);
                     }else{
-                        _dataHolder[r] = newObj;
-                        const oldId = _dataDomMapping.get(r);
-                        const oldDom = document.getElementById(oldId);
-                        container.replaceChild(newDom, oldDom);
-                        _dataDomMapping.set(r, id);
+                        const oldDom = _dataHolder[r].dom;
+                        _container.replaceChild(newDom, oldDom);
+                        _dataHolder[r] = new _DomLink(key, newObj, newDom);
                     }
                 }else{
                     noDiffOne && noDiffOne(newObj, r);
@@ -55,14 +53,15 @@ var MyDiffRendering = function(){
         }
         
         if(isInit){
-            container.appendChild(fragment);
+            _container.appendChild(fragment);
         }else{
+            if(isOverflow){
+                _container.appendChild(fragment);
+            }
             if(_dataHolder.length > data.length){
-                for(let x=r; r<_dataHolder.length; r++, x++){
-                    const oldId = _dataDomMapping.get(x);
-                    const oldDom = document.getElementById(oldId);
-                    container.removeChild(oldDom);
-                    _dataDomMapping.delete(x);
+                for(; r<_dataHolder.length; r++){
+                    const oldDom = _dataHolder[r].dom;
+                    _container.removeChild(oldDom);
                     _dataHolder.splice(r, 1);
                     r --;
                 }
@@ -75,24 +74,14 @@ var MyDiffRendering = function(){
         return _dataHolder.length;
     }
     
-    this.deleteByKey = function(deleteKey, getKey){
-        if(deleteKey == null || getKey == null){
-            return;
-        }
+    this.deleteByKey = function(deleteKey){
         for(let r=0; r < _dataHolder.length; r++){
-            if(deleteKey == getKey(_dataHolder[r])){
-                const oldId = _dataDomMapping.get(r);
-                const oldDom = document.getElementById(oldId);
+            const domLink = _dataHolder[r];
+            if(deleteKey == domLink.key){
+                const oldDom = domLink.dom;
                 _container.removeChild(oldDom);
-                _dataDomMapping.delete(r);
                 _dataHolder.splice(r, 1);
-                // reorder
-                const size = _dataDomMapping.size;
-                for(let x=r; x< size; x++){
-                    _dataDomMapping.set(x, _dataDomMapping.get(x+1));
-                }
-                _dataDomMapping.delete(size);
-                
+                r --;
                 break;
             }
         }

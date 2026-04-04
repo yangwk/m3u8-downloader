@@ -81,7 +81,7 @@ a {
     color: #fff;
     text-align: center;
     vertical-align: middle;
-    background-color: #777;
+    background-color: #999;
     border-radius: 10px;
 	margin-left: 3px;
 	margin-right: 3px;
@@ -104,7 +104,6 @@ a {
 	border-radius: 0;
 	background-color: #5cb85c;
 	cursor: pointer;
-    transition: background-color 0.3s ease;
 }
 .badge-b:hover {
     background-color: #88cf88;
@@ -114,18 +113,19 @@ a {
 }
 .badge-c {
 	border-radius: 0;
-	background-color: #98c1e4;
+	background: rgba(3, 169, 244, 0.5);
 	cursor: pointer;
 }
 .badge-c.active {
-	background-color: #316da0;
+	background-color: #03a9f4;
+    cursor: default;
 }
 hr {
-    border-top-color: #00ff00;
+    border-top-color: #0f0;
     height: 0;
     border-bottom-width: 0;
-	margin-top: 2px;
-    margin-bottom: 2px;
+	margin-top: 3px;
+    margin-bottom: 3px;
 }
 .favIcon {
 	max-width: 22px;
@@ -142,7 +142,7 @@ input[type="text"] , input[type="number"] {
     color: #555;
     background-color: #fff;
     background-image: none;
-    border: 1px solid #ccc;
+    border: 1px solid #5cb85c;
     border-radius: 4px;
     vertical-align: middle;
     font-size: 1rem;
@@ -160,6 +160,29 @@ input[type="checkbox"] {
     margin: 0;
     font-size: 1rem;
     line-height: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    position: relative;
+    border: 1px solid #5cb85c;
+    border-radius: 4px;
+    cursor: pointer;
+}
+input[type="checkbox"]:checked {
+    background-color: #5cb85c;
+}
+input[type="checkbox"]:checked::before {
+    content: "✓";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1rem;
+    font-weight: bold;
+    color: #fff;
+}
+input[type="checkbox"]:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 .not-select {
 	user-select: none;
@@ -167,7 +190,7 @@ input[type="checkbox"] {
 #page-wrapper {
 	overflow-y: auto;
 	overflow-x: hidden;
-    padding-top: 2px;
+    padding-top: 3px;
 }
 textarea {
 	margin: 2px 0px 0px 0px;
@@ -177,6 +200,7 @@ textarea {
 	border-style: solid;
     border-width: 1px;
 	border-radius: 4px;
+    border-color: #5cb85c;
 }
 .textarea-url {
     height: 90px;
@@ -195,7 +219,7 @@ select {
     line-height: 1;
     color: #555;
     background-color: #fff;
-    border: 1px solid #ccc;
+    border: 1px solid #5cb85c;
     border-radius: 4px;
     display: inline-block;
     font-size: 1rem;
@@ -248,6 +272,9 @@ label {
     word-break: break-all;
     white-space: normal;
 }
+.simple-row {
+    margin: 2px 0 2px 0;
+}
 /* modal begin */
 .modal-content {
     position: fixed;
@@ -267,7 +294,7 @@ label {
     visibility: visible;
 }
 .modal-content.min {
-    transition: width 2s ease 0s;
+    transition: width 2s ease-in 0s;
     height: 20px;
     width: 20px;
     top: 0;
@@ -283,17 +310,17 @@ label {
     right: 0;
     background: none;
     border: none;
-    font-size: 1.5rem;
+    font-size: 20px;
     cursor: pointer;
     width: 20px;
     height: 20px;
     padding: 0;
-    line-height: 1.35rem;
+    line-height: 20px;
     text-align: center;
-    font-weight: bold;
+    margin: 0;
 }
 .min-btn:hover , .close-btn:hover {
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.5);
 }
 .min-btn {
     position: absolute;
@@ -301,13 +328,14 @@ label {
     right: 0;
     background: none;
     border: none;
-    font-size: 2rem;
+    font-size: 1.5rem;
     cursor: pointer;
     width: 20px;
     height: 20px;
     padding: 0;
     line-height: 1rem;
     text-align: center;
+    margin: 0;
 }
 .modal-body {
     width: calc(100% - 21px);
