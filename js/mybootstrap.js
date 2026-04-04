@@ -65,8 +65,8 @@ var MyBootstrap = (function () {
 			}else if(request.action == "getconfig"){
 				sendResponse(MyChromeConfig.view());
 			}else if(request.action == "updateconfig"){
-				MyChromeConfig.update(request.data);
-				sendResponse({success: true});
+				const result = MyChromeConfig.update(request.data);
+				sendResponse({success: result});
 			}else if(request.action == "cleanmonitoredmedia"){
 				MyChromeMediaMonitor.clear();
 				sendResponse({success: true});

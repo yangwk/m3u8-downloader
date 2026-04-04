@@ -232,5 +232,11 @@
     },
     "errorCode0004": {
         "message": "network error $1"
+    },
+    "errorCode0005": {
+        "message": "please input a valid proxy address"
+    },
+    "errorCode0006": {
+        "message": "please input the matching rule in JSON format"
     }
 }

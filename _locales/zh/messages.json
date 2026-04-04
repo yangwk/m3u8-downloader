@@ -232,5 +232,11 @@
     },
     "errorCode0004": {
         "message": "网络错误 $1"
+    },
+    "errorCode0005": {
+        "message": "请输入合法的代理地址"
+    },
+    "errorCode0006": {
+        "message": "请输入JSON格式的匹配规则"
     }
 }

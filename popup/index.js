@@ -276,14 +276,12 @@ document.addEventListener("DOMContentLoaded", function () {
 			var url = document.getElementById("manual-url").value.trim();
             if(! url){
                 __logError(chrome.i18n.getMessage("errorCode0002"));
-				document.getElementById("manual-url").focus();
 				return ;
 			}
 			try{
 				new URL(url);
 			}catch(err){
                 __logError(chrome.i18n.getMessage("errorCode0002"));
-				document.getElementById("manual-url").focus();
 				return ;
 			}
             
@@ -683,6 +681,30 @@ document.addEventListener("DOMContentLoaded", function () {
 		
 		document.getElementById("settings-submit").onclick = function(e){
 			e.stopPropagation();
+            
+            const proxyAddressEnable = document.getElementById("settings-paenable").checked ? "1" : "0";
+            const proxyAddress = document.getElementById("settings-pa").value.trim();
+            if(proxyAddressEnable == "1" && ! proxyAddress){
+                __logError(chrome.i18n.getMessage("errorCode0005"));
+				return ;
+			}
+            if(proxyAddressEnable == "1"){
+                try{
+                    new URL(proxyAddress);
+                }catch(err){
+                    __logError(chrome.i18n.getMessage("errorCode0005"));
+                    return ;
+                }
+            }
+            
+            const matchingRule = document.getElementById("settings-mr").value.trim();
+            try{
+                JSON.parse(matchingRule)
+            }catch (e) {
+                __logError(chrome.i18n.getMessage("errorCode0006"));
+                return ;
+            }
+            
 			var data = {};
 			var senv = document.getElementById("settings-environment");
 			data.environment = senv[senv.selectedIndex].value;
@@ -701,16 +723,18 @@ document.addEventListener("DOMContentLoaded", function () {
             data.convertSubtitles = document.getElementById("settings-cs").checked ? "1" : "0";
             data.stopBrokenSequence = document.getElementById("settings-bseq").checked ? "1" : "0";
             data.autoReload = parseInt(document.getElementById("settings-ar").value, 10);
-            data.proxyAddressEnable = document.getElementById("settings-paenable").checked ? "1" : "0";
-            data.proxyAddress = document.getElementById("settings-pa").value.trim();
+            data.proxyAddressEnable = proxyAddressEnable;
+            data.proxyAddress = proxyAddress;
             data.matchingRuleEnable = document.getElementById("settings-mrenable").checked ? "1" : "0";
-            data.matchingRule = document.getElementById("settings-mr").value.trim();
+            data.matchingRule = matchingRule;
 			
 			chrome.runtime.sendMessage({
 					action: "updateconfig",
 					data: data
 				}, function(response){
-				repaintByConfig(data);
+                if(response.success){
+                    repaintByConfig(data);
+                }
 			});
 		};
         

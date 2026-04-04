@@ -338,9 +338,9 @@ label {
     margin: 0;
 }
 .modal-body {
-    width: calc(100% - 21px);
+    width: calc(100% - 25px);
     text-align: center;
-    padding: 5px 1px 5px 1px;
+    padding: 5px 2px 5px 2px;
     overflow-x: hidden;
     overflow-y: auto;
     position: relative;

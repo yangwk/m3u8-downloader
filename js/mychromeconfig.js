@@ -52,7 +52,7 @@ var MyChromeConfig = (function () {
             
             if(newConfig.matchingRule != null){
                 if(! MyUrlRuleMatcher.verify(newConfig.matchingRule)){
-                    delete newConfig.matchingRule;
+                    return false;
                 }else{
                     MyUrlRuleMatcher.update(JSON.parse(newConfig.matchingRule));
                 }
@@ -62,6 +62,7 @@ var MyChromeConfig = (function () {
 				_config[k] = newConfig[k];
 			}
 			chrome.storage.local.set(newConfig, function () {});
+            return true;
 		},
 		get: function (key) {
 			return _config[key];
