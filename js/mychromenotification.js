@@ -41,7 +41,7 @@ var MyChromeNotification = (function () {
 					type: "basic",
 					requireInteraction: true,
 					iconUrl: chrome.extension.getURL("img/icon128.png"),
-					title: chrome.i18n.getMessage("appName") + " " + options.title,
+					title: chrome.i18n.getMessage("appName") ,
 					message: options.message,
 					buttons: [{ title: chrome.i18n.getMessage("notificationYes") }, 
 						{ title: chrome.i18n.getMessage("notificationNo") }]

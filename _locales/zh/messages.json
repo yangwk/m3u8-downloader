@@ -176,9 +176,6 @@
     "filterDuration": {
         "message": "过滤长度"
     },
-    "settingsProcessorThreshold": {
-        "message": "非直播m3u8处理器模式的阈值（MB）"
-    },
     "settingsMatchingRule": {
         "message": "匹配规则"
     },
@@ -221,6 +218,18 @@
     "inputValidMatchingRule": {
         "message": "输入有效的匹配规则"
     },
+    "settingsSplitThreshold": {
+        "message": "m3u8结果文件拆分阈值（MB）"
+    },
+    "settingsFileProcess": {
+        "message": "m3u8结果文件处理"
+    },
+    "settingsFileProcessSplit": {
+        "message": "使用阈值拆分多个"
+    },
+    "settingsFileProcessProcessor": {
+        "message": "忽略阈值使用m3u8处理器"
+    },
     "errorCode0001": {
         "message": "不支持下载主播放列表"
     },
@@ -238,5 +247,8 @@
     },
     "errorCode0006": {
         "message": "请输入JSON格式的匹配规则"
+    },
+    "errorCode0007": {
+        "message": "下载内容已达到阈值，但存在未完成的下载任务，请检查下载任务"
     }
 }

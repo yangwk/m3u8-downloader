@@ -616,26 +616,34 @@ document.addEventListener("DOMContentLoaded", function () {
 			chrome.runtime.sendMessage({
 				action: "getconfig"
 			}, function(response){
-				var data = response;
+				const data = response;
 				repaintByConfig(data);
-				var senv = document.getElementById("settings-environment");
-				for(var s=0; s<senv.length; s++){
+				const senv = document.getElementById("settings-environment");
+				for(let s=0; s<senv.length; s++){
 					if(senv[s].value == data.environment){
 						senv.selectedIndex = s;
 						break;
 					}
 				}
+                const sfilepro = document.getElementById("settings-filepro");
+                for(let s=0; s<sfilepro.length; s++){
+					if(sfilepro[s].value == data.resultFileProcess){
+						sfilepro.selectedIndex = s;
+						break;
+					}
+				}
+                
 				document.getElementById("settings-mntmax").value = data.monitoredQueueMax;
 				document.getElementById("settings-dlingmax").value = data.downloadingMax;
 				document.getElementById("settings-dlbtmax").value = data.downloadBatchMax;
                 document.getElementById("settings-batchc").checked = data.batchConcurrent == "1";
 				document.getElementById("settings-popwidth").value = data.popupWidth;
 				document.getElementById("settings-popheight").value = data.popupHeight;
+                document.getElementById("settings-splitthr").value = data.resultSplitThreshold;
 				document.getElementById("settings-pwe").checked = data.promptWhenExist == "1";
 				document.getElementById("settings-nfar").checked = data.newFolderAtRoot == "1";
 				document.getElementById("settings-pswc").checked = data.playSoundWhenComplete == "1";
                 document.getElementById("settings-sd").checked = data.splitDiscontinuity == "1";
-                document.getElementById("settings-prothr").value = data.processorThreshold;
                 document.getElementById("settings-dps").value = data.downloaderPageSize;
                 document.getElementById("settings-cs").checked = data.convertSubtitles == "1";
                 document.getElementById("settings-bseq").checked = data.stopBrokenSequence == "1";
@@ -705,8 +713,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 return ;
             }
             
-			var data = {};
-			var senv = document.getElementById("settings-environment");
+			const data = {};
+			const senv = document.getElementById("settings-environment");
+            const sfilepro = document.getElementById("settings-filepro");
 			data.environment = senv[senv.selectedIndex].value;
 			data.monitoredQueueMax = parseInt(document.getElementById("settings-mntmax").value, 10);
 			data.downloadingMax = parseInt(document.getElementById("settings-dlingmax").value, 10);
@@ -714,11 +723,12 @@ document.addEventListener("DOMContentLoaded", function () {
             data.batchConcurrent = document.getElementById("settings-batchc").checked ? "1" : "0";
 			data.popupWidth = parseInt(document.getElementById("settings-popwidth").value, 10);
 			data.popupHeight = parseInt(document.getElementById("settings-popheight").value, 10);
+            data.resultSplitThreshold = parseInt(document.getElementById("settings-splitthr").value, 10);
+            data.resultFileProcess = sfilepro[sfilepro.selectedIndex].value;
 			data.promptWhenExist = document.getElementById("settings-pwe").checked ? "1" : "0";
 			data.newFolderAtRoot = document.getElementById("settings-nfar").checked ? "1" : "0";
 			data.playSoundWhenComplete = document.getElementById("settings-pswc").checked ? "1" : "0";
             data.splitDiscontinuity = document.getElementById("settings-sd").checked ? "1" : "0";
-            data.processorThreshold = parseInt(document.getElementById("settings-prothr").value, 10);
             data.downloaderPageSize = parseInt(document.getElementById("settings-dps").value, 10);
             data.convertSubtitles = document.getElementById("settings-cs").checked ? "1" : "0";
             data.stopBrokenSequence = document.getElementById("settings-bseq").checked ? "1" : "0";
@@ -932,7 +942,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             _modalContainer.classList.remove("popup");
             _modalPrimary.innerText = "";
-            _logBus.splice(0);
+            _logBus.length = 0;
             _currentId = null;
         }
         

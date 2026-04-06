@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8" />
+    <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>popup</title>
@@ -50,9 +50,13 @@
 				<div id="monitor-content"></div>
 			</div>
 			<div id="manual-page" class="hide">
-				<div>
+				<div class="simple-row">
 					<textarea id="manual-url" class="textarea-url" data-place="inputValidURL"></textarea>
+                </div>
+                <div class="simple-row">
                     <textarea id="manual-headers" class="textarea-headers" data-place="inputValidHeaders"></textarea>
+                </div>
+                <div class="simple-row">
 					<input type="text" data-place="inputFileName" id="manual-name" />
 				</div>
 				<div class="simple-row">
@@ -122,6 +126,17 @@
 					<label class="not-select" data-msg="settingsPopupHeight">popheight</label>
 					<input type="number" step="20" min="435" max="3000" id="settings-popheight" />
 				</div>
+                <div class="simple-row">
+                    <label class="not-select" data-msg="settingsSplitThreshold">splitthr</label>
+                    <input type="number" step="1" min="1" max="1024" id="settings-splitthr" />
+				</div>
+                <div class="simple-row">
+                    <label class="not-select" data-msg="settingsFileProcess">filepro</label>
+                    <select id="settings-filepro">
+					  <option value="split" data-msg="settingsFileProcessSplit">split</option>
+					  <option value="processor" data-msg="settingsFileProcessProcessor">processor</option>
+					</select>
+				</div>
 				<div class="simple-row">
 					<label class="not-select" data-msg="settingsPromptWhenExist">pwe</label>
 					<input type="checkbox" id="settings-pwe" />
@@ -137,10 +152,6 @@
 				<div class="simple-row">
 					<label class="not-select" data-msg="settingsSplitDiscontinuity">sd</label>
 					<input type="checkbox" id="settings-sd" />
-				</div>
-				<div class="simple-row">
-                    <label class="not-select" data-msg="settingsProcessorThreshold">prothr</label>
-                    <input type="number" step="50" min="0" max="2000" id="settings-prothr" />
 				</div>
                 <div class="simple-row">
                     <label class="not-select" data-msg="settingsDownloaderPageSize">dps</label>

@@ -13,7 +13,6 @@ var MyChromeM3u8Processor = (function () {
     }
     */
 	function _downloadM3u8Basic(data, parseResult, playListCnt, callback){
-		var processorId = null;
 		
 		function stepDownloadm3u8processor1(){
 			var processorName = MyUtils.isWindowsPlatform() ? "processor.bat" : "processor.sh.command" ;
@@ -30,11 +29,10 @@ var MyChromeM3u8Processor = (function () {
                 priority: true
             }, stepDownloadm3u8processor2 );
 		}
-		
-		stepDownloadm3u8processor1();
+
 		
 		function stepDownloadm3u8processor2(ids){
-			processorId = ids[0];
+			const processorId = ids[0];
 			
 			MyDownload.download({
                 tasks: [{
@@ -46,7 +44,9 @@ var MyChromeM3u8Processor = (function () {
                 }], 
                 showName: data.mediaName + "2.txt",
                 priority: true
-            }, stepDownloadm3u8playlist);
+            }, function(){
+                callback(processorId);
+            });
 		}
 		
 		
@@ -83,10 +83,11 @@ var MyChromeM3u8Processor = (function () {
                 tasks: tasks, 
                 showName: data.mediaName + ".m3u8",
                 priority: true
-            }, function(){
-                callback(processorId);
-            });
+            }, stepDownloadm3u8processor1 );
 		}
+        
+        stepDownloadm3u8playlist();
+        
     }
        
 
@@ -111,7 +112,7 @@ var MyChromeM3u8Processor = (function () {
         }, function(){
             URL.revokeObjectURL(url);
             
-            allBytes.splice(0);
+            allBytes.length = 0;
             playItem.content = null;
             
             callback();
@@ -123,7 +124,6 @@ var MyChromeM3u8Processor = (function () {
         MyVideox.playCompleteSound();
         
         MyChromeDownload.open(processorId, {
-            title: data.mediaName,
             message: chrome.i18n.getMessage("notificationOpenDownload", chrome.i18n.getMessage("processorName", data.mediaName) )
         });
 	}

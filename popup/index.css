@@ -1,3 +1,5 @@
+@charset "UTF-8";
+
 html {
     font-size: 16px;
     margin: 0;
@@ -15,6 +17,12 @@ body {
 	padding: 2px;
 	border: none;
     position: relative;
+}
+div {
+    margin: 0;
+    padding: 0;
+    border: none;
+    display: block;
 }
 ul {
 	margin-top: 0;
@@ -81,7 +89,7 @@ a {
     color: #fff;
     text-align: center;
     vertical-align: middle;
-    background-color: #999;
+    background-color: #aaa;
     border-radius: 10px;
 	margin-left: 3px;
 	margin-right: 3px;
@@ -146,9 +154,24 @@ input[type="text"] , input[type="number"] {
     border-radius: 4px;
     vertical-align: middle;
     font-size: 1rem;
+    padding: 1px 2px 1px 2px;
 }
 input[type="text"] {
     width: calc(100% - 6px);
+}
+input[type="text"]::placeholder {
+    color: #aaa;
+    line-height: 1;
+    font-size: 1rem;
+    font-family: inherit;
+    opacity: 0.7;
+}
+input[type="text"]::-webkit-input-placeholder {
+    color: #aaa;
+    line-height: 1;
+    font-size: 1rem;
+    font-family: inherit;
+    opacity: 0.7;
 }
 input[type="number"] {
 	width: 80px;
@@ -173,12 +196,13 @@ input[type="checkbox"]:checked {
 input[type="checkbox"]:checked::before {
     content: "✓";
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    top: 0;
+    left: 0;
+    line-height: 1;
     font-size: 1rem;
     font-weight: bold;
     color: #fff;
+    font-family: inherit;
 }
 input[type="checkbox"]:disabled {
     opacity: 0.5;
@@ -193,14 +217,29 @@ input[type="checkbox"]:disabled {
     padding-top: 3px;
 }
 textarea {
-	margin: 2px 0px 0px 0px;
-	line-height: 1.5;
+	margin: 0;
+	line-height: 1.2;
 	resize: none;
     width: calc(100% - 6px);
-	border-style: solid;
-    border-width: 1px;
+	border: 1px solid #5cb85c;
 	border-radius: 4px;
-    border-color: #5cb85c;
+    padding: 1px 2px 1px 2px;
+    font-size: 1rem;
+    font-family: inherit;
+}
+textarea::placeholder {
+    color: #aaa;
+    line-height: 1.2;
+    font-size: 1rem;
+    font-family: inherit;
+    opacity: 0.7;
+}
+textarea::-webkit-input-placeholder {
+    color: #aaa;
+    line-height: 1.2;
+    font-size: 1rem;
+    font-family: inherit;
+    opacity: 0.7;
 }
 .textarea-url {
     height: 90px;
@@ -209,7 +248,7 @@ textarea {
     height: 90px;
 }
 .textarea-mr {
-    height: 3em;
+    height: 3rem;
 }
 .textarea-mr-max {
     height: 300px;
@@ -267,6 +306,7 @@ label {
     font-size: 1rem;
     line-height: 1;
     vertical-align: middle;
+    margin-right: 3px;
 }
 .line-wrapping {
     word-break: break-all;
@@ -274,6 +314,9 @@ label {
 }
 .simple-row {
     margin: 2px 0 2px 0;
+    min-height: 1.75rem;
+    display: flex;
+    align-items: center;
 }
 /* modal begin */
 .modal-content {
@@ -347,6 +390,9 @@ label {
     color: #D32F2F;
     min-height: 30px;
     max-height: 55px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 /* modal end */
 .media-live {

@@ -9,13 +9,13 @@
         "message": "m3u8 downloader processor - $1"
     },
     "notificationYes": {
-        "message": "yes"
+        "message": "Yes"
     },
     "notificationNo": {
-        "message": "no"
+        "message": "No"
     },
     "notificationOpenDownload": {
-        "message": "open the file $1 ?"
+        "message": "Open the file $1 ?"
     },
     "nothing": {
         "message": "nothing"
@@ -176,9 +176,6 @@
     "filterDuration": {
         "message": "filter duration"
     },
-    "settingsProcessorThreshold": {
-        "message": "the threshold (MB) of non-live m3u8 processor mode"
-    },
     "settingsMatchingRule": {
         "message": "matching rule"
     },
@@ -221,22 +218,37 @@
     "inputValidMatchingRule": {
         "message": "input valid matching rule"
     },
+    "settingsSplitThreshold": {
+        "message": "m3u8 result file split threshold (MB)"
+    },
+    "settingsFileProcess": {
+        "message": "m3u8 result file process"
+    },
+    "settingsFileProcessSplit": {
+        "message": "split into multiple use threshold"
+    },
+    "settingsFileProcessProcessor": {
+        "message": "ignore threshold use m3u8 processor"
+    },
     "errorCode0001": {
-        "message": "download main playlist is not supported"
+        "message": "Download main playlist is not supported"
     },
     "errorCode0002": {
-        "message": "please input a valid URL"
+        "message": "Please input a valid URL"
     },
     "errorCode0003": {
-        "message": "maximum number of download batch has been reached"
+        "message": "Maximum number of download batch has reached"
     },
     "errorCode0004": {
-        "message": "network error $1"
+        "message": "Network error $1"
     },
     "errorCode0005": {
-        "message": "please input a valid proxy address"
+        "message": "Please input a valid proxy address"
     },
     "errorCode0006": {
-        "message": "please input the matching rule in JSON format"
+        "message": "Please input the matching rule in JSON format"
+    },
+    "errorCode0007": {
+        "message": "Downloaded content has reached split threshold, but there is incomplete download task. Please check downloading task"
     }
 }

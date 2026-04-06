@@ -98,7 +98,6 @@ var MyChromeDownload = (function () {
         downloadTask: _downloadTask,
 		open: function(id, options){
 			MyChromeNotification.create({
-				title: options.title,
 				message: options.message
 			}, function(nid){
 				if(! nid){
