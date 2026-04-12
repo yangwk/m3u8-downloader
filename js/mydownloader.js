@@ -109,7 +109,9 @@ var MyDownloader = (function () {
             return null;
         }
         _data.delete(id);
-        return item.content;
+        const result = item.content;
+        item.content = null;
+        return result;
     }
     
     function _metric(){
@@ -201,9 +203,9 @@ var MyDownloader = (function () {
                         resumable0 = request.getStatus() == 206 && (ar == null || ar.trim() != "none");
                     }else{
                         if(useRangeMode){
-                            resumable0 = request.getStatus() != 200 && cr != null && entityLength != -1 && (ar == null || ar.trim() != "none");
+                            resumable0 = request.getStatus() == 206 && cr != null && entityLength != -1 && (ar == null || ar.trim() != "none");
                         }else{
-                            resumable0 = ar != null && ar.trim() != "none";
+                            resumable0 = (ar != null && ar.trim() != "none");
                         }
                     }
                     item.resumable = resumable0;
@@ -219,7 +221,7 @@ var MyDownloader = (function () {
                     }
                     
                     // restart it from the beginning
-                    item.restart = (item.rangeMode && ! resumable0) || (isResume && ! item.resumable) || (! isResume && useRangeMode && ! item.resumable && request.getStatus() != 200);
+                    item.restart = (item.rangeMode && ! item.resumable) || (isResume && ! item.resumable) || (! isResume && useRangeMode && ! item.resumable );
                     if(item.restart){
                         request.destroy();
                         if(! isResume && useRangeMode){

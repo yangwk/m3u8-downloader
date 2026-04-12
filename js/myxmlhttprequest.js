@@ -197,7 +197,9 @@ var MyXMLHttpRequest = function (_settings) {
     
     this.getResponse = function(){
         _check(true, "must send XMLHttpRequest");
-        return _xhr.response;
+        const result = _xhr.response;
+        _xhr.response = null;
+        return result;
     }
     
     this.getResponseHeader = function(headerName){
