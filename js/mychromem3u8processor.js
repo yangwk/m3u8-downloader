@@ -53,21 +53,22 @@ var MyChromeM3u8Processor = (function () {
 		function stepDownloadm3u8playlist(){
             var tasks = [];
             var shouldSplit = parseResult.discontinuity.length > 1;
+            let reqUrl = null;
             for(var r=0; r<parseResult.discontinuity.length; r++){
                 var m3u8Name = MyUtils.padStart(r.toString(), 10,"0") + "-"
                     + (shouldSplit ? "1" : "0") + "-" + playListCnt + "-"
                     + parseResult.discontinuity[r].start + "-" + parseResult.discontinuity[r].end + "-"
                     + data.uniqueKey + ".m3u8";
                 if(r == 0){
+                    const ua = new TextEncoder().encode(parseResult.content);
+                    const blob = new Blob([ua], {type: "application/octet-stream"});
+                    reqUrl = URL.createObjectURL(blob);
                     tasks.push({
                         options: {
-                            url: data.reqConfig.url,
-                            filename: data.downloadDirectory + "/m3u8/" + m3u8Name,
-                            method: data.reqConfig.method,
-                            headers: data.reqConfig.headers
+                            url: reqUrl,
+                            filename: data.downloadDirectory + "/m3u8/" + m3u8Name
                         },
-                        target: "chrome",
-                        proxy: true
+                        target: "chrome"
                     });
                 }else{
                     tasks.push({
@@ -83,7 +84,11 @@ var MyChromeM3u8Processor = (function () {
                 tasks: tasks, 
                 showName: data.mediaName + ".m3u8",
                 priority: true
-            }, stepDownloadm3u8processor1 );
+            }, function(){
+                URL.revokeObjectURL(reqUrl);
+                
+                stepDownloadm3u8processor1();
+            });
 		}
         
         stepDownloadm3u8playlist();

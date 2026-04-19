@@ -280,7 +280,8 @@ var MyM3u8Parser = function(_reqConfig, _content){
             suffix: _determineSuffix(segmentType, playList.length > 0 ? playList[0].url : null),
             renditionData: _sortRendition(renditionData),
             targetDuration: targetDuration,
-            isLive: ! isMasterPlaylist && ! playlistType && ! hasEnd
+            isLive: ! isMasterPlaylist && ! playlistType && ! hasEnd,
+            content: _content
 		};
 	}
 	

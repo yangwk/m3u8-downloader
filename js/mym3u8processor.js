@@ -319,6 +319,7 @@ var MyM3u8Processor = (function () {
                     context.parseResult.keyData = changedKeyData;
                     context.parseResult.targetDuration = parseResult.targetDuration;
                     context.parseResult.isLive = parseResult.isLive;
+                    context.parseResult.content = parseResult.content;
                     context.playListCnt += changedPlayList.length;
                     context.lastMaxSequence = changedPlayList[changedPlayList.length - 1].sequence;
                     context.lastKeyRef = changedPlayList[changedPlayList.length - 1].keyRef;
