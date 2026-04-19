@@ -870,6 +870,12 @@ document.addEventListener("DOMContentLoaded", function () {
         
         
         function onLogError(item){
+            if(MyUtils.isString(item)){
+                const lastOne = _logBus.length > 0 ? _logBus[_logBus.length - 1] : _modalPrimary.innerText;
+                if(MyUtils.isString(lastOne) && lastOne == item){
+                    return;
+                }
+            }
             _logBus.push(item);
             logNext(false);
         }
@@ -915,12 +921,13 @@ document.addEventListener("DOMContentLoaded", function () {
         
         function logNext(force){
             if(!force && ( _modalContainer.classList.contains("popup") || _modalContainer.classList.contains("min") )){
+                updateContainerTitle(true);
                 return ;
             }
             if(_currentId != null){
                 removeRemoteLog( [ _currentId ] );
             }
-            
+            updateContainerTitle();
             const item = _logBus.shift();
             if(item != null){
                 const message = MyUtils.isString(item) ? item : item.message;
@@ -942,6 +949,11 @@ document.addEventListener("DOMContentLoaded", function () {
             _modalPrimary.innerText = "";
             _logBus.length = 0;
             _currentId = null;
+            updateContainerTitle();
+        }
+        
+        function updateContainerTitle(addOne){
+            _modalContainer.title = chrome.i18n.getMessage("promptMessage", ( _logBus.length + (addOne ? 1 : 0) ).toString());
         }
         
         function removeRemoteLog(ids){

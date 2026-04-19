@@ -2,6 +2,7 @@ var MyLogger = (function () {
     
     const _logBus = new Map();
     const _maxSize = 1000;
+    let _lastId = null;
     
     var _MessageItem = function(message){
         this.id = MyUtils.genRandomString();
@@ -15,8 +16,15 @@ var MyLogger = (function () {
         if(_logBus.size >= _maxSize){
             return ;
         }
+        if(_lastId != null){
+            const item = _logBus.get(_lastId);
+            if(item != null && item.message == message){
+                return ;
+            }
+        }
         const item = new _MessageItem(message);
         _logBus.set(item.id, item);
+        _lastId = item.id;
         
         chrome.runtime.sendMessage({
             action: "log.error",
@@ -35,11 +43,15 @@ var MyLogger = (function () {
     function _remove(ids){
         if(MyUtils.isString(ids)){
             _logBus.clear();
+            _lastId = null;
             return;
         }
         for(let r=0; ids != null && r < ids.length; r++){
             const id = ids[r];
             _logBus.delete(id);
+        }
+        if(_logBus.size == 0){
+            _lastId = null;
         }
     }
     

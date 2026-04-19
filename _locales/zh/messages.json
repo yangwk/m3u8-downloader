@@ -206,8 +206,8 @@
     "minimizePopup": {
         "message": "最小化"
     },
-    "log": {
-        "message": "日志"
+    "promptMessage": {
+        "message": "$1 个消息"
     },
     "settingsBatchConcurrent": {
         "message": "多批次并发下载"

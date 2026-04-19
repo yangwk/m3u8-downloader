@@ -195,7 +195,7 @@
         "message": "proxy address"
     },
     "settingsAutoReload": {
-        "message": "interval seconds of extension popup data auto-reload"
+        "message": "interval second of extension popup data auto-reload"
     },
     "manualMethod": {
         "message": "request method"
@@ -206,8 +206,8 @@
     "minimizePopup": {
         "message": "minimize"
     },
-    "log": {
-        "message": "log"
+    "promptMessage": {
+        "message": "$1 message"
     },
     "settingsBatchConcurrent": {
         "message": "multiple batches concurrent download"
