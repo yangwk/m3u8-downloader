@@ -59,6 +59,14 @@ var MyM3u8Processor = (function () {
     }
     
     function _mergeContentAction(context){
+        const reservedKeyRef = new Set();
+        for(let x=0; x < context.parseResult.playList.length; x++){
+            const playItem = context.parseResult.playList[x];
+            if(playItem.content == null){
+                reservedKeyRef.add(playItem.keyRef);
+            }
+        }
+        MyUtils.deleteNotReserved(reservedKeyRef, context.parseResult.keyData);
         
         if(context.isLive){
             context.parseResult.discontinuity = [{ start: 0, end: context.parseResult.playList.length-1 }];
@@ -70,31 +78,47 @@ var MyM3u8Processor = (function () {
             const allBytes = [];
             let currentTotal = 0;
             let targetIndex = -1;
-            const reservedKeyRef = new Set();
-            for(let p=disconItem.start; p<=disconItem.end; p++){
-                const playItem = context.parseResult.playList[p];
-                if(playItem.content == null){
-                    reservedKeyRef.add(playItem.keyRef);
-                }
-            }
+            
+            
             for(let p=disconItem.start; p<=disconItem.end; p++){
                 const playItem = context.parseResult.playList[p];
                 if(playItem.content == null){
                     return;
                 }
+                if(playItem.isInitSection){
+                    if(p != disconItem.start){
+                        throw "not support format";
+                    }
+                    context.mergeM3u8.disconInitSection.set(context.mergeM3u8.disconIndex, playItem.content);
+                    allBytes.push(playItem.content);
+                    currentTotal += playItem.content.byteLength;
+                    continue;
+                }
+                const initSection = context.mergeM3u8.disconInitSection.get(context.mergeM3u8.disconIndex);
+                const shouldAddInitSection = (initSection != null && ! context.parseResult.playList[disconItem.start].isInitSection );
+                const threshold = shouldAddInitSection ? Math.max(context.mergeM3u8.threshold - initSection.byteLength, initSection.byteLength) : context.mergeM3u8.threshold;
+                
                 const sum = currentTotal + playItem.content.byteLength;
-                if(sum == context.mergeM3u8.threshold){
+                if(sum == threshold){
                     targetIndex = p;
                     allBytes.push(playItem.content);
                     context.mergeM3u8.total += sum;
-                }else if(sum > context.mergeM3u8.threshold){
+                }else if(sum > threshold){
                     const noPrevious = (p-1) < disconItem.start;
-                    targetIndex = noPrevious ? disconItem.start : (p-1);
-                    if(noPrevious){
+                    const index = noPrevious ? disconItem.start : (p-1);
+                    const pi = context.parseResult.playList[index];
+                    if(pi.isInitSection){
+                        targetIndex = p;
                         allBytes.push(playItem.content);
-                        currentTotal = sum;
+                        context.mergeM3u8.total += sum;
+                    }else{
+                        targetIndex = index;
+                        if(noPrevious){
+                            allBytes.push(playItem.content);
+                            currentTotal = sum;
+                        }
+                        context.mergeM3u8.total += currentTotal;
                     }
-                    context.mergeM3u8.total += currentTotal;
                 }else{
                     if(p == disconItem.end){
                         targetIndex = p;
@@ -126,6 +150,11 @@ var MyM3u8Processor = (function () {
                 if(MyChromeConfig.get("newFolderAtRoot") == "0" && ! serialNumber){
                     fileName = context.mediaName;
                 }
+                
+                if(shouldAddInitSection){
+                    allBytes.unshift(initSection);
+                }
+                
                 _mergeContentImpl(allBytes, fileName, function(){
                     if(_isMergeM3u8Completed(context)){
                         _mergeM3u8Complete(context);
@@ -136,7 +165,7 @@ var MyM3u8Processor = (function () {
                     context.parseResult.playList[r].content = null;
                     context.parseResult.playList.splice(r, 1);
                 }
-                MyUtils.deleteNotReserved(reservedKeyRef, context.parseResult.keyData);
+                
                 const removeCnt = targetIndex - disconItem.start + 1;
                 context.mergeM3u8.completedCnt += removeCnt;
                 if(isOver){
@@ -320,7 +349,7 @@ var MyM3u8Processor = (function () {
         
                 
         function comparePlayList(newPlayList, lastMaxSequence){
-            const changedPlayList = newPlayList.filter(newPi => newPi.sequence > lastMaxSequence);
+            const changedPlayList = newPlayList.filter(newPi => newPi.sequence > lastMaxSequence && ! newPi.isInitSection);
             newPlayList.length = 0;
             if(changedPlayList.length > 0){
                 if(MyChromeConfig.get("stopBrokenSequence") == "0"){
@@ -396,6 +425,7 @@ var MyM3u8Processor = (function () {
                 disconIndex: 0,
                 disconLength: parseResult.discontinuity.length,
                 disconPart: new Map(),
+                disconInitSection: new Map(),
                 completedCnt: 0,
                 mergeCallback: mergeCallback
             }

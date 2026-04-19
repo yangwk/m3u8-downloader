@@ -5,7 +5,7 @@ very simple parser:
 */
 var MyM3u8Parser = function(_reqConfig, _content){
 	
-	var _PlayItem = function(logicSequence, sequence, url, keyRef, keyIV, duration){
+	var _PlayItem = function(logicSequence, sequence, url, keyRef, keyIV, duration, isInitSection){
         this.logicSequence = logicSequence;
 		this.sequence = sequence;
 		this.url = url;
@@ -13,6 +13,7 @@ var MyM3u8Parser = function(_reqConfig, _content){
         this.keyRef = keyRef;
         this.keyIV = keyIV;
         this.duration = duration;
+        this.isInitSection = isInitSection;
         this.content = null;
 	}
     
@@ -261,7 +262,7 @@ var MyM3u8Parser = function(_reqConfig, _content){
                     let iv = _parseAttributeValue("0x" + ivSequence.toString(16), 1);
                     keyIV = new Uint8Array(_paddingIV(iv));
                 }
-				playList.push( new _PlayItem(firstSequence+logicIndex, ivSequence, MyUtils.concatUrl(contentURI, _reqConfig.url), keyRef, keyIV, duration) );
+				playList.push( new _PlayItem(firstSequence+logicIndex, ivSequence, MyUtils.concatUrl(contentURI, _reqConfig.url), keyRef, keyIV, duration, isInitializationSection) );
 				if(isURI){  // Media Initialization Section can not change the Media Sequence Number
                     index ++;
                 }
