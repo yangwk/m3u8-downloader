@@ -146,9 +146,6 @@
 	"settingsPlaySoundWhenComplete": {
         "message": "下载完成时播放声音"
     },
-	"settingsSplitDiscontinuity": {
-        "message": "拆分处理不连续的m3u8播放列表"
-    },
 	"pause": {
         "message": "暂停"
     },
@@ -192,13 +189,13 @@
         "message": "停止直播"
     },
     "settingsBrokenSequence": {
-        "message": "直播下载断序即停止"
+        "message": "m3u8直播下载断序即停止"
     },
     "settingsProxyAddress": {
         "message": "代理地址"
     },
     "settingsAutoReload": {
-        "message": "自动刷新的间隔秒数"
+        "message": "扩展程序弹窗数据自动刷新的间隔秒数"
     },
     "manualMethod": {
         "message": "请求方法"
@@ -249,6 +246,6 @@
         "message": "请输入JSON格式的匹配规则"
     },
     "errorCode0007": {
-        "message": "下载内容已达到阈值，但存在未完成的下载任务，请检查下载任务"
+        "message": "存在未完成的下载任务，请检查正在下载任务"
     }
 }

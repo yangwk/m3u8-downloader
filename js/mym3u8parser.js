@@ -323,10 +323,6 @@ var MyM3u8Parser = function(_reqConfig, _content){
         if(playList.length == 0){
             return retval;
         }
-        if(MyChromeConfig.get("splitDiscontinuity") != "1"){
-            retval.push( new _DiscontinuityItem(0, playList.length-1) );
-            return retval;
-        }
         for(var r=0, start=0, end=0; r<playList.length; r++){
             if(playList[r].discontinuity == true || r == playList.length-1){
                 end = r;

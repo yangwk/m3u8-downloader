@@ -141,13 +141,10 @@
         "message": "prompt when filename exist"
     },
 	"settingsNewFolderAtRoot": {
-        "message": "create subdirectory at download root folder"
+        "message": "create subdirectory at download root directory"
     },
 	"settingsPlaySoundWhenComplete": {
         "message": "play sound when download complete"
-    },
-	"settingsSplitDiscontinuity": {
-        "message": "split to handle discontinuity m3u8 playlist"
     },
 	"pause": {
         "message": "pause"
@@ -192,13 +189,13 @@
         "message": "stop live"
     },
     "settingsBrokenSequence": {
-        "message": "stop live download if broken sequence"
+        "message": "stop live m3u8 download when broken sequence"
     },
     "settingsProxyAddress": {
         "message": "proxy address"
     },
     "settingsAutoReload": {
-        "message": "the interval seconds of auto-reload"
+        "message": "interval seconds of extension popup data auto-reload"
     },
     "manualMethod": {
         "message": "request method"
@@ -249,6 +246,6 @@
         "message": "Please input the matching rule in JSON format"
     },
     "errorCode0007": {
-        "message": "Downloaded content has reached split threshold, but there is incomplete download task. Please check downloading task"
+        "message": "There is incomplete download task. Please check downloading task"
     }
 }

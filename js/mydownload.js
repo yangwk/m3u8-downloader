@@ -31,8 +31,7 @@ var MyDownload = (function () {
                     task.control.hideInDownloadList = task.hideInDownloadList || false;
                     task.control.batchShowName = copyTaskData.showName;
                     task.control.removeDownloadId = task.removeDownloadId || false;
-                    task.control.state = null;
-                    task.control.stateRecordTime = null;
+                    task.control.state = "in_progress";
 				}
                 if(isUpdate){
                     const batch = _queue.get(batchName);
@@ -162,8 +161,7 @@ var MyDownload = (function () {
                     if(control.state == "complete"){
                         return ;
                     }
-                    // final state is counted within the time limit, for pause and then resume
-                    if(control.state == "in_progress" || (control.state != "in_progress" && Math.abs(Date.now() - (control.stateRecordTime || Date.now())) < 3000 ) ){
+                    if(control.state == "in_progress"){
                         countInfo.actionCount ++;
                     }
 				});

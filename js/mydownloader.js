@@ -25,6 +25,7 @@ var MyDownloader = (function () {
         this.rangeMode = false;
         this.header = header;
         this.data = data;
+        this.fakePause = false;
 	}
     
     function _download(options, callback){
@@ -152,6 +153,14 @@ var MyDownloader = (function () {
                         _notify(item, callback);
                         return ;
                     }
+                    if(d.state == "interrupted"){
+                        if(item.fakePause){
+                            item.state = "in_progress";
+                            _notify(item, callback);
+                            item.fakePause = false;
+                            return ;
+                        }
+                    }
                     item.speed = d.speed;
                     item.speedUnit = d.speedUnit;
                     item.loaded = item.loadedOriginal + d.loaded;
@@ -164,6 +173,7 @@ var MyDownloader = (function () {
                     if(useRangeMode && ! item.rangeMode){
                         if(! isResume && item.resumable && item.lengthComputable && item.total > 0){
                             item.rangeMode = true;
+                            item.fakePause = true;
                             _pause(id);
                             item.loaded = item.loadedOriginal;
                             _resume(id, callback);

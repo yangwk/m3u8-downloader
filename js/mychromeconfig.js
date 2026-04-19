@@ -18,7 +18,6 @@ var MyChromeConfig = (function () {
 		promptWhenExist: "0",
 		newFolderAtRoot: "1",
 		playSoundWhenComplete: "1",
-        splitDiscontinuity: "1",
         downloaderPageSize: 5,
         convertSubtitles: "1",
         stopBrokenSequence: "1",

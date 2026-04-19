@@ -11,16 +11,12 @@ var MyChromeDownload = (function () {
 		}
 		
 		if(delta.state && delta.state.current == "interrupted"){
-			if(delta.canResume && delta.canResume.current != true){
-				// TODO interrupted and can't resume
-			}
+			MyLogger.error(chrome.i18n.getMessage("errorCode0007"));
 		}
         
         if (delta.state){
+            MyDownload.downloadTask();
             control.state = delta.state.current;
-            if(control.stateRecordTime == null){
-                control.stateRecordTime = Date.now();
-            }
         }
 
 		if (delta.state && delta.state.current == "complete") {
@@ -32,10 +28,6 @@ var MyChromeDownload = (function () {
 					}
 				});
 			}
-		}
-		
-		if (delta.state){
-			MyDownload.downloadTask();
 		}
 	});
 	

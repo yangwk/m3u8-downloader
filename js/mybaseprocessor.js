@@ -14,11 +14,11 @@ var MyBaseProcessor = (function () {
         const control = MyDownload.downloadingHolder.get(data.id);
         if (control != null) {
             if(control.state != data.state){
+                if(data.state == "interrupted"){
+                    MyLogger.error(chrome.i18n.getMessage("errorCode0007"));
+                }
                 MyDownload.downloadTask();
-            }
-            control.state = data.state;
-            if(control.stateRecordTime == null){
-                control.stateRecordTime = Date.now();
+                control.state = data.state;
             }
         }
 
