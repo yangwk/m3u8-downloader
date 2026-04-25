@@ -234,7 +234,7 @@
         "message": "downloaded size"
     },
     "resultSplitNumber": {
-        "message": "number of m3u8 result file split"
+        "message": "total number of m3u8 result file split"
     },
     "timeSpent": {
         "message": "time spent"

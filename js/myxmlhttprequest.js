@@ -36,16 +36,20 @@ var MyXMLHttpRequest = function (_settings) {
         current: null,
         previous: null
     };
+    
+    function _isFinalState(){
+        return _loadDelta.current != null && (_loadDelta.current.state == "interrupted" || _loadDelta.current.state == "complete");
+    }
 	
 	function _fireChanged(newState){
         if(_settings.listener == null || _settings.listener.changed == null){
             return ;
         }
+        if(_isFinalState()){
+            return ;
+        }
         if(_loadDelta.current == null){
             _loadDelta.current = new _LoadDeltaItem(0, 0, 0, false);
-        }
-        if(_loadDelta.current.state == "interrupted" || _loadDelta.current.state == "complete"){
-            return ;
         }
         _loadDelta.current.state = newState;
         
@@ -179,6 +183,9 @@ var MyXMLHttpRequest = function (_settings) {
             _fireChanged("in_progress");
         };
         xhr.onprogress = function (e) {
+            if(_isFinalState()){
+                return ;
+            }
             _loadDelta.previous = _loadDelta.current;
             _loadDelta.current = new _LoadDeltaItem(e.timeStamp, e.loaded, e.total, e.lengthComputable);
             _fireChanged("in_progress");

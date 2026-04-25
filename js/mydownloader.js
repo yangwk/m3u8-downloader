@@ -149,6 +149,12 @@ var MyDownloader = (function () {
                         return ;
                     }
                     if(item.restart){
+                        if(item.fakePause){
+                            item.state = "in_progress";
+                            _notify(item, callback);
+                            item.fakePause = false;
+                            return ;
+                        }
                         item.state = "interrupted";
                         _notify(item, callback);
                         return ;
@@ -233,8 +239,12 @@ var MyDownloader = (function () {
                     // restart it from the beginning
                     item.restart = (item.rangeMode && ! item.resumable) || (isResume && ! item.resumable) || (! isResume && useRangeMode && ! item.resumable );
                     if(item.restart){
+                        const shouldRestart = (! isResume && useRangeMode);
+                        if(shouldRestart){
+                            item.fakePause = true;
+                        }
                         request.destroy();
-                        if(! isResume && useRangeMode){
+                        if(shouldRestart){
                             _restart(id, callback);
                         }
                     }
