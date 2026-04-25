@@ -227,6 +227,18 @@
     "settingsFileProcessProcessor": {
         "message": "ignore threshold use m3u8 processor"
     },
+    "downloadedDuration": {
+        "message": "downloaded duration"
+    },
+    "downloadedSize": {
+        "message": "downloaded size"
+    },
+    "resultSplitNumber": {
+        "message": "number of m3u8 result file split"
+    },
+    "timeSpent": {
+        "message": "time spent"
+    },
     "errorCode0001": {
         "message": "Download main playlist is not supported"
     },

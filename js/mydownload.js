@@ -201,13 +201,27 @@ var MyDownload = (function () {
 		});
 		var downloadBatches = [];
 		_downloadBatchHolder.forEach(function(batch){
+            let m3u8Info = null;
+            if(batch.attributes && batch.attributes.mediaType == "m3u8"){
+                const context = MyBaseProcessor.getDownloadContext(batch.attributes.contextId);
+                if(context != null){
+                    m3u8Info = {
+                        contextId: batch.attributes.contextId,
+                        isLive: context.isLive,
+                        dlDuration: context.duration,
+                        dlSize: context.total,
+                        splitFileCnt: context.mergeM3u8.fileCnt,
+                        spentTime: Math.trunc((Date.now() - context.beginTime) / 1000)
+                    };
+                }
+            }
 			downloadBatches.push({
 				showName: batch.showName,
 				waitCnt: batch.tasks.length,
 				completedCnt: batch.completedCnt,
 				triggeredCnt: batch.downloadIdSize,
 				sum: batch.mustCompleteCnt,
-                attributes: batch.attributes
+                m3u8Info: m3u8Info
 			});
 		});
 		

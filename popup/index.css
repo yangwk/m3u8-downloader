@@ -396,9 +396,10 @@ label {
     flex-wrap: wrap;
 }
 /* modal end */
-.media-live {
+.warning {
     background-color: #ec971f;
 }
-.media-duration {
+.info {
     background-color: #5bc0de;
+    user-select: text !important;
 }

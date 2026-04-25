@@ -14,7 +14,7 @@ var MyM3u8Processor = (function () {
             }
             playItem.content = _decodeContent(context.parseResult.keyData, playItem, buf);
             context.completedCnt ++;
-            
+            context.duration += playItem.duration;
             context.total += playItem.content.byteLength;
             context.useChromeM3u8 = context.total >= context.chromeM3u8.threshold;
             MyDownload.downloadBatchHolder.reuse(context.batchName, context.parseResult.isLive);
@@ -156,6 +156,7 @@ var MyM3u8Processor = (function () {
                 }
                 
                 _mergeContentImpl(allBytes, fileName, function(){
+                    context.mergeM3u8.fileCnt ++;
                     if(_isMergeM3u8Completed(context)){
                         _mergeM3u8Complete(context);
                     }
@@ -394,7 +395,9 @@ var MyM3u8Processor = (function () {
             downloadDirectory: downloadDirectory,
             parseResult: parseResult,
             completedCnt: 0,
+            duration: 0,
             total: 0,
+            beginTime: Date.now(),
             chromeM3u8 : {
                 data : {
                     uniqueKey: uniqueKey,
@@ -428,6 +431,7 @@ var MyM3u8Processor = (function () {
                 disconPart: new Map(),
                 disconInitSection: new Map(),
                 completedCnt: 0,
+                fileCnt: 0,
                 mergeCallback: mergeCallback
             }
         });
@@ -491,8 +495,8 @@ var MyM3u8Processor = (function () {
                 tasks: tasks, 
                 showName: mediaName + ".multiplets",
                 attributes: {
-                    contextId: context.id,
-                    isLive: context.isLive
+                    mediaType: "m3u8",
+                    contextId: context.id
                 }
             }, null);
                         

@@ -107,12 +107,12 @@ document.addEventListener("DOMContentLoaded", function () {
 						'<hr/>' +
 						'<span class="badge badge-url" data-title="url">' + obj.url + '</span>' +
 						( obj.tabItem ? '<span data-title="monitorFromTab">' + ( obj.tabItem.favIconUrl ? '<img class="favIcon" src="'+ obj.tabItem.favIconUrl +'"/>' : '' ) + '<span class="badge">' + obj.tabItem.title + '</span></span>' : '' ) +
-						( obj.duration ? '<span class="badge media-duration" data-title="duration">' + MyUtils.formatHms(obj.duration) + '</span>' : '' ) +
+						( obj.duration ? '<span class="badge info" data-title="duration">' + MyUtils.formatHms(obj.duration) + '</span>' : '' ) +
 						( obj.length ? '<span class="badge">' + obj.length + '</span>' : '' ) +
 						'<span class="badge">' + obj.method + '</span>' +
 						'<span class="badge">' + obj.mediaType + '</span>' +
 						( obj.mime ? '<span class="badge">' + obj.mime + '</span>' : '' ) +
-                        ( obj.isLive ? '<span class="badge media-live" data-msg="live">live</span>' : '' ) +
+                        ( obj.isLive ? '<span class="badge warning" data-msg="live">live</span>' : '' ) +
 						'<input type="text" data-place="inputFileName" id="' + nameId + '" />'
 					);
 					dom.innerHTML = html;
@@ -404,15 +404,24 @@ document.addEventListener("DOMContentLoaded", function () {
 					'<span class="badge" data-title="downloadTaskWaitCnt">' + obj.waitCnt + '</span>' +
 					'<span class="badge" data-title="downloadTaskCompletedCnt">' + obj.completedCnt + '</span>' +
 					'<span class="badge" data-title="downloadTaskTriggeredCnt">' + obj.triggeredCnt + '</span>' +
-					'<span class="badge" data-title="downloadTaskSum">' + obj.sum + '</span></div>'
+					'<span class="badge" data-title="downloadTaskSum">' + obj.sum + '</span>'
 				);
+                if(obj.m3u8Info){
+                    html += (
+                        '<span class="badge info" data-title="downloadedDuration">' + MyUtils.formatHms(obj.m3u8Info.dlDuration) + '</span>' +
+                        '<span class="badge info" data-title="downloadedSize">' + obj.m3u8Info.dlSize + ' B' + '</span>' +
+                        '<span class="badge info" data-title="resultSplitNumber">' + obj.m3u8Info.splitFileCnt + '</span>' +
+                        '<span class="badge info" data-title="timeSpent">' + obj.m3u8Info.spentTime + ' ' + chrome.i18n.getMessage("second") + '</span>'
+                    );
+                }
+                html += '</div>';
 				dom.innerHTML = html;
 				contentDom.appendChild(dom);
                 
-                if(obj.attributes && obj.attributes.isLive){
+                if(obj.m3u8Info && obj.m3u8Info.isLive){
                     var dom2 = document.createElement("span");
                     dom2.innerHTML = '<span class="badge badge-b" data-msg="stopLive">stopLive</span>';
-                    dom2.dataset["contextId"] = obj.attributes.contextId;
+                    dom2.dataset["contextId"] = obj.m3u8Info.contextId;
                     dom2.addEventListener("click", stopM3u8LiveDownload, { once: true });
                     dom.appendChild(dom2);
                 }

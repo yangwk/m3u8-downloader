@@ -3,9 +3,9 @@
 
 * 支持中英双文国际化
 
-* 支持m3u8标准AES-128加密流
+* 支持HLS标准AES-128加密流
 
-* 支持m3u8直播
+* 支持HLS直播
 
 * 支持2种m3u8处理方式
 
@@ -15,54 +15,39 @@
 
 ## 运行环境
 
-* Windows操作系统
+* 浏览器
 
-| chrome/chromium版本 | 3.0.0以下版本支持功能 | 3.0.0及以上版本支持功能 |
-|-------|------|------|
-| 52.0.2743.82 | 全部 | 未验证 |
-| 56.0.2924.87 | 全部 | 未验证 |
-| 59.0.3071.115 | 全部 | 未验证 |
-| 60及以上 | 除部分网页不支持监控之外，其他都支持 | 除部分网页不支持监控之外，其他都支持 |
+基于Chromium
 
-推荐使用chrome/chromium 59
+* 扩展程序
 
-* macOS操作系统
-
-| chrome/chromium版本 | 操作系统 | 支持功能 |
-|-------|------|------|
-| 99.0.4844.51以下 | 所有 | 未验证 |
-| 99.0.4844.51 | macOS Big Sur 11.6.4 | 不支持m3u8处理器自动打开 |
-| 99.0.4844.51以上 | 所有 | 未验证 |
+Manifest version 2
 
 ## 使用教程
 
 WeChat 1459669836
 
-安装，扩展程序 > 打开 开发者模式 > 加载已解压的扩展程序，选择文件夹，加载后建议关闭 开发者模式
+浏览器设置 扩展程序 > 打开 开发者模式 > 加载已解压的扩展程序，选择文件夹，加载扩展程序后建议关闭 开发者模式
 
-安装后显示插件图标
+安装后显示扩展程序图标
 
 ![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/01.png)
 
-点击插件图标，查看插件弹窗
+点击扩展程序图标，查看扩展程序弹窗
 
 ![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/02.PNG)
 
-英文界面
-
-![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/02-1.PNG)
-
-打开视频网站，监控到多媒体，插件图标有绿色标记
+打开视频网站，监控到媒体，扩展程序图标有绿色标记
 
 ![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/03.PNG)
 
-插件弹窗导航到 监控 页面，点击 刷新，查看监控详情
+扩展程序弹窗导航到 监控 页面，点击 刷新，查看监控详情
 
 ![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/04.PNG)
 
 输入保存的文件名（可选），点击 下载
 
-如果下载m3u8媒体，并且使用m3u8处理器模式（非直播达到阈值或者直播），那么当下载完成时会下载m3u8处理器
+如果下载m3u8媒体，并且使用m3u8处理器，那么下载完成时下载m3u8处理器
 
 ![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/05.PNG)
 
@@ -70,11 +55,11 @@ WeChat 1459669836
 
 ![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/06.PNG)
 
-通知打开m3u8处理器，点击 是
+通知运行m3u8处理器，点击 是
 
 ![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/07.PNG)
 
-m3u8处理器处理完毕后，自动打开处理后的文件所处位置
+m3u8处理器运行完毕后，自动打开处理后的文件所处目录
 
 ![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/08.PNG)
 
@@ -82,7 +67,7 @@ m3u8处理器处理完毕后，自动打开处理后的文件所处位置
 
 ![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/09.PNG)
 
-## 案例
+## 应用案例
 
 * 音乐
 
@@ -92,24 +77,26 @@ m3u8处理器处理完毕后，自动打开处理后的文件所处位置
 
 ![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/11.png)
 
-* 社交
-
-![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/12.png)
-
 * 直播
 
 ![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/live01.png)
 
 ## 注意事项
 
-* 为了避免糟糕的下载体验，请关闭浏览器选项 设置 -> 高级 -> 下载内容 -> 下载前询问每个文件的保存位置
+* 为了避免糟糕的下载体验，请关闭浏览器 设置 -> 高级 -> 下载内容 -> 下载前询问每个文件的保存位置
 
-* 使用m3u8处理器模式下载m3u8媒体，浏览器提示m3u8处理器是一个有风险的文件，该处理器安全可靠，请保留该文件，让下载继续
+* 浏览器提示m3u8处理器是一个有风险的文件，该文件安全可靠，请保留该文件让下载继续
+
+* 仅Windows操作系统支持自动运行m3u8处理器，其他操作系统需要手动运行
 
 ## 特殊技巧
 
-* 同一个标签页，可能监控到多个媒体，可以根据监控详情的长度鉴别哪个是下载目标
+* 根据监控详情的长度，鉴别哪个媒体是下载目标
 
-* 一些网站将视频、音频、字幕拆分，比如 Twitter，需要分别下载video和audio和subtitles（如果有）文件
+* 一些网站将视频、音频、字幕分开，需要分别下载video和audio和subtitles文件
 
-* 一些网站防止下载，比如 某b，解决方法是：将插件弹窗设置的 模拟环境 切换为 手机，刷新网站页面后即可监控下载
+* 一些网站防止下载，解决方法：将扩展程序弹窗设置 模拟环境 切换为 手机，刷新网站即可监控下载
+
+* m3u8结果文件处理，忽略阈值使用m3u8处理器，完整下载原始数据，更适合超大文件或二次处理场景
+
+* 开启代理地址，使用外部程序下载
