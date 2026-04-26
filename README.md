@@ -31,55 +31,45 @@ WeChat 1459669836
 
 安装后显示扩展程序图标
 
-![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/01.png)
+![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/001.png)
 
 点击扩展程序图标，查看扩展程序弹窗
 
-![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/02.PNG)
+![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/002.png)
 
 打开视频网站，监控到媒体，扩展程序图标有绿色标记
 
-![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/03.PNG)
+![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/003.png)
 
 扩展程序弹窗导航到 监控 页面，点击 刷新，查看监控详情
 
-![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/04.PNG)
+![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/004.png)
 
 输入保存的文件名（可选），点击 下载
 
 如果下载m3u8媒体，并且使用m3u8处理器，那么下载完成时下载m3u8处理器
 
-![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/05.PNG)
-
 保留m3u8处理器
 
-![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/06.PNG)
+![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/005.png)
 
 通知运行m3u8处理器，点击 是
 
-![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/07.PNG)
+![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/006.png)
 
 m3u8处理器运行完毕后，自动打开处理后的文件所处目录
 
-![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/08.PNG)
-
-更多设置
-
-![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/09.PNG)
+![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/007.png)
 
 ## 应用案例
 
 * 音乐
 
-![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/10.png)
-
-* 视频
-
-![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/11.png)
+![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/008.png)
 
 * 直播
 
-![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/live01.png)
+![readme](https://raw.githubusercontent.com/yangwk/m3u8-downloader/master/readme/009.png)
 
 ## 注意事项
 

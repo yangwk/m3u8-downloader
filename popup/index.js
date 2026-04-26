@@ -91,8 +91,8 @@ document.addEventListener("DOMContentLoaded", function () {
 					if(targetMediaType && obj.mediaType != targetMediaType){
                         continue;
                     }
-                    if(targetDuration && obj.duration && ! MyUtils.inRange(MyUtils.padStart(MyUtils.formatHms(obj.duration), 20, "0"), targetDurationRange, 
-                        (left, right) => [ MyUtils.padStart(left, 20, "0"), MyUtils.padStart(right, 20, "0") ]) ){
+                    if(targetDuration && ( !obj.duration || ( obj.duration && ! MyUtils.inRange(MyUtils.padStart(MyUtils.formatHms(obj.duration), 20, "0"), targetDurationRange, 
+                        (left, right) => [ MyUtils.padStart(left, 20, "0"), MyUtils.padStart(right, 20, "0") ]) ) ) ){
                         continue;
                     }
                     filteredData.push(obj);
