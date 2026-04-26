@@ -11,14 +11,17 @@ var MyChromeDownload = (function () {
 		}
 		
 		if(delta.state && delta.state.current == "interrupted"){
-			if(delta.canResume && delta.canResume.current != true){
-				// TODO interrupted and can't resume
-			}
+			MyLogger.error(chrome.i18n.getMessage("errorCode0007"));
 		}
+        
+        if (delta.state){
+            MyDownload.downloadTask();
+            control.state = delta.state.current;
+        }
 
 		if (delta.state && delta.state.current == "complete") {
 			MyDownload.downloadingHolder.delete(delta.id);
-			MyDownload.downloadBatchHolder.complete(control.batchName);
+			MyDownload.downloadBatchHolder.complete(control.batchName, delta.id, control);
 			if(control.hideInDownloadList){
 				chrome.downloads.erase({id: delta.id}, function(){
 					if(chrome.runtime.lastError){
@@ -26,22 +29,9 @@ var MyChromeDownload = (function () {
 				});
 			}
 		}
-		
-		if (delta.state){
-			MyDownload.downloadTask();
-		}
 	});
 	
-	chrome.downloads.onErased.addListener(function(id){
-		var control = MyDownload.downloadingHolder.get(id);
-		if (control == null) {
-			return;
-		}
-		
-		MyDownload.downloadBatchHolder.clearWhenInterrupted( control.batchName );
-	});
-	
-	
+
 	function _downloadTask(task){
 		if(task.options.method){
 			task.options.method = task.options.method.toUpperCase();
@@ -77,27 +67,20 @@ var MyChromeDownload = (function () {
 
     function _downloadTaskImpl(task){
 		try{
-			// sync calculate, incr firstly, decr if error
-			MyDownload.downloadingHolder.actionIncr();
-			
 			chrome.downloads.download(task.options, function (id) {
 				if(chrome.runtime.lastError){
-					MyDownload.downloadingHolder.actionDecr();
 					MyDownload.downloadBatchHolder.clearWhenInterrupted(task.control.batchName);
 				}else{
 					if(id){
 						if(MyDownload.downloadBatchHolder.saveId(task.control.batchName, id)){
                             MyDownload.downloadingHolder.put(id, task.control);
-                            MyDownload.downloadTask();
                         }
 					}else{
-						MyDownload.downloadingHolder.actionDecr();
 						MyDownload.downloadBatchHolder.clearWhenInterrupted(task.control.batchName);
 					}
 				}
 			});
 		}catch(err){
-			MyDownload.downloadingHolder.actionDecr();
 			MyDownload.downloadBatchHolder.clearWhenInterrupted(task.control.batchName);
 		}
 	}
@@ -107,7 +90,6 @@ var MyChromeDownload = (function () {
         downloadTask: _downloadTask,
 		open: function(id, options){
 			MyChromeNotification.create({
-				title: options.title,
 				message: options.message
 			}, function(nid){
 				if(! nid){

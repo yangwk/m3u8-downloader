@@ -24,7 +24,7 @@
             "js/aes-js.js", "js/mym3u8processor.js", 
             "js/mychromem3u8processor.js", "js/mymp4racodecs.js",
             "js/mym3u8builder.js", "js/myyoutubetimedtextconverter.js", 
-            "js/mybaseprocessor.js", "js/mybootstrap.js"],
+            "js/mybaseprocessor.js", "js/mylogger.js", "js/mybootstrap.js"],
         "persistent": true
     },
     "content_scripts": [

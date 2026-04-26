@@ -7,19 +7,18 @@ var MyChromeConfig = (function () {
 	
 	var _config = {
 		environment: "nothing",
-		showTab: "1",
-		showDuration: "1",
 		monitoredQueueMax: 50,
 		downloadingMax: 3,
 		downloadBatchMax: 5,
-		popupWidth: 490,
+        batchConcurrent: "1",
+		popupWidth: 494,
 		popupHeight: 435,
+        resultSplitThreshold: 500,
+        resultFileProcess: "split",
 		promptWhenExist: "0",
 		newFolderAtRoot: "1",
 		playSoundWhenComplete: "1",
-        splitDiscontinuity: "1",
-        processorThreshold: 500,
-        downloaderPageSize: 5 * 1024 * 1024,
+        downloaderPageSize: 5,
         convertSubtitles: "1",
         stopBrokenSequence: "1",
         autoReload: 0,
@@ -53,7 +52,7 @@ var MyChromeConfig = (function () {
             
             if(newConfig.matchingRule != null){
                 if(! MyUrlRuleMatcher.verify(newConfig.matchingRule)){
-                    delete newConfig.matchingRule;
+                    return false;
                 }else{
                     MyUrlRuleMatcher.update(JSON.parse(newConfig.matchingRule));
                 }
@@ -63,6 +62,7 @@ var MyChromeConfig = (function () {
 				_config[k] = newConfig[k];
 			}
 			chrome.storage.local.set(newConfig, function () {});
+            return true;
 		},
 		get: function (key) {
 			return _config[key];

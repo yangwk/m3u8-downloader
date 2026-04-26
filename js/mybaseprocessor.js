@@ -6,13 +6,22 @@ var MyBaseProcessor = (function () {
         const control = MyDownload.downloadingHolder.get(data.id);
         if (control != null) {
             MyDownload.downloadingHolder.delete(data.id);
-            MyDownload.downloadBatchHolder.complete(control.batchName);
-        }
-        
-        MyDownload.downloadTask();
+            MyDownload.downloadBatchHolder.complete(control.batchName, data.id, control);
+        }        
     }
 
     function _downloadCallback(data){
+        const control = MyDownload.downloadingHolder.get(data.id);
+        if (control != null) {
+            if(control.state != data.state){
+                if(data.state == "interrupted"){
+                    MyLogger.error(chrome.i18n.getMessage("errorCode0007"));
+                }
+                MyDownload.downloadTask();
+                control.state = data.state;
+            }
+        }
+
         if(data.state != "complete"){
             return;
         }
@@ -30,16 +39,15 @@ var MyBaseProcessor = (function () {
         }).catch((e) => {
             MyDownload.cancel(data.id);
             _cache.delete(data.attributes.contextId);
+            MyLogger.error(MyUtils.obtainExceptionContent(e));
         });
     }
     
      
     function _downloadDownload(task){
-        MyDownload.downloadingHolder.actionIncr();
         _downloadDownloadImpl(task, function(id){
             if(MyDownload.downloadBatchHolder.saveId(task.control.batchName, id)){
                 MyDownload.downloadingHolder.put(id, task.control);
-                MyDownload.downloadTask();
             }
         });
     }
@@ -49,7 +57,7 @@ var MyBaseProcessor = (function () {
             url: task.options.url,
             method: task.options.method.toUpperCase(),
             attributes: task.custom,
-            rangeBoundary: MyChromeConfig.get("downloaderPageSize"),
+            rangeBoundary: MyChromeConfig.get("downloaderPageSize") * 1024 * 1024,
             useRangeMode: task.custom == null || (task.custom.useRangeMode == null || task.custom.useRangeMode == true) ,
             header: MyUtils.headersToHeader(task.options.headers),
             data: task.options.body

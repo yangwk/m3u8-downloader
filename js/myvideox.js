@@ -108,7 +108,7 @@ var MyVideox = (function () {
                     }
 				});
 			}else{
-				if (_videoCount >= 10) {
+				if (_videoCount >= 20) {
 					callback(null);
 				} else {
 					_videoCount++;

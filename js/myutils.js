@@ -88,7 +88,7 @@ var MyUtils = (function(){
 			return addStr + str;
 		},
 		formatHms: function(sec){
-			var fsec = sec < 1 ? 1 : Number(sec.toFixed(0));
+			var fsec = sec < 1 ? 1 : Math.trunc(sec);
 			var hour = Math.trunc(fsec / 3600);
 			var tail = fsec % 3600;
 			var minute = Math.trunc(tail / 60);
@@ -214,9 +214,28 @@ var MyUtils = (function(){
             }
             return null;
         },
+        outerWidth: function(dom){
+            // only consider px
+            const style = window.getComputedStyle(dom);
+            const marginWidth = parseFloat( style.marginLeft || 0 ) + parseFloat( style.marginRight || 0 );
+            return dom.offsetWidth + marginWidth;
+        },
         outerHeight: function(dom){
-            const marginHeight = parseFloat( dom.style.marginTop || 0 ) + parseFloat( dom.style.marginBottom || 0 );
+            const style = window.getComputedStyle(dom);
+            const marginHeight = parseFloat( style.marginTop || 0 ) + parseFloat( style.marginBottom || 0 );
             return dom.offsetHeight + marginHeight;
+        },
+        notContentWidth: function(dom){
+            const style = window.getComputedStyle(dom);
+            return parseFloat( style.paddingLeft || 0 ) + parseFloat( style.paddingRight || 0 ) 
+                + parseFloat( style.borderLeftWidth || 0 ) + parseFloat( style.borderRightWidth || 0 )
+                + parseFloat( style.marginLeft || 0 ) + parseFloat( style.marginRight || 0 );
+        },
+        notContentHeight: function(dom){
+            const style = window.getComputedStyle(dom);
+            return parseFloat( style.paddingTop || 0 ) + parseFloat( style.paddingBottom || 0 ) 
+                + parseFloat( style.borderTopWidth || 0 ) + parseFloat( style.borderBottomWidth || 0 )
+                + parseFloat( style.marginTop || 0 ) + parseFloat( style.marginBottom || 0 );
         },
         getMimeType: function(mime){
             if(mime){
@@ -289,6 +308,161 @@ var MyUtils = (function(){
         },
         buildDownloadDirectory: function(mediaName, uniqueKey){
             return mediaName + "-" + uniqueKey;
+        },
+        deleteNotReserved(reservedKeySet, dataMap){
+            const keysToDelete = new Set();
+            dataMap.forEach((value, key) => {
+                if (!reservedKeySet.has(key)) {
+                    keysToDelete.add(key);
+                }
+            });
+            keysToDelete.forEach(key => dataMap.delete(key));
+        },
+        obtainExceptionContent: function(e){
+            let message = null;
+            if(e != null){
+                if(e instanceof Error){
+                    if(e.stack){
+                        message = e.stack;
+                    }else{
+                        message = e.toString();
+                    }
+                }else{
+                    message = e.toString();
+                }
+            }
+            return message;
+        },
+        diffArray: function(oldArr, newArr){
+            if(oldArr.length != newArr.length){
+                return true;
+            }
+            for(let r=0; r<oldArr.length; r++){
+                if(this.diffObject(oldArr[r], newArr[r])){
+                    return true;
+                }
+            }
+            return false;
+        },
+        diffArrayBuffer: function(oldArr, newArr){
+            if(oldArr.byteLength != newArr.byteLength){
+                return true;
+            }
+            const oldView = new DataView(oldArr);
+            const newView = new DataView(newArr);
+            for(let r=0; r<oldArr.byteLength; r++){
+                if(this.diffObject(oldView.getUint8(r), newView.getUint8(r))){
+                    return true;
+                }
+            }
+            return false;
+        },
+        diffObject: function(oldObj, newObj){
+            if(oldObj == null && newObj == null){
+                return false;
+            }
+            else if((oldObj == null && newObj != null) || (oldObj != null && newObj == null)){
+                return true;
+            }
+            else if(oldObj instanceof Array && newObj instanceof Array){
+                return this.diffArray(oldObj, newObj);
+            }
+            else if(oldObj instanceof Set && newObj instanceof Set){
+                if(oldObj.size != newObj.size){
+                    return true;
+                }
+                return this.diffArray(Array.from(oldObj), Array.from(newObj));
+            }
+            else if(oldObj instanceof Map && newObj instanceof Map){
+                if(oldObj.size != newObj.size){
+                    return true;
+                }
+                if(this.diffArray(Array.from(oldObj.keys()), Array.from(newObj.keys()))){
+                    return true;
+                }
+                for(const [key, value] of oldObj){
+                    if(this.diffObject(value, newObj.get(key))){
+                        return true;
+                    }
+                }
+            }
+            else if(ArrayBuffer.isView(oldObj) && ArrayBuffer.isView(newObj)){
+                if(oldObj.byteLength != newObj.byteLength){
+                    return true;
+                }
+                return this.diffArrayBuffer(oldObj.buffer, newObj.buffer);
+            }
+            else if(oldObj instanceof ArrayBuffer && newObj instanceof ArrayBuffer){
+                return this.diffArrayBuffer(oldObj, newObj);
+            }
+            else if(oldObj instanceof Object && newObj instanceof Object && Object.getPrototypeOf(oldObj) === Object.getPrototypeOf(newObj)){
+                const oldKey = Array.from(Object.keys(oldObj));
+                const newKey = Array.from(Object.keys(newObj));
+                if(this.diffArray(oldKey, newKey)){
+                    return true;
+                }
+                for(const key of oldKey){
+                    if(this.diffObject(oldObj[key], newObj[key])){
+                        return true;
+                    }
+                }
+            }
+            else if(oldObj !== newObj){
+                return true;
+            }
+            
+            return false;
+        },
+        buildSimpleShowName: function(name){
+            return name + ".main";
+        },
+        inRange: function(value, range, decorateLeftRightValue){
+            if(value == null || range == null){
+                return false;
+            }
+            const regex = /^(\s*\(\s*|\s*\[\s*)([^,\(\[\]\)]+?)\s*,\s*([^,\(\[\]\)]+?)(\s*\]\s*|\s*\)\s*)$/;
+            const arr = range.match(regex);
+            if(arr == null){
+                throw "invalid format";
+            }
+            const leftBracket = arr[1].trim();
+            let leftValue = arr[2].trim();
+            let rightValue = arr[3].trim();
+            const rightBracket = arr[4].trim();
+            
+            const infinity = "∞";
+            if(value == infinity){
+                return (leftValue == infinity && rightValue == infinity);
+            }
+            if(leftValue == infinity && rightValue == infinity){
+                return value == infinity;
+            }
+            
+            if(leftValue != infinity && rightValue != infinity && leftValue.localeCompare(rightValue) > 0){
+                throw "invalid format";
+            }
+            
+            if(decorateLeftRightValue != null){
+                const decorated = decorateLeftRightValue(leftValue, rightValue);
+                if(leftValue != infinity){
+                    leftValue = decorated[0];
+                }
+                if(rightValue != infinity){
+                    rightValue = decorated[1];
+                }
+            }
+            
+            if(leftBracket == "[" && rightBracket == ")"){
+                return ( leftValue == infinity ? true : leftValue.localeCompare(value) <= 0 ) && ( rightValue == infinity ? true : value.localeCompare(rightValue) < 0 );
+            }else if(leftBracket == "[" && rightBracket == "]"){
+                return ( leftValue == infinity ? true : leftValue.localeCompare(value) <= 0 ) && ( rightValue == infinity ? true : value.localeCompare(rightValue) <= 0 );
+            }else if(leftBracket == "(" && rightBracket == ")"){
+                return ( leftValue == infinity ? true : leftValue.localeCompare(value) < 0 ) && ( rightValue == infinity ? true : value.localeCompare(rightValue) < 0 );
+            }else if(leftBracket == "(" && rightBracket == "]"){
+                return ( leftValue == infinity ? true : leftValue.localeCompare(value) < 0 ) && ( rightValue == infinity ? true : value.localeCompare(rightValue) <= 0 );
+            }
+            
+            return false;
         }
     };
 })();

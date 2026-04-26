@@ -5,7 +5,7 @@ very simple parser:
 */
 var MyM3u8Parser = function(_reqConfig, _content){
 	
-	var _PlayItem = function(logicSequence, sequence, url, keyRef, keyIV, duration){
+	var _PlayItem = function(logicSequence, sequence, url, keyRef, keyIV, duration, isInitSection){
         this.logicSequence = logicSequence;
 		this.sequence = sequence;
 		this.url = url;
@@ -13,6 +13,7 @@ var MyM3u8Parser = function(_reqConfig, _content){
         this.keyRef = keyRef;
         this.keyIV = keyIV;
         this.duration = duration;
+        this.isInitSection = isInitSection;
         this.content = null;
 	}
     
@@ -261,7 +262,7 @@ var MyM3u8Parser = function(_reqConfig, _content){
                     let iv = _parseAttributeValue("0x" + ivSequence.toString(16), 1);
                     keyIV = new Uint8Array(_paddingIV(iv));
                 }
-				playList.push( new _PlayItem(firstSequence+logicIndex, ivSequence, MyUtils.concatUrl(contentURI, _reqConfig.url), keyRef, keyIV, duration) );
+				playList.push( new _PlayItem(firstSequence+logicIndex, ivSequence, MyUtils.concatUrl(contentURI, _reqConfig.url), keyRef, keyIV, duration, isInitializationSection) );
 				if(isURI){  // Media Initialization Section can not change the Media Sequence Number
                     index ++;
                 }
@@ -279,7 +280,8 @@ var MyM3u8Parser = function(_reqConfig, _content){
             suffix: _determineSuffix(segmentType, playList.length > 0 ? playList[0].url : null),
             renditionData: _sortRendition(renditionData),
             targetDuration: targetDuration,
-            isLive: ! isMasterPlaylist && ! playlistType && ! hasEnd
+            isLive: ! isMasterPlaylist && ! playlistType && ! hasEnd,
+            content: _content
 		};
 	}
 	
@@ -320,10 +322,6 @@ var MyM3u8Parser = function(_reqConfig, _content){
     function _handleDiscontinuity(playList){
         var retval = [];
         if(playList.length == 0){
-            return retval;
-        }
-        if(MyChromeConfig.get("splitDiscontinuity") != "1"){
-            retval.push( new _DiscontinuityItem(0, playList.length-1) );
             return retval;
         }
         for(var r=0, start=0, end=0; r<playList.length; r++){
@@ -367,7 +365,8 @@ var MyM3u8Parser = function(_reqConfig, _content){
 	this.parse = function(){
 		try{
 			return _parse();
-		}catch(err){
+		}catch(e){
+            MyLogger.error(MyUtils.obtainExceptionContent(e));
 		}
         return null;
 	};

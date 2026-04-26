@@ -3,7 +3,7 @@
         "message": "m3u8下载器"
     },
     "appDescription": {
-        "message": "此插件支持监控和下载：m3u8流媒体、视频、音频"
+        "message": "此扩展程序支持监控和下载：m3u8流媒体、视频、音频"
     },
     "processorName": {
         "message": "m3u8下载器 处理器 - $1"
@@ -39,7 +39,7 @@
         "message": "刷新"
     },
     "url": {
-        "message": "URL地址"
+        "message": "URL"
     },
     "monitorFromTab": {
         "message": "来自标签页"
@@ -51,7 +51,7 @@
         "message": "删除"
     },
     "inputValidURL": {
-        "message": "输入合法的URL地址"
+        "message": "输入合法的URL"
     },
     "inputValidHeaders": {
         "message": "输入合法的请求头"
@@ -69,10 +69,10 @@
         "message": "正在下载任务总数"
     },
     "downloadBatchShow": {
-        "message": "批次"
+        "message": "下载批次"
     },
     "downloadBatchCount": {
-        "message": "批次总数"
+        "message": "下载批次总数"
     },
     "fileName": {
         "message": "文件名"
@@ -81,7 +81,7 @@
         "message": "取消"
     },
     "downloadDatchName": {
-        "message": "批次名称"
+        "message": "下载批次名称"
     },
     "downloadTaskWaitCnt": {
         "message": "待下载任务数"
@@ -99,40 +99,34 @@
         "message": "模拟环境"
     },
     "settingsEnvironmentPC": {
-        "message": "桌面"
+        "message": "电脑"
     },
     "settingsEnvironmentMobile": {
         "message": "手机"
-    },
-    "settingsShowTab": {
-        "message": "监控详情显示标签页信息"
     },
     "settingsMonitorMax": {
         "message": "监控数最大值"
     },
     "settingsDlingMax": {
-        "message": "正在下载任务数最大值"
+        "message": "每批次正在下载任务数最大值"
     },
     "settingsDlBatchMax": {
         "message": "下载批次数最大值"
     },
     "settingsPopupWidth": {
-        "message": "插件弹窗宽度最大像素"
+        "message": "扩展程序弹窗宽度最大像素"
     },
     "settingsPopupHeight": {
-        "message": "插件弹窗高度最大像素"
+        "message": "扩展程序弹窗高度最大像素"
     },
     "submit": {
-        "message": "应用"
+        "message": "提交"
     },
 	"copyUrl": {
         "message": "复制URL"
     },
 	"settingsPopupInTab": {
-        "message": "标签页打开插件弹窗"
-    },
-	"settingsShowDuration": {
-        "message": "监控详情显示长度"
+        "message": "标签页打开扩展程序弹窗"
     },
 	"duration": {
         "message": "长度"
@@ -151,9 +145,6 @@
     },
 	"settingsPlaySoundWhenComplete": {
         "message": "下载完成时播放声音"
-    },
-	"settingsSplitDiscontinuity": {
-        "message": "拆分处理不连续的m3u8播放列表"
     },
 	"pause": {
         "message": "暂停"
@@ -176,17 +167,17 @@
     "downloadReloadTip": {
         "message": "每次操作前刷新"
     },
-    "filter": {
-        "message": "过滤"
+    "filterMediaType": {
+        "message": "过滤媒体类型"
     },
-    "settingsProcessorThreshold": {
-        "message": "非直播m3u8处理器模式的阈值（MB）"
+    "filterDuration": {
+        "message": "过滤长度"
     },
     "settingsMatchingRule": {
         "message": "匹配规则"
     },
     "settingsDownloaderPageSize": {
-        "message": "下载器的页大小（byte）"
+        "message": "下载器的页大小（MB）"
     },
     "settingsConvertSubtitles": {
         "message": "转换字幕格式"
@@ -198,15 +189,75 @@
         "message": "停止直播"
     },
     "settingsBrokenSequence": {
-        "message": "直播下载断序即停止"
+        "message": "m3u8直播下载断序即停止"
     },
     "settingsProxyAddress": {
         "message": "代理地址"
     },
     "settingsAutoReload": {
-        "message": "自动刷新的间隔秒数"
+        "message": "扩展程序弹窗数据自动刷新的间隔秒数"
     },
     "manualMethod": {
         "message": "请求方法"
+    },
+    "closePopup": {
+        "message": "左键单击关闭当前，右键单击关闭全部"
+    },
+    "minimizePopup": {
+        "message": "最小化"
+    },
+    "promptMessage": {
+        "message": "$1 个消息"
+    },
+    "settingsBatchConcurrent": {
+        "message": "多批次并发下载"
+    },
+    "inputValidMatchingRule": {
+        "message": "输入有效的匹配规则"
+    },
+    "settingsSplitThreshold": {
+        "message": "m3u8结果文件拆分阈值（MB）"
+    },
+    "settingsFileProcess": {
+        "message": "m3u8结果文件处理"
+    },
+    "settingsFileProcessSplit": {
+        "message": "使用阈值拆分多个"
+    },
+    "settingsFileProcessProcessor": {
+        "message": "忽略阈值使用m3u8处理器"
+    },
+    "downloadedDuration": {
+        "message": "已下载长度"
+    },
+    "downloadedSize": {
+        "message": "已下载大小"
+    },
+    "resultSplitNumber": {
+        "message": "m3u8结果文件拆分个数"
+    },
+    "timeSpent": {
+        "message": "已花费时间"
+    },
+    "errorCode0001": {
+        "message": "不支持下载主播放列表"
+    },
+    "errorCode0002": {
+        "message": "请输入合法的URL"
+    },
+    "errorCode0003": {
+        "message": "下载批次数最大值已达到"
+    },
+    "errorCode0004": {
+        "message": "网络错误 $1"
+    },
+    "errorCode0005": {
+        "message": "请输入合法的代理地址"
+    },
+    "errorCode0006": {
+        "message": "请输入JSON格式的匹配规则"
+    },
+    "errorCode0007": {
+        "message": "存在未完成的下载任务，请检查正在下载任务"
     }
 }

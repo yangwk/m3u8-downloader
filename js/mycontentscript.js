@@ -56,13 +56,10 @@
                 e.stopPropagation();
                 
                 window.postMessage({ action: "getm3u8" }, "*");
-                
-                dom.removeEventListener("mouseover", onceHandler);
-                dom.removeEventListener("touchstart", onceHandler);
             };
             
-            dom.addEventListener("mouseover", onceHandler);
-            dom.addEventListener("touchstart", onceHandler);
+            dom.addEventListener("mouseover", onceHandler, { once: true });
+            dom.addEventListener("touchstart", onceHandler, { once: true });
         }
 
     }

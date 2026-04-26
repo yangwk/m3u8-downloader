@@ -122,27 +122,28 @@ var MyUrlRuleMatcher = (function(){
         try {
             const options = JSON.parse(optionsString);
             if(! Array.isArray(options)){
-                throw "invalid";
+                throw "invalid matching rule";
             }
             for(let r in options){
                 if(options[r].url.host == null){
-                    throw "invalid";
+                    throw "invalid matching rule";
                 }
                 if(options[r].rule.identifier != null){
                     if(options[r].rule.identifier.pathIndex != null && ! Array.isArray(options[r].rule.identifier.pathIndex)){
-                        throw "invalid";
+                        throw "invalid matching rule";
                     }
                     if(options[r].rule.identifier.queryParam != null && ! Array.isArray(options[r].rule.identifier.queryParam)){
-                        throw "invalid";
+                        throw "invalid matching rule";
                     }
                 }
                 if(options[r].rule.ignorer != null){
                     if(options[r].rule.ignorer.queryParam != null && ! Array.isArray(options[r].rule.ignorer.queryParam)){
-                        throw "invalid";
+                        throw "invalid matching rule";
                     }
                 }
             }
         } catch (e) {
+            MyLogger.error(MyUtils.obtainExceptionContent(e));
             return false;
         }
         

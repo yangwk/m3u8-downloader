@@ -8,15 +8,17 @@ var MyBootstrap = (function () {
 	function _start() {
 		chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 			if(request.action == "downloadmedia"){
-                if(MyDownload.canDownload()){
-                    _downloadMedia(request.data);
+                if(!MyDownload.canDownload()){
+                    sendResponse({success: false, message: chrome.i18n.getMessage("errorCode0003")});
+                    return ;
                 }
-				sendResponse({success: true});
+                sendResponse({success: true});
+                _downloadMedia(request.data);
 			}else if(request.action == "loadmonitoredmedia"){
 				sendResponse(MyChromeMediaMonitor.view());
 			}else if(request.action == "downloadmonitoredmedia"){
                 if(!MyDownload.canDownload()){
-                    sendResponse({success: true});
+                    sendResponse({success: false, message: chrome.i18n.getMessage("errorCode0003")});
                     return ;
                 }
 				var mediaItem = request.data.destroy ? MyChromeMediaMonitor.take(request.data.identifier) : MyChromeMediaMonitor.element(request.data.identifier);
@@ -63,8 +65,8 @@ var MyBootstrap = (function () {
 			}else if(request.action == "getconfig"){
 				sendResponse(MyChromeConfig.view());
 			}else if(request.action == "updateconfig"){
-				MyChromeConfig.update(request.data);
-				sendResponse({success: true});
+				const result = MyChromeConfig.update(request.data);
+				sendResponse({success: result});
 			}else if(request.action == "cleanmonitoredmedia"){
 				MyChromeMediaMonitor.clear();
 				sendResponse({success: true});
@@ -76,7 +78,8 @@ var MyBootstrap = (function () {
                     notification: MyChromeNotification.info(),
                     processor: MyBaseProcessor.info(),
                     downloader: MyDownloader.info(),
-                    matchingRule: MyUrlRuleMatcher.info()
+                    matchingRule: MyUrlRuleMatcher.info(),
+                    logger: MyLogger.info()
                 });
 			}else if(request.action == "download.restart"){
                 MyDownload.restart(request.data.id);
@@ -102,6 +105,11 @@ var MyBootstrap = (function () {
 			}else if(request.action == "stopm3u8livedownload"){
                 MyM3u8Processor.stopDownloadByContextId(request.data.id);
                 sendResponse({success: true});
+            }else if(request.action == "log.snapshot"){
+                sendResponse(MyLogger.snapshot());
+            }else if(request.action == "log.remove"){
+                sendResponse({success: true});
+                MyLogger.remove(request.data);
             }
 		});
         
@@ -190,7 +198,7 @@ var MyBootstrap = (function () {
                 },
                 target: "chrome"
             }], 
-            showName: mediaName
+            showName: MyUtils.buildSimpleShowName( mediaName )
         }, function(){
             MyVideox.playCompleteSound();
         });
@@ -221,7 +229,7 @@ var MyBootstrap = (function () {
                 target: "custom",
                 custom: { contextId: uniqueKey }
             }],
-            showName: mediaName
+            showName: MyUtils.buildSimpleShowName( mediaName )
         }, null);
         
                 
@@ -251,7 +259,7 @@ var MyBootstrap = (function () {
                     },
                     target: "chrome"
                 }], 
-                showName: mediaName,
+                showName: MyUtils.buildSimpleShowName( mediaName ),
                 priority: true
             }, function(){
                 URL.revokeObjectURL(url);

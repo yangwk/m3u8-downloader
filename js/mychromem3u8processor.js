@@ -6,13 +6,13 @@ var MyChromeM3u8Processor = (function () {
         downloadDirectory: "",
         reqConfig: {
             url: "",
-            method: ""
+            method: "",
+            headers: null
         }, 
         mediaName: ""
     }
     */
 	function _downloadM3u8Basic(data, parseResult, playListCnt, callback){
-		var processorId = null;
 		
 		function stepDownloadm3u8processor1(){
 			var processorName = MyUtils.isWindowsPlatform() ? "processor.bat" : "processor.sh.command" ;
@@ -29,11 +29,10 @@ var MyChromeM3u8Processor = (function () {
                 priority: true
             }, stepDownloadm3u8processor2 );
 		}
-		
-		stepDownloadm3u8processor1();
+
 		
 		function stepDownloadm3u8processor2(ids){
-			processorId = ids[0];
+			const processorId = ids[0];
 			
 			MyDownload.download({
                 tasks: [{
@@ -45,28 +44,31 @@ var MyChromeM3u8Processor = (function () {
                 }], 
                 showName: data.mediaName + "2.txt",
                 priority: true
-            }, stepDownloadm3u8playlist);
+            }, function(){
+                callback(processorId);
+            });
 		}
 		
 		
 		function stepDownloadm3u8playlist(){
             var tasks = [];
             var shouldSplit = parseResult.discontinuity.length > 1;
+            let reqUrl = null;
             for(var r=0; r<parseResult.discontinuity.length; r++){
                 var m3u8Name = MyUtils.padStart(r.toString(), 10,"0") + "-"
                     + (shouldSplit ? "1" : "0") + "-" + playListCnt + "-"
                     + parseResult.discontinuity[r].start + "-" + parseResult.discontinuity[r].end + "-"
                     + data.uniqueKey + ".m3u8";
                 if(r == 0){
+                    const ua = new TextEncoder().encode(parseResult.content);
+                    const blob = new Blob([ua], {type: "application/octet-stream"});
+                    reqUrl = URL.createObjectURL(blob);
                     tasks.push({
                         options: {
-                            url: data.reqConfig.url,
-                            filename: data.downloadDirectory + "/m3u8/" + m3u8Name,
-                            method: data.reqConfig.method,
-                            headers: data.reqConfig.headers
+                            url: reqUrl,
+                            filename: data.downloadDirectory + "/m3u8/" + m3u8Name
                         },
-                        target: "chrome",
-                        proxy: true
+                        target: "chrome"
                     });
                 }else{
                     tasks.push({
@@ -83,9 +85,14 @@ var MyChromeM3u8Processor = (function () {
                 showName: data.mediaName + ".m3u8",
                 priority: true
             }, function(){
-                callback(processorId);
+                URL.revokeObjectURL(reqUrl);
+                
+                stepDownloadm3u8processor1();
             });
 		}
+        
+        stepDownloadm3u8playlist();
+        
     }
        
 
@@ -105,12 +112,12 @@ var MyChromeM3u8Processor = (function () {
                 target: "chrome",
                 hideInDownloadList: true
             }], 
-            showName: fileName,
+            showName: MyUtils.buildSimpleShowName( fileName ),
             priority: true
         }, function(){
             URL.revokeObjectURL(url);
             
-            allBytes.splice(0);
+            allBytes.length = 0;
             playItem.content = null;
             
             callback();
@@ -122,7 +129,6 @@ var MyChromeM3u8Processor = (function () {
         MyVideox.playCompleteSound();
         
         MyChromeDownload.open(processorId, {
-            title: data.mediaName,
             message: chrome.i18n.getMessage("notificationOpenDownload", chrome.i18n.getMessage("processorName", data.mediaName) )
         });
 	}

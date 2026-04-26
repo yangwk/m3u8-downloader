@@ -25,6 +25,7 @@ var MyDownloader = (function () {
         this.rangeMode = false;
         this.header = header;
         this.data = data;
+        this.fakePause = false;
 	}
     
     function _download(options, callback){
@@ -109,7 +110,9 @@ var MyDownloader = (function () {
             return null;
         }
         _data.delete(id);
-        return item.content;
+        const result = item.content;
+        item.content = null;
+        return result;
     }
     
     function _metric(){
@@ -146,9 +149,23 @@ var MyDownloader = (function () {
                         return ;
                     }
                     if(item.restart){
+                        if(item.fakePause){
+                            item.state = "in_progress";
+                            _notify(item, callback);
+                            item.fakePause = false;
+                            return ;
+                        }
                         item.state = "interrupted";
                         _notify(item, callback);
                         return ;
+                    }
+                    if(d.state == "interrupted"){
+                        if(item.fakePause){
+                            item.state = "in_progress";
+                            _notify(item, callback);
+                            item.fakePause = false;
+                            return ;
+                        }
                     }
                     item.speed = d.speed;
                     item.speedUnit = d.speedUnit;
@@ -162,6 +179,7 @@ var MyDownloader = (function () {
                     if(useRangeMode && ! item.rangeMode){
                         if(! isResume && item.resumable && item.lengthComputable && item.total > 0){
                             item.rangeMode = true;
+                            item.fakePause = true;
                             _pause(id);
                             item.loaded = item.loadedOriginal;
                             _resume(id, callback);
@@ -201,9 +219,9 @@ var MyDownloader = (function () {
                         resumable0 = request.getStatus() == 206 && (ar == null || ar.trim() != "none");
                     }else{
                         if(useRangeMode){
-                            resumable0 = request.getStatus() != 200 && cr != null && entityLength != -1 && (ar == null || ar.trim() != "none");
+                            resumable0 = request.getStatus() == 206 && cr != null && entityLength != -1 && (ar == null || ar.trim() != "none");
                         }else{
-                            resumable0 = ar != null && ar.trim() != "none";
+                            resumable0 = (ar != null && ar.trim() != "none");
                         }
                     }
                     item.resumable = resumable0;
@@ -219,10 +237,14 @@ var MyDownloader = (function () {
                     }
                     
                     // restart it from the beginning
-                    item.restart = (item.rangeMode && ! resumable0) || (isResume && ! item.resumable) || (! isResume && useRangeMode && ! item.resumable && request.getStatus() != 200);
+                    item.restart = (item.rangeMode && ! item.resumable) || (isResume && ! item.resumable) || (! isResume && useRangeMode && ! item.resumable );
                     if(item.restart){
+                        const shouldRestart = (! isResume && useRangeMode);
+                        if(shouldRestart){
+                            item.fakePause = true;
+                        }
                         request.destroy();
-                        if(! isResume && useRangeMode){
+                        if(shouldRestart){
                             _restart(id, callback);
                         }
                     }

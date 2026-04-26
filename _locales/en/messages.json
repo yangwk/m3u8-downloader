@@ -3,19 +3,19 @@
         "message": "m3u8 downloader"
     },
     "appDescription": {
-        "message": "This extension can monitor and download m3u8 stream, and video, audio media."
+        "message": "This extension can monitor and download m3u8 stream, video, and audio"
     },
     "processorName": {
         "message": "m3u8 downloader processor - $1"
     },
     "notificationYes": {
-        "message": "yes"
+        "message": "Yes"
     },
     "notificationNo": {
-        "message": "no"
+        "message": "No"
     },
     "notificationOpenDownload": {
-        "message": "open the file $1 ?"
+        "message": "Open the file $1 ?"
     },
     "nothing": {
         "message": "nothing"
@@ -45,7 +45,7 @@
         "message": "from tab"
     },
     "inputFileName": {
-        "message": "input the name of the file to be saved"
+        "message": "input the filename to save"
     },
     "delete": {
         "message": "delete"
@@ -69,28 +69,28 @@
         "message": "downloading task count"
     },
     "downloadBatchShow": {
-        "message": "batch"
+        "message": "download batch"
     },
     "downloadBatchCount": {
-        "message": "batch count"
+        "message": "download batch count"
     },
     "fileName": {
-        "message": "the name of file"
+        "message": "filename"
     },
     "cancel": {
         "message": "cancel"
     },
     "downloadDatchName": {
-        "message": "the name of batch"
+        "message": "the name of download batch"
     },
     "downloadTaskWaitCnt": {
-        "message": "waiting tasks count"
+        "message": "waiting task count"
     },
     "downloadTaskCompletedCnt": {
-        "message": "completed tasks count"
+        "message": "completed task count"
     },
     "downloadTaskTriggeredCnt": {
-        "message": "triggered tasks count"
+        "message": "triggered task count"
     },
     "downloadTaskSum": {
         "message": "total number of task"
@@ -104,14 +104,11 @@
     "settingsEnvironmentMobile": {
         "message": "mobile"
     },
-    "settingsShowTab": {
-        "message": "the monitored details show tab information"
-    },
     "settingsMonitorMax": {
         "message": "maximum number of the monitored"
     },
     "settingsDlingMax": {
-        "message": "maximum number of downloading task"
+        "message": "maximum number of downloading task per batch"
     },
     "settingsDlBatchMax": {
         "message": "maximum number of download batch"
@@ -131,9 +128,6 @@
 	"settingsPopupInTab": {
         "message": "open the extension popup in tab"
     },
-	"settingsShowDuration": {
-        "message": "the monitored details show duration"
-    },
 	"duration": {
         "message": "duration"
     },
@@ -147,13 +141,10 @@
         "message": "prompt when filename exist"
     },
 	"settingsNewFolderAtRoot": {
-        "message": "create subdirectory at download root folder"
+        "message": "create subdirectory at download root directory"
     },
 	"settingsPlaySoundWhenComplete": {
-        "message": "play sound when complete"
-    },
-	"settingsSplitDiscontinuity": {
-        "message": "split to handle discontinuity m3u8 playlist"
+        "message": "play sound when download complete"
     },
 	"pause": {
         "message": "pause"
@@ -176,20 +167,20 @@
     "downloadReloadTip": {
         "message": "reload before each operation"
     },
-    "filter": {
-        "message": "filter"
+    "filterMediaType": {
+        "message": "filter media type"
     },
-    "settingsProcessorThreshold": {
-        "message": "the threshold (MB) of non-live m3u8 processor mode"
+    "filterDuration": {
+        "message": "filter duration"
     },
     "settingsMatchingRule": {
         "message": "matching rule"
     },
     "settingsDownloaderPageSize": {
-        "message": "the page size (byte) of downloader"
+        "message": "the page size (MB) of downloader"
     },
     "settingsConvertSubtitles": {
-        "message": "convert subtitles"
+        "message": "convert subtitles format"
     },
     "live": {
         "message": "live"
@@ -198,15 +189,75 @@
         "message": "stop live"
     },
     "settingsBrokenSequence": {
-        "message": "stop live downloads if broken sequence"
+        "message": "stop live m3u8 download when broken sequence"
     },
     "settingsProxyAddress": {
         "message": "proxy address"
     },
     "settingsAutoReload": {
-        "message": "the interval seconds of auto-reload"
+        "message": "interval second of extension popup data auto-reload"
     },
     "manualMethod": {
         "message": "request method"
+    },
+    "closePopup": {
+        "message": "left-click close current, right-click close all"
+    },
+    "minimizePopup": {
+        "message": "minimize"
+    },
+    "promptMessage": {
+        "message": "$1 message"
+    },
+    "settingsBatchConcurrent": {
+        "message": "multiple batches concurrent download"
+    },
+    "inputValidMatchingRule": {
+        "message": "input valid matching rule"
+    },
+    "settingsSplitThreshold": {
+        "message": "m3u8 result file split threshold (MB)"
+    },
+    "settingsFileProcess": {
+        "message": "m3u8 result file process"
+    },
+    "settingsFileProcessSplit": {
+        "message": "split into multiple use threshold"
+    },
+    "settingsFileProcessProcessor": {
+        "message": "ignore threshold use m3u8 processor"
+    },
+    "downloadedDuration": {
+        "message": "downloaded duration"
+    },
+    "downloadedSize": {
+        "message": "downloaded size"
+    },
+    "resultSplitNumber": {
+        "message": "total number of m3u8 result file split"
+    },
+    "timeSpent": {
+        "message": "time spent"
+    },
+    "errorCode0001": {
+        "message": "Download main playlist is not supported"
+    },
+    "errorCode0002": {
+        "message": "Please input a valid URL"
+    },
+    "errorCode0003": {
+        "message": "Maximum number of download batch has reached"
+    },
+    "errorCode0004": {
+        "message": "Network error $1"
+    },
+    "errorCode0005": {
+        "message": "Please input a valid proxy address"
+    },
+    "errorCode0006": {
+        "message": "Please input the matching rule in JSON format"
+    },
+    "errorCode0007": {
+        "message": "There is incomplete download task. Please check downloading task"
     }
 }

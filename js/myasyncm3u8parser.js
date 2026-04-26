@@ -20,7 +20,8 @@ var MyAsyncM3u8Parser = function (_reqConfig) {
                 target: "custom",
                 custom: { contextId: uniqueKey, useRangeMode: false }
             }], 
-            showName: mediaName
+            showName: MyUtils.buildSimpleShowName( mediaName ),
+            priority: true
         }, null);
 		
         function completeCallback(buf, context){
