@@ -161,9 +161,7 @@ var MyDownload = (function () {
                     if(control.state == "complete"){
                         return ;
                     }
-                    if(control.state == "in_progress"){
-                        countInfo.actionCount ++;
-                    }
+                    countInfo.actionCount ++;
 				});
                 return data;
 			},

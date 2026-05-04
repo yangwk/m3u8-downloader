@@ -52,10 +52,17 @@ var MyM3u8Processor = (function () {
             _mergeM3u8Complete(context);
             return ;
         }
-        if( (context.total - context.mergeM3u8.total) >= context.mergeM3u8.threshold
-            || (context.completedCnt >= context.playListCnt && context.isEnd) ){
+        if(_canMergeContent(context)){
             _mergeContentAction(context);
         }
+    }
+    
+    function _canMergeContent(context){
+        if( (context.total - context.mergeM3u8.total) >= context.mergeM3u8.threshold
+            || (context.completedCnt >= context.playListCnt && context.isEnd) ){
+            return true;
+        }
+        return false;
     }
     
     function _mergeContentAction(context){
@@ -190,6 +197,10 @@ var MyM3u8Processor = (function () {
                     allBytes.length = 0;
                     currentTotal = 0;
                     targetIndex = -1;
+                }
+                
+                if(context.isLive && ! _canMergeContent(context)){
+                    return;
                 }
             }
 
