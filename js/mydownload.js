@@ -161,9 +161,7 @@ var MyDownload = (function () {
                     if(control.state == "complete"){
                         return ;
                     }
-                    if(control.state == "in_progress"){
-                        countInfo.actionCount ++;
-                    }
+                    countInfo.actionCount ++;
 				});
                 return data;
 			},
@@ -211,6 +209,9 @@ var MyDownload = (function () {
                         dlDuration: context.duration,
                         dlSize: context.total,
                         splitFileCnt: context.mergeM3u8.fileCnt,
+                        splitFileSize: context.mergeM3u8.total,
+                        fileProcess: context.resultFileProcess,
+                        fileThreshold: Math.floor(context.mergeM3u8.threshold / 1024 / 1024),
                         spentTime: Math.trunc((Date.now() - context.beginTime) / 1000)
                     };
                 }

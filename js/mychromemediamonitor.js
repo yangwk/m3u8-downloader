@@ -378,6 +378,8 @@ var MyChromeMediaMonitor = (function () {
         chrome.tabs.query({
             url: url
         }, function(tabs){
+            if(chrome.runtime.lastError){
+            }
             let tab = null;
             if(tabs != null && tabs.length > 0){
                 for(let r in tabs){
@@ -421,6 +423,17 @@ var MyChromeMediaMonitor = (function () {
                         tab.title,
                         tab.favIconUrl
                     );
+                    if(! tab.favIconUrl){
+                        MyUtils.delay(9000, function(){
+                            chrome.tabs.get(details.tabId, function(tab2){
+                                if(chrome.runtime.lastError){
+                                }
+                                if(tab2 != null && tab2.favIconUrl){
+                                    mediaItem.tabItem.favIconUrl = tab2.favIconUrl;
+                                }
+                            });
+                        });
+                    }
                 }
                 _getMediaInfo(mediaItem);
             });

@@ -262,6 +262,12 @@ var MyUtils = (function(){
                 throw e;
             });
         },
+        delayCancelable: function(delayMs, callback){
+            return setTimeout(() => { callback(); }, delayMs);
+        },
+        cancelDelay: function(id){
+            clearTimeout(id);
+        },
         isM3u8: function(suffix) {
             if(suffix){
                 suffix = suffix.toLowerCase();

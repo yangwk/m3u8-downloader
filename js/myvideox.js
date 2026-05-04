@@ -4,6 +4,7 @@ var MyVideox = (function () {
         var _video = null;
         var _destroyed = false;
         var _fired = false;
+        let _delayId = null;
 
         function _fireCallback(arg) {
             if (!_fired) {
@@ -41,12 +42,22 @@ var MyVideox = (function () {
                 _destroy();
                 _fireCallback(null);
             }
+            
+            _delayId = MyUtils.delayCancelable(15000, function(){
+                _destroy();
+                _fireCallback(null);
+                _delayId = null;
+            });
 		}
 		
         this.getInfo = function (url) {
 			_init(url,true);
 
             _video.ondurationchange = function () {
+                if(_delayId != null){
+                    MyUtils.cancelDelay(_delayId);
+                    _delayId = null;
+                }
                 var duration = _video.duration;
                 _destroy();
                 _fireCallback((duration != null && !isNaN(duration)) ? {
@@ -61,6 +72,10 @@ var MyVideox = (function () {
 			_init(url, false);
 
             _video.onended = function () {
+                if(_delayId != null){
+                    MyUtils.cancelDelay(_delayId);
+                    _delayId = null;
+                }
                 _destroy();
                 _fireCallback(null);
             }
