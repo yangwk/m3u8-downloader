@@ -234,7 +234,10 @@
         "message": "已下载大小"
     },
     "resultSplitNumber": {
-        "message": "m3u8结果文件拆分个数"
+        "message": "m3u8结果文件已拆分个数"
+    },
+    "resultSplitSize": {
+        "message": "m3u8结果文件已拆分大小"
     },
     "timeSpent": {
         "message": "已花费时间"

@@ -93,7 +93,7 @@
         "message": "triggered task count"
     },
     "downloadTaskSum": {
-        "message": "total number of task"
+        "message": "all task count"
     },
     "settingsEnvironment": {
         "message": "simulation environment"
@@ -234,7 +234,10 @@
         "message": "downloaded size"
     },
     "resultSplitNumber": {
-        "message": "total number of m3u8 result file split"
+        "message": "number of splitted m3u8 result file"
+    },
+    "resultSplitSize": {
+        "message": "size of splitted m3u8 result file"
     },
     "timeSpent": {
         "message": "time spent"

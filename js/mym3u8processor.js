@@ -444,7 +444,8 @@ var MyM3u8Processor = (function () {
                 completedCnt: 0,
                 fileCnt: 0,
                 mergeCallback: mergeCallback
-            }
+            },
+            resultFileProcess: MyChromeConfig.get("resultFileProcess")
         });
         stepDownloadKey();
         

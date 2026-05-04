@@ -408,9 +408,11 @@ document.addEventListener("DOMContentLoaded", function () {
 				);
                 if(obj.m3u8Info){
                     html += (
+                        '<span class="badge info">' + Array.from(document.getElementById("settings-filepro").options).find(op => op.value == obj.m3u8Info.fileProcess).text + (obj.m3u8Info.fileProcess == "split" ? " " + obj.m3u8Info.fileThreshold + " MB" : "") + '</span>' +
                         '<span class="badge info" data-title="downloadedDuration">' + MyUtils.formatHms(obj.m3u8Info.dlDuration) + '</span>' +
                         '<span class="badge info" data-title="downloadedSize">' + obj.m3u8Info.dlSize + ' B' + '</span>' +
                         '<span class="badge info" data-title="resultSplitNumber">' + obj.m3u8Info.splitFileCnt + '</span>' +
+                        '<span class="badge info" data-title="resultSplitSize">' + obj.m3u8Info.splitFileSize + ' B' + '</span>' +
                         '<span class="badge info" data-title="timeSpent">' + obj.m3u8Info.spentTime + ' ' + chrome.i18n.getMessage("second") + '</span>'
                     );
                 }
